@@ -149,7 +149,7 @@ plotTimeSeriesWithConfidenceIntervalByFacettedGroup <- function(df, variable, yl
     stat_summary(fun.y="mean", conf.int=.95, geom="smooth", lty="dashed", colour="black") +
     
     #facet_grid(. ~ modelRun)+
-    facet_wrap(~ modelRun, nrow=nrow)+
+    facet_wrap(~ modelRun, nrow=1)+
     theme(legend.position="none")+
     xlab("Time [a]")+
     ylab(ylabel)+
