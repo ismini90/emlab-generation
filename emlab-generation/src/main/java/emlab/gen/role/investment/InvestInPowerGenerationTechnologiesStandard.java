@@ -94,7 +94,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
     public void act(T agent) {
 
         long futureTimePoint = getCurrentTick() + agent.getInvestmentFutureTimeHorizon();
-        // logger.warn(agent + " is looking at timepoint " + futureTimePoint);
+        logger.warn(agent + " is looking at timepoint " + futureTimePoint);
 
         // ==== Expectations ===
 

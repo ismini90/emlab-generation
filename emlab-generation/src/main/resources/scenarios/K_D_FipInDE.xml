@@ -788,8 +788,8 @@ p:feedInPremiumBiasFactor="1.2">
 		p:minValue="0" />
 
 	<!-- Minimum CO2 Price Trends -->
-	<bean id="minCo2PriceTrend" class="emlab.gen.trend.StepTrend" p:start="${minCo2PriceStart}"
-		p:duration="${minCo2PriceDuration}" p:increment="${minCo2PriceIncrement}"
+	<bean id="minCo2PriceTrend" class="emlab.gen.trend.StepTrend" p:start="${minCo2EUPriceStart}"
+		p:duration="${minCo2PriceDuration}" p:increment="${minCo2EUPriceIncrement}"
 		p:minValue="0" />
 		
 	<bean id="minCo2PriceTrendNL" class="emlab.gen.trend.StepTrend" p:start="0"
@@ -816,7 +816,7 @@ p:feedInPremiumBiasFactor="1.2">
 
 	<bean id="governmentDE" class="emlab.gen.domain.agent.NationalGovernment"
 		p:name="Country B Government">
-		<property name="minNationalCo2PriceTrend" ref="minCo2PriceTrendNL" />
+		<property name="minNationalCo2PriceTrend" ref="minCo2PriceTrendDE" />
 		<property name="governedZone" ref="de" />
 	</bean>
 		

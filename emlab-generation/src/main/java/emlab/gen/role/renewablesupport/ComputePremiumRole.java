@@ -146,8 +146,10 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 totalGenerationinMWh = fullLoadHours * plant.getActualNominalCapacity();
                 annualMarginalCost = totalGenerationinMWh * mc;
 
-                logger.warn("for technology " + plant.getTechnology().getName() + " total generation is "
-                        + totalGenerationinMWh + " and running hours is " + fullLoadHours);
+                // logger.warn("for technology " +
+                // plant.getTechnology().getName() + " total generation is "
+                // + totalGenerationinMWh + " and running hours is " +
+                // fullLoadHours);
 
                 double fixedOMCost = calculateFixedOperatingCost(plant, getCurrentTick());
                 double operatingCost = fixedOMCost + annualMarginalCost;
@@ -175,10 +177,11 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                         + regulator.getDebtRatioOfInvestments() * regulator.getLoanInterestRate();
 
                 double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);
-                logger.warn("discountedCapitalCosts " + discountedCapitalCosts);
+                // logger.warn("discountedCapitalCosts " +
+                // discountedCapitalCosts);
                 double discountedOpCost = npv(discountedProjectCashOutflow, wacc);
                 double factorDiscountedGeneration = npv(factorDiscountedGenerationSeries, wacc);
-                logger.warn("discountedOpCost " + discountedOpCost);
+                // logger.warn("discountedOpCost " + discountedOpCost);
                 lcoe = (discountedCapitalCosts + discountedOpCost) * scheme.getFeedInPremiumBiasFactor()
                         / (totalGenerationinMWh * factorDiscountedGeneration);
 
