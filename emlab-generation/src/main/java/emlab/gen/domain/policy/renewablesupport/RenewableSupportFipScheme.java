@@ -47,18 +47,6 @@ public class RenewableSupportFipScheme {
 
     private String name;
 
-    // Feed-in-Premium Related Pàrameters
-    @SimulationParameter(label = "FeedInPremiumFactor", from = 0, to = 1)
-    private double feedInPremiumBiasFactor;
-
-    public double getFeedInPremiumBiasFactor() {
-        return feedInPremiumBiasFactor;
-    }
-
-    public void setFeedInPremiumBiasFactor(double feedInPremiumBiasFactor) {
-        this.feedInPremiumBiasFactor = feedInPremiumBiasFactor;
-    }
-
     public String getName() {
         return name;
     }

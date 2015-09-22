@@ -115,7 +115,7 @@ addProducerCashBalanceForAll <- function(df){
 
 # Generic Plotting Functions over Time ------------------------------------
 
-plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE, variable="variable", value="value", xlabel="Time [a]", manuelPalette=NULL, summaryFunction=median, nrow=NULL){
+plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE, variable="variable", value="value", xlabel="Time [a]", manuelPalette=NULL, summaryFunction=median, nrow=1){
   ## This function can plot stacked diagrams of variables over time, and is set to accept the standard
   ## output of the melt (reshape) function. the absolute parameter can be used to switch between absolute
   ## and relative plotting (e.g. 20GW installed capacity vs 20% of a total of 100GW)

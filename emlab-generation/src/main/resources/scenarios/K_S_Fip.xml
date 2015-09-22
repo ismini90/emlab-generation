@@ -71,8 +71,7 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 </bean>
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="15" 
-p:feedInPremiumBiasFactor="1">
+p:supportSchemeDuration="15" >
 <property name="regulator" ref="regulator"/>
 <property name="powerGeneratingTechnologiesEligible">
 			<set>
@@ -83,6 +82,35 @@ p:feedInPremiumBiasFactor="1">
 			</set>
 </property>
 </bean>
+
+<bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.0">
+<property name="node" ref="beneluxNode"> </property>
+<property name="scheme" ref="renewableSupportScheme"></property>
+<property name="technology" ref = "photovoltaicPGT" ></property>
+</bean>
+
+<bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.0">
+<property name="node" ref="beneluxNode"> </property>
+<property name="scheme" ref="renewableSupportScheme"></property>
+<property name="technology" ref = "windPGT" ></property>
+</bean>
+
+<bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.0">
+<property name="node" ref="beneluxNode"> </property>
+<property name="scheme" ref="renewableSupportScheme"></property>
+<property name="technology" ref = "windOffshorePGT" ></property>
+</bean>
+
+<bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.0">
+<property name="node" ref="beneluxNode"> </property>
+<property name="scheme" ref="renewableSupportScheme"></property>
+<property name="technology" ref = "biomassPGT" ></property>
+</bean>
+
 
 	<bean id="interconnectorBeneluxGermany" class="emlab.gen.domain.technology.Interconnector"
 		p:capacity="${interconnectorCapacity}">

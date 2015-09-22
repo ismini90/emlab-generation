@@ -203,7 +203,7 @@ public class PowerPlant {
                         double range = max - min;
 
                         factor = max - segmentPortion * range;
-                        int i = 0;
+                        // int i = 0;
                     } else {
                         factor = getTechnology().getPeakSegmentDependentAvailability();
                     }
