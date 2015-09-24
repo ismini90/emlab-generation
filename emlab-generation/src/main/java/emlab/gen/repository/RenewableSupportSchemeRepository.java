@@ -22,8 +22,6 @@ import org.springframework.data.repository.query.Param;
 
 import emlab.gen.domain.policy.renewablesupport.BiasFactor;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
-import emlab.gen.domain.technology.PowerGeneratingTechnology;
-import emlab.gen.domain.technology.PowerGridNode;
 
 /**
  * @author Kaveri3012
@@ -31,9 +29,8 @@ import emlab.gen.domain.technology.PowerGridNode;
  */
 public interface RenewableSupportSchemeRepository extends GraphRepository<RenewableSupportFipScheme> {
 
-    @Query(value = "g.v(scheme).in('BIASFACTOR_FOR_SUPPORTSCHEME').as('x').out('BIASFACTOR_FOR_NODE').propertyFilter('name', FilterPipe.Filter.EQUAL, node.name).back('x').out('BIASFACTOR_FOR_TECHNOLOGY').propertyFilter('name', FilterPipe.Filter.EQUAL, technology.name).back('x')", type = QueryType.Gremlin)
-    public BiasFactor findBiasFactorGivenTechnologyNodeAndScheme(
-            @Param("technology") PowerGeneratingTechnology technology, @Param("node") PowerGridNode node,
-            @Param("scheme") RenewableSupportFipScheme scheme);
+    @Query(value = "g.v(scheme).in('BIASFACTOR_FOR_SUPPORTSCHEME').as('x').out('BIASFACTOR_FOR_NODE').filter{it.name==node}.back('x').out('BIASFACTOR_FOR_TECHNOLOGY').filter{it.name==technology}.back('x')", type = QueryType.Gremlin)
+    public BiasFactor findBiasFactorGivenTechnologyNodeAndScheme(@Param("technology") String technologyName,
+            @Param("node") String nodeName, @Param("scheme") RenewableSupportFipScheme scheme);
 
 }

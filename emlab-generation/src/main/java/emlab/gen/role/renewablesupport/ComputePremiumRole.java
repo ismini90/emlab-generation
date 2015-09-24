@@ -34,7 +34,6 @@ import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.market.electricity.Segment;
 import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
-import emlab.gen.domain.policy.renewablesupport.BiasFactor;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
@@ -183,9 +182,11 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 double discountedOpCost = npv(discountedProjectCashOutflow, wacc);
                 double factorDiscountedGeneration = npv(factorDiscountedGenerationSeries, wacc);
                 // logger.warn("discountedOpCost " + discountedOpCost);
-                BiasFactor biasFactor = reps.renewableSupportSchemeRepository
-                        .findBiasFactorGivenTechnologyNodeAndScheme(technology, node, scheme);
-                lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactor.getFeedInPremiumBiasFactor()
+                double biasFactor = reps.renewableSupportSchemeRepository
+                        .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme)
+                        .getFeedInPremiumBiasFactor();
+                // double biasFactor = 1.0d;
+                lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactor
                         / (totalGenerationinMWh * factorDiscountedGeneration);
 
                 BaseCostFip baseCostFip = new BaseCostFip();

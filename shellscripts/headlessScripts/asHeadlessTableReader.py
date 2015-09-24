@@ -5,7 +5,11 @@ import sys
 import json
 
 def find_runIds_based_on_logfiles_and_runname(path, runName):
+    print("list of query paths")
+    print(path,runName)
+    print("after printing run name")
     listOfQueryPaths = glob.glob(path + runName + "/*.log")
+    print(listOfQueryPaths)
     listOfRunIds = []
     for query in listOfQueryPaths:
         m = re.search('(?<={0}{1}/).*'.format(path, runName), query)
@@ -133,6 +137,8 @@ def main(path, runName, tableName):
 
 if __name__ == "__main__":
     if len(sys.argv[1:]) == 3:
+	print("main condition 1")
+	#print(sys.argv[1], sys.argv[2], sys.argv[3])
         main(sys.argv[1], sys.argv[2], sys.argv[3])
     elif len(sys.argv[1:]) == 2:
         f=sys.argv[1]

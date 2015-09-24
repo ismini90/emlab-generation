@@ -16,6 +16,7 @@
 package emlab.gen.domain.policy.renewablesupport;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import agentspring.simulation.SimulationParameter;
@@ -26,6 +27,7 @@ import emlab.gen.domain.technology.PowerGridNode;
  * @author Kaveri3012
  *
  */
+@NodeEntity
 public class BiasFactor {
 
     @SimulationParameter(label = "FeedInPremiumFactor", from = 0, to = 2)
