@@ -37,6 +37,7 @@ WALLTIME=$5
 #Creating output folders
 STREAMOUTPUT=$HOME/$RUNNAME/streamOutput
 INPUTPARAMETERFOLDER=$HOME/$RUNNAME/inputParameter
+echo "Input parameter folder "$INPUTPARAMETERFOLDER"."
 if [ ! -e $HOME/$RUNNAME ];then
 mkdir $HOME/$RUNNAME
 #mkdir $HOME/$JOBNAME/results
@@ -47,6 +48,7 @@ mkdir $INPUTPARAMETERFOLDER
 fi
 ######################
 cp $REMOTESCENARIOFOLDER/$SCENARIO $INPUTPARAMETERFOLDER/
+echo "Moving "$SCENARIO "from" $REMOTESCENARIOFOLDER "to" $INPUTPARAMETERFOLDER"."
 PARAMETERFILE=$(grep "classpath:scenarios" <$INPUTPARAMETERFOLDER/$SCENARIO | sed 's/[^:]*:scenarios\/\([^"]*\).*/\1/')
 cp $REMOTESCENARIOFOLDER/$PARAMETERFILE $INPUTPARAMETERFOLDER/
 

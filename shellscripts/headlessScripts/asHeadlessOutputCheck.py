@@ -6,6 +6,7 @@ import glob
 import re
 import csv
 import sys
+import os.path
 
 
 def check_that_dict_has_equal_length(resultDict):
@@ -22,7 +23,7 @@ def check_that_dict_has_equal_length(resultDict):
 
 def read_query_of_runid(path, runName, runId, queryName, resultDict):
     filename = runId + "-" + queryName
-    print("queryName:" +queryName)
+    #print("queryName:" +queryName)
     filepath = path + runName + "/" + filename
     json_data = open(filepath, 'r')
     resultList = []
@@ -106,6 +107,7 @@ runId, queryName, json_data, resultDict):
 def read_standard_conform_key_value_pairs(tempJsonLine, wrapperCounter, runId,
 queryName, json_data, resultDict):
     subElementNumber = 0
+    print("Query Name" +queryName)
     for subelement in tempJsonLine:
         if not len(subelement) == 2:
             print(wrapperCounter)
@@ -148,14 +150,14 @@ queryName, json_data, resultDict):
 
 def find_query_names_in_directory_for_runId(path, runName, runId):
     listOfQueryPaths = glob.glob(path + runName + "/" + runId + "-*")
-    print(path)
-    print(runName)
-    print listOfQueryPaths
+    #print(path)
+    #print(runName)
+    #print listOfQueryPaths
     #ERROR
     listOfQueries = []
     listOfTableQueries = []
     for query in listOfQueryPaths:
-	print("query is" + query)
+	#print("query is" + query)
         m = re.search('(?<={0}{1}/{2}-).*'.format(path, runName, runId), query)
         if not m.group(0).startswith("TABLE_"):
             listOfQueries.append(m.group(0))
@@ -169,11 +171,14 @@ def find_query_names_in_directory_for_runId(path, runName, runId):
 
 def find_runIds_based_on_logfiles_and_runname(path, runName):
     listOfQueryPaths = glob.glob(path + runName + "/*.log")
+    #print(listOfQueryPaths)
     listOfRunIds = []
     for query in listOfQueryPaths:
+        #print(query)
         m = re.search('(?<={0}{1}/).*'.format(path, runName), query)
         n = re.sub("^(.*).log$", "\\1", m.group(0))
         listOfRunIds.append(n)
+    print("list Of Run Ids" +`listOfRunIds`)
     return listOfRunIds
 
 
@@ -236,15 +241,6 @@ def write_following_runids_to_csv(path, runName, runId, resultDict, noOfTicks):
             i = i + 1
 
 
-def write_csv_for_run_name(path, runName, ignoredQueries):
-    runIds = find_runIds_based_on_logfiles_and_runname(path, runName)
-    totalRunIdNo = len(runIds)
-    j = 0
-    for runId in runIds:
-        resultDict = read_runId_to_dictionary(path, runName,
-        runId, ignoredQueries)
-        print 
-
 
 def write_first_runid_dictionary_to_csv(path, runName, runId,
 resultDict, noOfTicks):
@@ -284,18 +280,75 @@ def write_following_runids_to_csv(path, runName, runId, resultDict, noOfTicks):
             singleTickDict.update({"runId": runId})
             csvwriter.writerow(singleTickDict)
             i = i + 1
+            
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
 
+#Checks 1. Which RunIds are missing due to a missing log file. 
+#Checks 2. Which RunIds have missing queries
+#Checks 3. Which Queries are missing in the RunIds that have missing queries
+def checkOutputFolderForIncompleteRuns(path, runName, noOfRuns, expectedNoOfTicks, ignoreRunIdsWithUnexpectedTicks):
+    ignoredQueries=set()
+    ignoredRunIds=set()
+    runIdsWithUnexpectedNoOfTicks=set()
+    missingRunIdsBasedOnLog=set()
+    runIdDict = {} 
+    maxNoOfQueries = 0
+    noOfRuns = int(noOfRuns)
+    for i in range(1,noOfRuns):
+        runIdStr = runName + "-" + `i`
+        #Checks 1. Which RunIds are missing due to a missing log file. 
+        doesLogExist = os.path.isfile(path + runName + "/" + runIdStr + ".log")
+        queries = glob.glob(path + runName + "/" + runIdStr + "-*")
+        noOfQueries = len(queries)
+        if doesLogExist:
+            runIdDict[runIdStr] = noOfQueries
+        else:
+            missingRunIdsBasedOnLog.add(runIdStr)
+            continue
+        maxNoOfQueries = noOfQueries if noOfQueries >= maxNoOfQueries else maxNoOfQueries
+        maxNoOfTicks = 0
+        queryDict = {}
+        for query in queries:
+            noOfTicks = file_len(query)
+            queryDict[query] = noOfTicks
+            maxNoOfTicks = noOfTicks if noOfTicks >= maxNoOfTicks else maxNoOfTicks
+        if maxNoOfTicks != expectedNoOfTicks:
+            runIdsWithUnexpectedNoOfTicks.add(runIdStr)
+            if ignoreRunIdsWithUnexpectedTicks:
+                ignoredRunIds.add(runIdStr)
+        incompleteQueryList={k:v for (k,v) in queryDict.items() if v < maxNoOfTicks}
+        for k in incompleteQueryList.keys():
+            ignoredQueries.add(k.rsplit("-", 1)[-1])
+    listOfRunIdsMissingQueries={k:v for (k,v) in runIdDict.items() if v < maxNoOfQueries}
+    for k in listOfRunIdsMissingQueries.keys():
+        ignoredRunIds.add(k)
+    return ignoredRunIds, ignoredQueries, runIdsWithUnexpectedNoOfTicks, missingRunIdsBasedOnLog
+    #print("missingRunIdsBasedOnLog " + `missingRunIdsBasedOnLog`)
+        #print(runIdStr + ": " + `doesLogExist` + ", " + `nrOfQueries`)
 
-def write_csv_for_run_name(path, runName, ignoredQueries):
+def write_csv_for_run_name(path, runName, ignoredRunIds, ignoredQueries):
     runIds = find_runIds_based_on_logfiles_and_runname(path, runName)
+    print("runIds:" + `runIds`)    
+    #print("path is " + path)
+    #print("runName is " + runName)      
+    runIdSet = set(runIds)
+    runIdSet = runIdSet.difference(ignoredRunIds)
+    runIds = list(runIdSet)
+    print("runIds after set difference:" + `runIds`)
+    #print("ignored: " + `ignoredRunIds`)
     #print(runIds)
     totalRunIdNo = len(runIds)
-    print(totalRunIdNo)
+    print("No of working runIds" + `totalRunIdNo`)
     j = 0
     for runId in runIds:
         resultDict = read_runId_to_dictionary(path, runName,
         runId, ignoredQueries)
-	noOfTicks = len(resultDict.items()[1][1])
+        #print(resultDict)
+        noOfTicks = len(resultDict.items()[1][1])
         if j == 0:
             write_first_runid_dictionary_to_csv(path, runName, runId,
             resultDict, noOfTicks)
@@ -307,31 +360,41 @@ def write_csv_for_run_name(path, runName, ignoredQueries):
         print((str(percentage) + "% done."))
 
 
-def main(outputPath, runName, ignoredQueries):
+def main(outputPath, runName, noOfRuns, noOfTicks, ignoreRunIdsWithUnexpectedTicks):
     if(not outputPath.endswith("/")):
         outputPath = outputPath + "/"
-    #print((find_runIds_based_on_logfiles_and_runname(outputPath, runName)))
-    write_csv_for_run_name(outputPath, runName, ignoredQueries)
+    ignoredRunIds, ignoredQueries, runIdsWithUnexpectedNoOfTicks, missingRunIdsBasedOnLog = checkOutputFolderForIncompleteRuns(outputPath, runName, noOfRuns, noOfTicks, ignoreRunIdsWithUnexpectedTicks)
+    if len(ignoredRunIds) > 0:
+        with open(outputPath + runName + "-" + "ignoredRunIds" + ".txt", 'w') as ignoredRunIdsOutput:
+            for item in list(ignoredRunIds):
+                ignoredRunIdsOutput.write("%s\n" % item)
+    if len(ignoredQueries) > 0:
+        with open(outputPath + runName + "-" +  "ignoredQueries" + ".txt", 'w') as ignoredQueriesOutput:
+            for item in list(ignoredQueries):
+                ignoredQueriesOutput.write("%s\n" % item)
+    if len(missingRunIdsBasedOnLog) > 0:
+        with open(outputPath + runName + "-" +  "missingRunIdsBasedOnLog" + ".txt", 'w') as missingRunIdsBasedOnLogOutput:
+            for item in list(missingRunIdsBasedOnLog):
+                missingRunIdsBasedOnLogOutput.write("%s\n" % item)
+    if len(runIdsWithUnexpectedNoOfTicks) > 0:
+        with open(outputPath + runName + "-" +  "runIdsWithUnexpectedNoOfTicks" + ".txt", 'w') as runIdsWithUnexpectedNoOfTicksOutput:
+            for item in list(runIdsWithUnexpectedNoOfTicks):
+                runIdsWithUnexpectedNoOfTicksOutput.write("%s\n" % item)
+    write_csv_for_run_name(outputPath, runName, ignoredRunIds, ignoredQueries)
+    if len(ignoredRunIds) > 0:
+        if ignoreRunIdsWithUnexpectedTicks:
+            print("WARNING, ignored runIds due to missing queries and unexpected tick length: " + `ignoredRunIds`)
+        else: 
+            print("WARNING, ignored runIds due to missing queries: " + `ignoredRunIds`)
+    if len(ignoredQueries) > 0:
+        print("WARNING, ignored queries due to missing ticks: " + `ignoredQueries`)
+    if len(runIdsWithUnexpectedNoOfTicks) > 0:
+        print("WARNING, thes runIds have an unexpected tick length: " + `runIdsWithUnexpectedNoOfTicks`)
 
 if __name__ == "__main__":
-    if len(sys.argv[1:]) > 2:
+    if len(sys.argv[1:]) == 5:
 	#print("hello0")
-        main(sys.argv[1], sys.argv[2], sys.argv[3:])
-    elif len(sys.argv[1:]) == 2:
-	print("hello1")
-        print(sys.argv[1],sys.argv[2])
-        main(sys.argv[1], sys.argv[2], [])
-    elif len(sys.argv[1:]) == 1:
-        print("hello2")
-        f=sys.argv[1]
-        f=f[:-1]
-        print(f)
-        fs=f.split("/")
-        print(fs)
-        f=f.replace(fs[len(fs)-1],"")
-        print(f[len(fs)-1])
-        print(f,fs[-1],[])
-        main(f,fs[-1],[])
+        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
     else:
         print("This script needs to be called with: outputPath, \
-        runName (, ignoredQueries)")
+        runName, noOfRuns, noOfTicks, ignoreRunIdsWithUnexpectedTicks (True or False)")

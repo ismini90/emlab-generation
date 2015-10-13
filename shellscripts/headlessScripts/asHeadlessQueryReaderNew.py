@@ -146,25 +146,32 @@ queryName, json_data, resultDict):
     return resultDict
 
 
-def find_query_names_in_directory_for_runId(path, runName, runId):
+def find_query_names_in_directory_for_runId(path, runName, runId, noOfRuns, noOfQueries, noOfTicks ):
     listOfQueryPaths = glob.glob(path + runName + "/" + runId + "-*")
     print(path)
     print(runName)
     print listOfQueryPaths
+    #get number of queries
+    if (listOfOueryPaths == null || len(listOfQueryPaths) <= noOfQueries)
+	print('This RunID is incomplete - has fewer or no queries' + runId)
+	listOfIncompleteRunIds.append(runId)
+    	listOfQueryPaths.remove(path + runName + "/" + runId + "-*")
+    #add path plus runID to a list and delete from current list
     #ERROR
-    listOfQueries = []
-    listOfTableQueries = []
-    for query in listOfQueryPaths:
-	print("query is" + query)
-        m = re.search('(?<={0}{1}/{2}-).*'.format(path, runName, runId), query)
-        if not m.group(0).startswith("TABLE_"):
-            listOfQueries.append(m.group(0))
-        else:
-            listOfTableQueries.append(m.group(0))
-    listOfQueries.sort()
-    listOfQueryPaths.sort()
-    #return listOfQueries,listOfQueryPaths
-    return listOfQueries, listOfTableQueries
+    elif
+    	listOfQueries = []
+    	listOfTableQueries = []
+    	for query in listOfQueryPaths:
+		print("query is" + query)
+    	    m = re.search('(?<={0}{1}/{2}-).*'.format(path, runName, runId), query)
+    	    if not m.group(0).startswith("TABLE_"):
+    	        listOfQueries.append(m.group(0))
+    	    else:
+    	        listOfTableQueries.append(m.group(0))
+    	listOfQueries.sort()
+    	listOfQueryPaths.sort()
+    	#return listOfQueries,listOfQueryPaths
+    	return listOfQueries, listOfTableQueries
 
 
 def find_runIds_based_on_logfiles_and_runname(path, runName):
@@ -236,14 +243,6 @@ def write_following_runids_to_csv(path, runName, runId, resultDict, noOfTicks):
             i = i + 1
 
 
-def write_csv_for_run_name(path, runName, ignoredQueries):
-    runIds = find_runIds_based_on_logfiles_and_runname(path, runName)
-    totalRunIdNo = len(runIds)
-    j = 0
-    for runId in runIds:
-        resultDict = read_runId_to_dictionary(path, runName,
-        runId, ignoredQueries)
-        print 
 
 
 def write_first_runid_dictionary_to_csv(path, runName, runId,
@@ -286,9 +285,10 @@ def write_following_runids_to_csv(path, runName, runId, resultDict, noOfTicks):
             i = i + 1
 
 
-def write_csv_for_run_name(path, runName, ignoredQueries):
+def write_csv_for_run_name(path, runName, noOfRuns, noOfQueries, noOfTicks, ignoredQueries):
+    print('second function')
     runIds = find_runIds_based_on_logfiles_and_runname(path, runName)
-    #print(runIds)
+    print(runIds)
     totalRunIdNo = len(runIds)
     print(totalRunIdNo)
     j = 0
@@ -297,8 +297,7 @@ def write_csv_for_run_name(path, runName, ignoredQueries):
         runId, ignoredQueries)
 	noOfTicks = len(resultDict.items()[1][1])
         if j == 0:
-            write_first_runid_dictionary_to_csv(path, runName, runId,
-            resultDict, noOfTicks)
+            write_first_runid_dictionary_to_csv(path, runName, runId, resultDict, noOfTicks)
         else:
             write_following_runids_to_csv(path, runName, runId,
             resultDict, noOfTicks)
@@ -307,16 +306,19 @@ def write_csv_for_run_name(path, runName, ignoredQueries):
         print((str(percentage) + "% done."))
 
 
-def main(outputPath, runName, ignoredQueries):
+def main(outputPath, runName, noOfRuns, noOfQueries, noOfTicks, ignoredQueries):
     if(not outputPath.endswith("/")):
         outputPath = outputPath + "/"
     #print((find_runIds_based_on_logfiles_and_runname(outputPath, runName)))
-    write_csv_for_run_name(outputPath, runName, ignoredQueries)
+    write_csv_for_run_name(outputPath, runName, noOfRuns, noOfQueries, noOfTicks, ignoredQueries)
 
 if __name__ == "__main__":
-    if len(sys.argv[1:]) > 2:
+    if len(sys.argv[1:]) > 6:
 	#print("hello0")
-        main(sys.argv[1], sys.argv[2], sys.argv[3:])
+        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6:])
+    elif len(sys.argv[1:]) == 6:
+	#print("hello0")
+        main(sys.argv[1], sys.argv[2], sys.argv[3:], sys.argv[4], sys.argv[5], sys.argv[6])
     elif len(sys.argv[1:]) == 2:
 	print("hello1")
         print(sys.argv[1],sys.argv[2])
@@ -334,4 +336,4 @@ if __name__ == "__main__":
         main(f,fs[-1],[])
     else:
         print("This script needs to be called with: outputPath, \
-        runName (, ignoredQueries)")
+        runName, noOfRuns, noOfQueries, noOfTicks (, ignoredQueries)")
