@@ -94,7 +94,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
     public void act(T agent) {
 
         long futureTimePoint = getCurrentTick() + agent.getInvestmentFutureTimeHorizon();
-        logger.warn(agent + " is looking at timepoint " + futureTimePoint);
+        // logger.warn(agent + " is looking at timepoint " + futureTimePoint);
 
         // ==== Expectations ===
 
@@ -339,16 +339,19 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             // if (expectedBaseCost > 0d)
                             supportFromFip = (expectedBaseCost * expectedGeneration) - expectedRevenue;
 
-                        logger.warn(" expected FIP details for technology " + plant.getTechnology().getName()
-                                + "for node " + node.getNodeId());
+                        // logger.warn(" expected FIP details for technology " +
+                        // plant.getTechnology().getName()
+                        // + "for node " + node.getNodeId());
 
-                        logger.warn("Expected Base Cost " + expectedBaseCost);
+                        // logger.warn("Expected Base Cost " +
+                        // expectedBaseCost);
                         // logger.warn("Expected flh " + totalFlh);
                         // logger.warn("Expected Total Generation " +
                         // expectedGeneration);
                         // logger.warn("Expected Revenue from EM " +
                         // expectedRevenue);
-                        logger.warn("Expected Annual Subsidy " + supportFromFip);
+                        // logger.warn("Expected Annual Subsidy " +
+                        // supportFromFip);
 
                         double operatingProfit = expectedGrossProfit - fixedOMCost + supportFromFip;
                         // Calculation of weighted average cost of capital,
@@ -371,7 +374,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                         double projectValue = discountedOpProfit + discountedCapitalCosts;
 
-                        logger.warn("Expected Project Value " + projectValue);
+                        // logger.warn("Expected Project Value " +
+                        // projectValue);
                         if (projectValue > 0 && projectValue / plant.getActualNominalCapacity() > highestValue) {
                             highestValue = projectValue / plant.getActualNominalCapacity();
                             bestTechnology = plant.getTechnology();
@@ -460,13 +464,15 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         SimpleRegression gtr = new SimpleRegression();
         if (BaseCostFipSet != null) {
             for (BaseCostFip baseCostFip : BaseCostFipSet) {
-                logger.warn("Base cost FIP {} , in" + baseCostFip.getCostPerMWh());
+                // logger.warn("Base cost FIP {} , in" +
+                // baseCostFip.getCostPerMWh());
 
                 gtr.addData(baseCostFip.getStartTime(), baseCostFip.getCostPerMWh());
             }
             expectedBaseCostFip = gtr.predict(futureTimePoint);
         }
-        logger.warn("Forecast {}: in Step " + futureTimePoint, gtr.predict(futureTimePoint));
+        // logger.warn("Forecast {}: in Step " + futureTimePoint,
+        // gtr.predict(futureTimePoint));
         return expectedBaseCostFip;
     }
 

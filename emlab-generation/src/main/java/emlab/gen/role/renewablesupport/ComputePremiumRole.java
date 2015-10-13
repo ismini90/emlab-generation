@@ -96,9 +96,8 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 EnergyProducer producer = reps.energyProducerRepository.findAll().iterator().next();
 
                 plant.specifyNotPersist(getCurrentTick(), producer, node, technology);
-                // logger.warn("creating a new power plant for " +
-                // producer.getName() + ", of technology "
-                // + plant.getTechnology().getName());
+                logger.warn("creating a new power plant for " + producer.getName() + ", of technology "
+                        + plant.getTechnology().getName() + ", with node" + node.getName());
 
                 Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
                 for (Substance fuel : technology.getFuels()) {

@@ -349,6 +349,9 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
     @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 12).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
     double calculateCO2HedgingRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 13).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    double calculateFipRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
+
     @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').filter{it.type==5 || it.type==6 || it.type==9}.propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
     double calculateCO2CostsOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 

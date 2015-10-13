@@ -31,9 +31,13 @@
 		p:feedInPremiumImplemented="true">
 	</bean>
 
-	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendNL"
+<!-- <bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendNL"
 		p:start="${demandGrowthNLStart}" p:min="${demandGrowthNLMin}" p:max="${demandGrowthNLMax}"
 		p:top="${demandGrowthNLTop}" />
+-->		
+		<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/demandGrowthNL.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="demandNL-1" />
 		
 
 	<!-- Substances -->
@@ -85,28 +89,28 @@ p:supportSchemeDuration="15" >
 </bean>
 
 <bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.5">
+p:feedInPremiumBiasFactor="2.5">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
 <bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2.0">
+p:feedInPremiumBiasFactor="1.6">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
 <bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.0">
+p:feedInPremiumBiasFactor="2.0">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
 <bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="0.7">
+p:feedInPremiumBiasFactor="1.2">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
@@ -311,18 +315,25 @@ p:feedInPremiumBiasFactor="0.7">
 		p:auction="true" p:referencePrice="0" p:name="CO2 auction" p:substance-ref="co2"/>
 
 	<!-- Fuel Prices -->
-	<bean id="coalPrice" class="emlab.gen.trend.TriangularTrend" p:start="${coalPriceStart}"
-		p:min="${coalPriceMin}" p:max="${coalPriceMax}" p:top="${coalPriceTop}" />
-	<bean id="gasPrice" class="emlab.gen.trend.TriangularTrend" p:start="${gasPriceStart}"
-		p:min="${gasPriceMin}" p:max="${gasPriceMax}" p:top="${gasPriceTop}" />
-	<bean id="biomassPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${biomassPriceStart}" p:min="${biomassPriceMin}" p:max="${biomassPriceMax}"
-		p:top="${biomassPriceTop}" />
-	<bean id="uraniumPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${uraniumPriceStart}" p:min="${uraniumPriceMin}" p:max="${uraniumPriceMax}"
-		p:top="${uraniumPriceTop}" />
+
 	<bean id="lignitePrice" class="emlab.gen.trend.TriangularTrend"
 		p:start="5.14" p:min="0.99" p:max="1.01" p:top="1.00"/>
+		
+				<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/demandGrowthNL.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="coalPrice-1" />
+				<bean id="gasPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/gasPrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="gasPrice-1" />
+				<bean id="biomassPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/biomassPrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="biomassPrice-1" />
+				<bean id="uraniumPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/uraniumPrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="uraniumPrice-1" />
+				<bean id="lignitePrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/lignitePrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="lignitePrice-1" />
 
 	<!-- Agents -->
 	<bean id="coalSupplier" class="emlab.gen.domain.agent.CommoditySupplier">

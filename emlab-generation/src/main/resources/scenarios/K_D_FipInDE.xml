@@ -32,11 +32,11 @@
 	</bean> 
 	
 		<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendNL"
-		p:start="1" p:min="1" p:max="1"
-		p:top="1" />
+		p:start="1" p:min="0.9516263553" p:max="1.0435267857"
+		p:top="1.0194189818" />
 	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendDE"
-		p:start="1.0" p:min="1" p:max="1.0"
-		p:top="1"  />
+		p:start="1.0" p:min="0.942294159" p:max="1.0548917102"
+		p:top="1.0082073112"  />
 		
 
 	<!-- Substances -->
@@ -63,16 +63,18 @@
 
 	<!-- PowerGrid -->
 	<bean id="beneluxNode" class="emlab.gen.domain.technology.PowerGridNode"
-	p:capacityMultiplicationFactor="1.0">
+	p:capacityMultiplicationFactor="1.0"
+	p:name="nodeNL">
 		<property name="zone" ref="nl" />
 	</bean>
 		<bean id="deNode" class="emlab.gen.domain.technology.PowerGridNode"
-	p:capacityMultiplicationFactor="1.0">
+	p:capacityMultiplicationFactor="1.0"
+	p:name="nodeDE">
 		<property name="zone" ref="de" />
 	</bean>
 	
 	<!-- Renewable Support Scheme -->
-	<bean id="regulator" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
+	<bean id="regulatorDE" class="emlab.gen.domain.agent.Regulator" p:name="Regulator DE" 
 p:numberOfYearsLookingBackToForecastDemand="4"
 p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 		p:debtRatioOfInvestments="0.7">
@@ -81,41 +83,38 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
 p:supportSchemeDuration="15" >
-<property name="regulator" ref="regulator"/>
+<property name="regulator" ref="regulatorDE"/>
 <property name="powerGeneratingTechnologiesEligible">
 			<set>
-				<ref bean="photovoltaicPGT" />
 				<ref bean="windOffshorePGT" />
-				<ref bean="windPGT" />
-				<ref bean="biomassPGT" />
 			</set>
 </property>
 </bean>
 
-<bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.0">
-<property name="node" ref="beneluxNode"> </property>
+<bean id="biasFactorDEPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="2.5">
+<property name="node" ref="deNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
-<bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.0">
-<property name="node" ref="beneluxNode"> </property>
+<bean id="biasFactorDEWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.6">
+<property name="node" ref="deNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
-<bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.0">
-<property name="node" ref="beneluxNode"> </property>
+<bean id="biasFactorDEWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="2.0">
+<property name="node" ref="deNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
-<bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.0">
-<property name="node" ref="beneluxNode"> </property>
+<bean id="biasFactorDEBiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+p:feedInPremiumBiasFactor="1.2">
+<property name="node" ref="deNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
@@ -579,7 +578,7 @@ p:feedInPremiumBiasFactor="1.0">
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
 		p:investorMarket-ref="germanElectricitySpotMarket"/>
 
-	<bean id="standardInvestmentRole" class="emlab.gen.role.investment.InvestInPowerGenerationTechnologiesStandard"/>
+	<bean id="standardInvestmentRole" class="emlab.gen.role.investment.InvestWithHistoricalCVar"/>
 
 	<!-- PowerGenerationTechnology Node Limits -->
 	

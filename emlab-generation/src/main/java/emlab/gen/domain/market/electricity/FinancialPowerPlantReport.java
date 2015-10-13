@@ -47,6 +47,8 @@ public class FinancialPowerPlantReport {
 
     double strategicReserveRevenue;
 
+    double feedInPremiumRevenue;
+
     double co2HedgingRevenue;
 
     double overallRevenue;
@@ -188,6 +190,14 @@ public class FinancialPowerPlantReport {
 
     public void setPowerPlantStatus(int powerPlantStatus) {
         this.powerPlantStatus = powerPlantStatus;
+    }
+
+    public double getFeedInPremiumRevenue() {
+        return feedInPremiumRevenue;
+    }
+
+    public void setFeedInPremiumRevenue(double feedInPremiumRevenue) {
+        this.feedInPremiumRevenue = feedInPremiumRevenue;
     }
 
 }
