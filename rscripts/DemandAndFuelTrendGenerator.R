@@ -11,8 +11,10 @@ noOfTicks = 50
 noOfRepetitions = 120 
 columnNames = as.character(seq.int(2011,2060)) 
 
+setwd("~/emlab-generation/emlab-generation/src/main/resources/data/stochasticDemandNLandDE")
+
 #For NL
-start = 1 
+start = 1
 top = 1.02
 max = 1.05
 min = 0.99
@@ -20,7 +22,11 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 demandNL<- matrix(nrow = noOfRepetitions, ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-for(i in 1:noOfTicks){demandNL[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  demandNLGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  demandNL[j,1]=start
+for(i in 2:noOfTicks){
+  demandNL[j,i] <- demandNL[j,i-1]*demandNLGrowthRate[i]
+}
   rowNames <- c(rowNames, paste('demandNL-',j,sep = ""))
 }
 colnames(demandNL) <- columnNames
@@ -36,11 +42,17 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 demandDE<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){demandDE[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  demandDEGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  demandDE[j,1]=start
+  for(i in 2:noOfTicks){
+    demandDE[j,i] <- demandDE[j,i-1]*demandDEGrowthRate[i]
+  }
   rowNames <- c(rowNames, paste('demandDE-',j,sep = ""))
 }
 colnames(demandDE) <- columnNames
 write.csv(demandDE, file =paste('demandGrowthDE.csv'), quote = F, row.names = rowNames)
+
+setwd("~/emlab-generation/emlab-generation/src/main/resources/data/stochasticFuelPrices")
 
 #For Coal Price
 start = 1 
@@ -52,7 +64,11 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 coalPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){coalPrice[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  coalPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  coalPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    coalPrice[j,i] <- coalPrice[j,i-1]*coalPriceGrowthRate[i]
+  }
   rowNames <- c(rowNames, paste('coalPrice-',j,sep = ""))
 }
 colnames(coalPrice) <- columnNames
@@ -69,7 +85,12 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 gasPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){gasPrice[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  gasPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  gasPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    gasPrice[j,i] <- gasPrice[j,i-1]*gasPriceGrowthRate[i]
+
+  }
   rowNames <- c(rowNames, paste('gasPrice-',j,sep = ""))
 }
 colnames(gasPrice) <- columnNames
@@ -85,7 +106,12 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 biomassPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){biomassPrice[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  biomassPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  biomassPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    biomassPrice[j,i] <- biomassPrice[j,i-1]*biomassPriceGrowthRate[i]
+
+  }
   rowNames <- c(rowNames, paste('biomassPrice-',j,sep = ""))
 }
 colnames(biomassPrice) <- columnNames
@@ -101,7 +127,12 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 uraniumPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){uraniumPrice[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  uraniumPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  uraniumPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    uraniumPrice[j,i] <- uraniumPrice[j,i-1]*uraniumPriceGrowthRate[i]
+
+  }
   rowNames <- c(rowNames, paste('uraniumPrice-',j,sep = ""))
 }
 colnames(uraniumPrice) <- columnNames
@@ -117,7 +148,11 @@ rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
 lignitePrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
 for(j in 1:noOfRepetitions){
-  for(i in 1:noOfTicks){lignitePrice[j,i] <- rtriangle(1, min, max, modeSeq[i])}
+  lignitePriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  lignitePrice[j,1]=start
+  for(i in 2:noOfTicks){
+    lignitePrice[j,i] <- lignitePrice[j,i-1]*lignitePriceGrowthRate[i]
+  }
   rowNames <- c(rowNames, paste('lignitePrice-',j,sep = ""))
 }
 colnames(lignitePrice) <- columnNames

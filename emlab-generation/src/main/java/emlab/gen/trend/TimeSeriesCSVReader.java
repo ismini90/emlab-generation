@@ -93,6 +93,8 @@ public class TimeSeriesCSVReader extends TimeSeriesImpl {
             for (String s : lineContentSplit) {
                 if (i > 0)
                     timeSeries[i - 1] = Double.parseDouble(s);
+                // logger.warn("First value of variableName is" +
+                // timeSeries[0]);
                 i++;
             }
             setTimeSeries(timeSeries);

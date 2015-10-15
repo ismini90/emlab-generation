@@ -155,9 +155,8 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
 
                 long durationOfSupportScheme = scheme.getSupportSchemeDuration();
 
-                // logger.warn("Fixed OM cost for technology " +
-                // plant.getTechnology().getName() + " is " + fixedOMCost
-                // + " and operatingCost is " + operatingCost);
+                logger.warn("Fixed OM cost for technology " + plant.getTechnology().getName() + " is " + fixedOMCost
+                        + " and operatingCost is " + operatingCost);
 
                 TreeMap<Integer, Double> discountedProjectCapitalOutflow = calculateSimplePowerPlantInvestmentCashFlow(
                         (int) durationOfSupportScheme, (int) plant.getActualLeadtime(),
