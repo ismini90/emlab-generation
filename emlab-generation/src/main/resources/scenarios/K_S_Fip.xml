@@ -23,7 +23,7 @@
 
 	<!-- Decarbonization Model -->
 	<bean id="decarbonizationModel" class="emlab.gen.domain.agent.DecarbonizationModel"
-		p:name="Decarbonization Model" p:simulationLength="${simulationLength}"
+		p:name="Decarbonization Model" p:simulationLength="40"
 		p:co2TradingImplemented="false"
 		p:realRenewableDataImplemented="false"
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
@@ -31,10 +31,6 @@
 		p:feedInPremiumImplemented="true">
 	</bean>
 
-<!-- <bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendNL"
-		p:start="${demandGrowthNLStart}" p:min="${demandGrowthNLMin}" p:max="${demandGrowthNLMax}"
-		p:top="${demandGrowthNLTop}" />
--->		
 		<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="demandNL-1" />
@@ -42,21 +38,21 @@
 
 	<!-- Substances -->
 	<bean id="coal" class="emlab.gen.domain.technology.Substance" p:name="Coal"
-		p:quality="1" p:energyDensity="29308" p:co2Density="2.78426" p:unit="tSKE"  />
+		p:quality="1" p:energyDensity="1000" p:co2Density="0.095" p:unit="GJ"  />
 	<bean id="lignite" class="emlab.gen.domain.technology.Substance" p:name="Lignite"
-		p:quality="1" p:energyDensity="3600" p:co2Density="0.41" p:unit="MWh_th" />
+		p:quality="1" p:energyDensity="1000" p:co2Density="0.11389" p:unit="GJ" />
 	<bean id="naturalgas" class="emlab.gen.domain.technology.Substance"
-		p:name="Natural Gas" p:quality="1" p:energyDensity="36" p:co2Density="0.00187" />
+		p:name="Natural Gas" p:quality="1" p:energyDensity="1000" p:co2Density="0.05194" p:unit="GJ"/>
 	<bean id="biomass" class="emlab.gen.domain.technology.Substance"
-		p:name="Biomass" p:quality="0.5" p:energyDensity="25000"
-		p:co2Density="0" />
+		p:name="Biomass" p:quality="0.5" p:energyDensity="1000"
+		p:co2Density="0" p:unit="GJ" />
 	<bean id="uranium" class="emlab.gen.domain.technology.Substance"
-		p:name="Uranium" p:quality="1" p:energyDensity="3888000000"
-		p:co2Density="0" />
+		p:name="Uranium" p:quality="1" p:energyDensity="1000"
+		p:co2Density="0" p:unit="GJ" />
 	<bean id="electricity" class="emlab.gen.domain.technology.Substance"
-		p:name="Electricity" p:quality="1" p:energyDensity="0" p:co2Density="0" />
+		p:name="Electricity" p:quality="1" p:energyDensity="0" p:co2Density="0" p:unit="MWh_el" />
 	<bean id="co2" class="emlab.gen.domain.technology.Substance" p:name="CO2"
-		p:quality="1" p:energyDensity="0" p:co2Density="1" />
+		p:quality="1" p:energyDensity="0" p:co2Density="1" p:unit="tCO2" />
 
 	<!-- Zones -->
 	<bean id="nl" class="emlab.gen.domain.gis.Zone" p:name="Country A" />
@@ -87,15 +83,6 @@ p:supportSchemeDuration="15" >
 			</set>
 </property>
 </bean>
-
-<!-- IntermittentNodeLoadFactors --> 
-<bean id="IntermittendNodeLoadFactorsNL" 
-	class ="emlab.gen.domain.market.electricity.IntermittentTechnologyNodeLoadFactor" 
- 	p:loadFactors="[1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20]"
- 	p:technology="windPGT"
- 	p:node-ref="beneluxNode"
- 	> 
-</bean> 
 
 <bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
 p:feedInPremiumBiasFactor="2.5">
@@ -136,46 +123,46 @@ p:feedInPremiumBiasFactor="1.2">
 	</bean>
 
 	<!-- Segments of load duration curves -->
-			<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="10"
-				p:segmentID="20" />
-			<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="50"
-				p:segmentID="19" />
-			<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="18" />
-			<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="17" />
-			<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="16" />
-			<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="15" />
-			<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="14" />
-			<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="13" />
-			<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="12" />
-			<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="11" />
-			<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="10" />
-			<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="9" />
-			<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="8" />
-			<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="7" />
-			<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="6" />
-			<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="5" />
-			<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
-				p:segmentID="4" />
-			<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="50"
-				p:segmentID="3" />
-			<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="9"
-				p:segmentID="2" />
-			<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="1"
-				p:segmentID="1" />
+	<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="17"
+		p:segmentID="20" />
+	<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="77"
+		p:segmentID="19" />
+	<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="187"
+		p:segmentID="18" />
+	<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="293"
+		p:segmentID="17" />
+	<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="294"
+		p:segmentID="16" />
+	<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="306"
+		p:segmentID="15" />
+	<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="346"
+		p:segmentID="14" />
+	<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="450"
+		p:segmentID="13" />
+	<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="649"
+		p:segmentID="12" />
+	<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="933"
+		p:segmentID="11" />
+	<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="894"
+		p:segmentID="10" />
+	<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="711"
+		p:segmentID="9" />
+	<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="630"
+		p:segmentID="8" />
+	<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="549"
+		p:segmentID="7" />
+	<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="571"
+		p:segmentID="6" />
+	<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="666"
+		p:segmentID="5" />
+	<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="544"
+		p:segmentID="4" />
+	<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="351"
+		p:segmentID="3" />
+	<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="207"
+		p:segmentID="2" />
+	<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="85"
+		p:segmentID="1" />
 
 	<!-- Markets -->
 	<!-- Electricity Spot -->

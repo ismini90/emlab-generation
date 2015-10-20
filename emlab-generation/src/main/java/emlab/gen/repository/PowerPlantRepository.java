@@ -334,28 +334,28 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
             @Param("gridnode") PowerGridNode node,
             @Param("technology") PowerGeneratingTechnology powerGeneratingTechnology, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 1).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 1).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateSpotMarketRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 2).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 2).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateLongTermContractRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 10).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 10).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateStrategicReserveRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 11).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 11).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateCapacityMarketRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 12).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 12).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateCO2HedgingRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 13).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').propertyFilter('type', FilterPipe.Filter.EQUAL, 13).propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateFipRevenueOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').filter{it.type==5 || it.type==6 || it.type==9}.propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').filter{it.type==5 || it.type==6 || it.type==9}.propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateCO2CostsOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').filter{it.type==3 || it.type==7 || it.type==8}.propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}; return result", type = QueryType.Gremlin)
+    @Query(value = "result=g.v(plant).in('REGARDING_POWERPLANT').filter{it.type==3 || it.type==7 || it.type==8}.propertyFilter('time', FilterPipe.Filter.EQUAL, tick).money.sum(); if(result==null){result=0}else{result=result}; return result", type = QueryType.Gremlin)
     double calculateFixedCostsOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
     @Query(value = "ppdps=g.v(plant).in('POWERPLANT_DISPATCHPLAN').filter{it.time==tick}.propertyFilter('forecast', FilterPipe.Filter.EQUAL, false); sum=0;"

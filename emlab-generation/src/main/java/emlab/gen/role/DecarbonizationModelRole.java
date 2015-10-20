@@ -373,15 +373,6 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         timerMarket.stop();
         logger.warn("        took: {} seconds.", timerMarket.seconds());
 
-        logger.warn("  6.b) Creating power plant financial reports.");
-        Timer financialReports = new Timer();
-        financialReports.start();
-
-        creatingFinancialReports.act(model);
-
-        financialReports.stop();
-        logger.warn("        took: {} seconds.", financialReports.seconds());
-
         if (model.isFeedInPremiumImplemented()) {
             logger.warn(" 6a. Run Feed In Premium Scheme");
             for (RenewableSupportFipScheme scheme : reps.renewableSupportSchemeRepository.findAll()) {
@@ -391,6 +382,15 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
             timerMarket.stop();
             logger.warn("        took: {} seconds.", timerMarket.seconds());
         }
+
+        logger.warn("  6.b) Creating power plant financial reports.");
+        Timer financialReports = new Timer();
+        financialReports.start();
+
+        creatingFinancialReports.act(model);
+
+        financialReports.stop();
+        logger.warn("        took: {} seconds.", financialReports.seconds());
 
         logger.warn("  7. Investing");
         Timer timerInvest = new Timer();

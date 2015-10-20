@@ -177,6 +177,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                                             .getPrice();
 
                                     double hours = segmentLoad.getSegment().getLengthInHours();
+                                    // do a sensitivity here to different
+                                    // averages of electricity prices.
                                     sumEMR = sumEMR + electricityPrice * hours * ppdp.getAcceptedAmount();
                                     totalGenerationInMwh += hours * ppdp.getAcceptedAmount();
 
@@ -192,8 +194,7 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                             logger.warn("Total Generation " + totalGenerationInMwh);
                             logger.warn("Revenue from EM " + sumEMR);
                             logger.warn("Annual Subsidy " + supportPrice);
-                            reps.nonTransactionalCreateRepository.createCashFlow(eMarket, plant.getOwner(),
-                                    supportPrice, CashFlow.FEED_IN_PREMIUM, getCurrentTick(), plant);
+                            createCashFlow(regulator, plant, supportPrice);
 
                         }
                         // delete contract. not sure if necessary. contract has
@@ -211,4 +212,13 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
         }
     }
+
+    @Transactional
+    public void createCashFlow(Regulator regulator, PowerPlant plant, double supportPrice) {
+
+        reps.nonTransactionalCreateRepository.createCashFlow(regulator, plant.getOwner(), supportPrice,
+                CashFlow.FEED_IN_PREMIUM, getCurrentTick(), plant);
+
+    }
+
 }
