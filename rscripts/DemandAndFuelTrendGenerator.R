@@ -55,10 +55,10 @@ write.csv(demandDE, file =paste('demandGrowthDE.csv'), quote = F, row.names = ro
 setwd("~/emlab-generation/emlab-generation/src/main/resources/data/stochasticFuelPrices")
 
 #For Coal Price
-start = 1 
-top = 1.02
+start = 3.6 
+top = 1.01
 max = 1.05
-min = 0.99
+min = 0.97
 noOfTicks = 50 
 rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
@@ -76,10 +76,10 @@ write.csv(coalPrice, file =paste('coalPrice.csv'), quote = F, row.names = rowNam
 
 
 #For gas Price
-start = 1 
-top = 1.02
+start = 9.02 
+top = 1.01
 max = 1.05
-min = 0.99
+min = 0.97
 noOfTicks = 50 
 rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
@@ -97,10 +97,10 @@ colnames(gasPrice) <- columnNames
 write.csv(gasPrice, file =paste('gasPrice.csv'), quote = F, row.names = rowNames)
 
 #For biomass Price
-start = 1 
-top = 1.02
+start = 4.5
+top = 1.01
 max = 1.05
-min = 0.99
+min = 0.97
 noOfTicks = 50 
 rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
@@ -118,9 +118,9 @@ colnames(biomassPrice) <- columnNames
 write.csv(biomassPrice, file =paste('biomassPrice.csv'), quote = F, row.names = rowNames)
 
 #For uranium Price
-start = 1 
-top = 1.02
-max = 1.05
+start = 1.29 
+top = 1.00
+max = 1.01
 min = 0.99
 noOfTicks = 50 
 rowNames = c()
@@ -139,9 +139,9 @@ colnames(uraniumPrice) <- columnNames
 write.csv(uraniumPrice, file =paste('uraniumPrice.csv'), quote = F, row.names = rowNames)
 
 #For lignite Price
-start = 1 
-top = 1.02
-max = 1.05
+start = 1.428
+top = 1.00
+max = 1.01
 min = 0.99
 noOfTicks = 50 
 rowNames = c()
