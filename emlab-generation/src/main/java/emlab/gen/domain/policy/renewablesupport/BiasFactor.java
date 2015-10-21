@@ -42,6 +42,17 @@ public class BiasFactor {
     @RelatedTo(type = "BIASFACTOR_FOR_SUPPORTSCHEME", elementClass = RenewableSupportFipScheme.class, direction = Direction.OUTGOING)
     private RenewableSupportFipScheme scheme;
 
+    @SimulationParameter(label = "DegressionFactor", from = 0, to = 1)
+    private double degressionFactor;
+
+    public double getDegressionFactor() {
+        return degressionFactor;
+    }
+
+    public void setDegressionFactor(double degressionFactor) {
+        this.degressionFactor = degressionFactor;
+    }
+
     public double getFeedInPremiumBiasFactor() {
         return feedInPremiumBiasFactor;
     }

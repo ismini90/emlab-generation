@@ -125,4 +125,7 @@ public class Reps {
     @Autowired
     public SupportPriceContractRepository supportPriceContractRepository;
 
+    @Autowired
+    public RelativeRenewableTargetRepository relativeRenewableTargetRepository;
+
 }

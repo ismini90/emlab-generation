@@ -42,6 +42,8 @@ public class RenewableSupportFipScheme {
 
     private boolean locationSpecificityEnabled;
 
+    private boolean costContainmentMechanismEnabled;
+
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
 
@@ -49,6 +51,14 @@ public class RenewableSupportFipScheme {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isCostContainmentMechanismEnabled() {
+        return costContainmentMechanismEnabled;
+    }
+
+    public void setCostContainmentMechanismEnabled(boolean costContainmentMechanismEnabled) {
+        this.costContainmentMechanismEnabled = costContainmentMechanismEnabled;
     }
 
     public void setName(String name) {

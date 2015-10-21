@@ -22,6 +22,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import emlab.gen.domain.agent.Regulator;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
+import emlab.gen.trend.TimeSeriesCSVReader;
 import emlab.gen.trend.TimeSeriesImpl;
 
 /**
@@ -33,24 +34,16 @@ import emlab.gen.trend.TimeSeriesImpl;
 public class RelativeRenewableTarget {
 
     @RelatedTo(type = "SET_BY_REGULATOR", elementClass = Regulator.class, direction = Direction.INCOMING)
-    private Regulator regulator;
-
-    @RelatedTo(type = "FOR_NODE", elementClass = PowerGridNode.class, direction = Direction.OUTGOING)
-    private PowerGridNode powerGridNodeSet;
+    Regulator regulator;
 
     @RelatedTo(type = "FOR_TECHNOLOGY", elementClass = PowerGeneratingTechnology.class, direction = Direction.OUTGOING)
-    private PowerGeneratingTechnology powerGeneratingTechnology;
+    PowerGeneratingTechnology powerGeneratingTechnology;
+
+    @RelatedTo(type = "AT_NODE", elementClass = PowerGridNode.class, direction = Direction.OUTGOING)
+    PowerGridNode powerGridNode;
 
     @RelatedTo(type = "TARGET_TREND", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
-    TimeSeriesImpl trend;
-
-    public TimeSeriesImpl getTrend() {
-        return trend;
-    }
-
-    public void setTrend(TimeSeriesImpl trend) {
-        this.trend = trend;
-    }
+    TimeSeriesCSVReader yearlyRenewableTargetTimeSeries;
 
     public Regulator getRegulator() {
         return regulator;
@@ -60,20 +53,28 @@ public class RelativeRenewableTarget {
         this.regulator = regulator;
     }
 
-    public PowerGridNode getPowerGridNodeSet() {
-        return powerGridNodeSet;
-    }
-
-    public void setPowerGridNodeSet(PowerGridNode powerGridNodeSet) {
-        this.powerGridNodeSet = powerGridNodeSet;
-    }
-
     public PowerGeneratingTechnology getPowerGeneratingTechnology() {
         return powerGeneratingTechnology;
     }
 
     public void setPowerGeneratingTechnology(PowerGeneratingTechnology powerGeneratingTechnology) {
         this.powerGeneratingTechnology = powerGeneratingTechnology;
+    }
+
+    public PowerGridNode getPowerGridNode() {
+        return powerGridNode;
+    }
+
+    public void setPowerGridNode(PowerGridNode powerGridNode) {
+        this.powerGridNode = powerGridNode;
+    }
+
+    public TimeSeriesCSVReader getYearlyRenewableTargetTimeSeries() {
+        return yearlyRenewableTargetTimeSeries;
+    }
+
+    public void setYearlyRenewableTargetTimeSeries(TimeSeriesCSVReader yearlyRenewableTargetTimeSeries) {
+        this.yearlyRenewableTargetTimeSeries = yearlyRenewableTargetTimeSeries;
     }
 
 }

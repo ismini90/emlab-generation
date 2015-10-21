@@ -30,10 +30,13 @@ import agentspring.role.RoleComponent;
 import emlab.gen.domain.agent.DecarbonizationModel;
 import emlab.gen.domain.agent.EnergyProducer;
 import emlab.gen.domain.agent.Regulator;
+import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.market.electricity.Segment;
 import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
+import emlab.gen.domain.policy.renewablesupport.BiasFactor;
+import emlab.gen.domain.policy.renewablesupport.RelativeRenewableTarget;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
@@ -180,11 +183,15 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 double discountedOpCost = npv(discountedProjectCashOutflow, wacc);
                 double factorDiscountedGeneration = npv(factorDiscountedGenerationSeries, wacc);
                 // logger.warn("discountedOpCost " + discountedOpCost);
-                double biasFactor = reps.renewableSupportSchemeRepository
-                        .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme)
-                        .getFeedInPremiumBiasFactor();
+                BiasFactor biasFactor = reps.renewableSupportSchemeRepository
+                        .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme);
+
+                if (scheme.isCostContainmentMechanismEnabled()) {
+                    computeDegressionAndResetBiasFactor(scheme);
+                }
                 // double biasFactor = 1.0d;
-                lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactor
+                double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
+                lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
                         / (totalGenerationinMWh * factorDiscountedGeneration);
 
                 BaseCostFip baseCostFip = new BaseCostFip();
@@ -202,6 +209,97 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
             }
         }
 
+    }
+
+    private void computeDegressionAndResetBiasFactor(RenewableSupportFipScheme scheme, BiasFactor biasFactor) {
+
+        // get target value of renewable generation
+        double renewableTargetInMwh = computeRenewableGenerationTarget(scheme);
+        double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme);
+        double degressionFactor = biasFactor.getDegressionFactor();
+
+        if (generationFromRenewables >= renewableTargetInMwh) {
+            double newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
+            biasFactor.setFeedInPremiumBiasFactor(newBiasFactor);
+        }
+        // if expected generation exceeds target, degress by a certain
+        // percentage.
+        // else if expected generation is lower than a certain margin, increase
+        // bias factor. - will have to create targetLowerMargin and
+        // targetUpperMargin for it, best created in target object.
+
+    }
+
+    private double computeRenewableGenerationTarget(RenewableSupportFipScheme scheme) {
+        double demandFactor;
+        double targetFactor;
+        Zone zone = scheme.getRegulator().getZone();
+
+        logger.warn("Calculate Renewable Target Role started of zone: " + zone);
+
+        ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(zone);
+
+        // get demand factor
+        demandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick());
+        /*
+         * it aggregates segments from both countries, so the boolean should
+         * actually be true here and the code adjusted to FALSE case. Or a query
+         * should be adjusted what probably will take less time.
+         */
+
+        // get renewable energy target in factor (percent)
+        RelativeRenewableTarget target = reps.relativeRenewableTargetRepository
+                .findRelativeRenewableTargetByRegulator(scheme.getRegulator());
+
+        targetFactor = target.getYearlyRenewableTargetTimeSeries().getValue(getCurrentTick());
+        // logger.warn("targetFactor is " + targetFactor);
+
+        // get totalLoad in MWh
+        double totalExpectedConsumption = 0d;
+
+        for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
+            // logger.warn("segmentLoad: " + segmentLoad);
+            totalExpectedConsumption += segmentLoad.getBaseLoad() * demandFactor
+                    * segmentLoad.getSegment().getLengthInHours();
+
+            // logger.warn("demand factor is: " + demandFactor);
+
+        }
+        logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
+        // renewable target for tender operation start year in MWh is
+        double renewableTargetInMwh = targetFactor * totalExpectedConsumption;
+
+        return renewableTargetInMwh;
+    }
+
+    private double totalExpectedGenerationFromRenewables(RenewableSupportFipScheme scheme) {
+
+        double totalExpectedGeneration = 0d;
+        double expectedGenerationPerTechnology = 0d;
+        double expectedGenerationPerPlant = 0d;
+        long numberOfSegments = reps.segmentRepository.count();
+        // logger.warn("numberOfsegments: " + numberOfSegments);
+        ElectricitySpotMarket market = reps.marketRepository
+                .findElectricitySpotMarketForZone(scheme.getRegulator().getZone());
+
+        for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
+            expectedGenerationPerTechnology = 0d;
+            for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(market,
+                    technology, getCurrentTick())) {
+                expectedGenerationPerPlant = 0d;
+                for (Segment segment : reps.segmentRepository.findAll()) {
+                    double availablePlantCapacity = plant.getAvailableCapacity(getCurrentTick(), segment,
+                            numberOfSegments);
+                    double lengthOfSegmentInHours = segment.getLengthInHours();
+                    expectedGenerationPerPlant += availablePlantCapacity * lengthOfSegmentInHours;
+                }
+                expectedGenerationPerTechnology += expectedGenerationPerPlant;
+            }
+            totalExpectedGeneration += expectedGenerationPerTechnology;
+
+        }
+
+        return totalExpectedGeneration;
     }
 
     private TreeMap<Integer, Double> calculateSimplePowerPlantInvestmentCashFlow(int depreciationTime, int buildingTime,

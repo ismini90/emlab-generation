@@ -20,7 +20,7 @@ import org.springframework.data.neo4j.annotation.QueryType;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
-import emlab.gen.domain.gis.Zone;
+import emlab.gen.domain.agent.Regulator;
 import emlab.gen.domain.policy.renewablesupport.RelativeRenewableTarget;
 
 /**
@@ -31,7 +31,7 @@ public interface RelativeRenewableTargetRepository extends GraphRepository<Relat
 
     // when location specific, modify the foll. to node, else there will be
     // several targets per regulator
-    @Query(value = "result = g.v(zone).in('OF_ZONE').out('SET_BY_REGULATOR')", type = QueryType.Gremlin)
-    RelativeRenewableTarget findOneByZone(@Param("zone") Zone zone);
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR')", type = QueryType.Gremlin)
+    public RelativeRenewableTarget findRelativeRenewableTargetByRegulator(@Param("regulator") Regulator regulator);
 
 }
