@@ -187,8 +187,9 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                         .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme);
 
                 if (scheme.isCostContainmentMechanismEnabled()) {
-                    computeDegressionAndResetBiasFactor(scheme);
+                    computeDegressionAndResetBiasFactor(scheme, biasFactor);
                 }
+                logger.warn("biasFactor is " + biasFactor + "for technology " + technology.getName());
                 // double biasFactor = 1.0d;
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
