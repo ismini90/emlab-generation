@@ -135,7 +135,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     // //findOperationalPowerPlantsByMarketAndTechnology(eMarket,
                     // technology, getCurrentTick())) {
 
-                    logger.warn("Compute FiP for power plant" + plant.getName());
+                    // logger.warn("Compute FiP for power plant" +
+                    // plant.getName());
 
                     // existing eligible plants at the start of the simulation
                     // (tick
@@ -154,44 +155,58 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                                 + renewableSupportScheme.getSupportSchemeDuration())) {
                             logger.warn("Inside contract payment loop");
                             double sumEMR = 0d;
+                            double emAvgPrice = 0d;
                             double electricityPrice = 0d;
-                            double totalGenerationInMwh = 0d;
-
+                            double totalGenerationOfPlantInMwh = 0d;
+                            double totalAnnualGeneration = 0d;
+                            double sumCostOfElectricity = 0d;
                             // the for loop below calculates the electricity
                             // market
                             // price the plant earned
                             // throughout the year, for its total production
+
                             for (SegmentLoad segmentLoad : eMarket.getLoadDurationCurve()) {
                                 // logger.warn("Inside segment loop for
                                 // calculating
                                 // total production");
+
+                                electricityPrice = reps.segmentClearingPointRepository
+                                        .findOneSegmentClearingPointForMarketSegmentAndTime(getCurrentTick(),
+                                                segmentLoad.getSegment(), eMarket, false)
+                                        .getPrice();
+                                double hours = segmentLoad.getSegment().getLengthInHours();
+                                totalAnnualGeneration += segmentLoad.getBaseLoad() * hours;
+                                sumCostOfElectricity += electricityPrice * segmentLoad.getBaseLoad() * hours;
+
                                 PowerPlantDispatchPlan ppdp = reps.powerPlantDispatchPlanRepository
                                         .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant,
                                                 segmentLoad.getSegment(), getCurrentTick(), false);
-                                if (ppdp.getStatus() < 0) {
-                                    sumEMR = 0d;
-                                } else if (ppdp.getStatus() >= 2) {
-                                    electricityPrice = reps.segmentClearingPointRepository
-                                            .findOneSegmentClearingPointForMarketSegmentAndTime(getCurrentTick(),
-                                                    segmentLoad.getSegment(), eMarket, false)
-                                            .getPrice();
 
-                                    double hours = segmentLoad.getSegment().getLengthInHours();
+                                if (ppdp.getStatus() < 0 || ppdp == null) {
+                                    electricityPrice = 0d;
+                                } else if (ppdp.getStatus() >= 2) {
                                     // do a sensitivity here to different
                                     // averages of electricity prices.
                                     sumEMR = sumEMR + electricityPrice * hours * ppdp.getAcceptedAmount();
-                                    totalGenerationInMwh += hours * ppdp.getAcceptedAmount();
-
+                                    totalGenerationOfPlantInMwh += hours * ppdp.getAcceptedAmount();
                                 }
 
                             }
+                            double supportPrice = 0d;
+                            emAvgPrice = sumCostOfElectricity / totalAnnualGeneration;
 
-                            double supportPrice = contract.getPricePerUnit() * totalGenerationInMwh - sumEMR;
+                            if (renewableSupportScheme.isAvgElectricityPriceBasedPremiumEnabled() == true) {
+                                supportPrice = (contract.getPricePerUnit() - emAvgPrice) * totalGenerationOfPlantInMwh;
+                            } else {
+                                supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh - sumEMR;
+
+                            }
+
                             if (supportPrice < 0)
                                 supportPrice = 0;
                             // payment
                             logger.warn("Base Cost " + contract.getPricePerUnit());
-                            logger.warn("Total Generation " + totalGenerationInMwh);
+                            logger.warn("Total Generation " + totalGenerationOfPlantInMwh);
                             logger.warn("Revenue from EM " + sumEMR);
                             logger.warn("Annual Subsidy " + supportPrice);
                             createCashFlow(regulator, plant, supportPrice);

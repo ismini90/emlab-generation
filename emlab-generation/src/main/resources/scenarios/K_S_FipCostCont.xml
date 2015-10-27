@@ -64,7 +64,7 @@
 		<property name="zone" ref="nl" />
 	</bean>
 	
-			<bean id="regulator" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
+			<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
 p:numberOfYearsLookingBackToForecastDemand="4"
 p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 		p:debtRatioOfInvestments="0.7">
@@ -74,7 +74,7 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
 p:supportSchemeDuration="15"
 p:costContainmentMechanismEnabled="true" >
-<property name="regulator" ref="regulator"/>
+<property name="regulator" ref="regulatorNL"/>
 <property name="powerGeneratingTechnologiesEligible">
 			<set>
 				<ref bean="photovoltaicPGT" />
@@ -86,39 +86,39 @@ p:costContainmentMechanismEnabled="true" >
 </bean>
 
 <bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2.5"
-p:degressionFactor="0.94">
+p:feedInPremiumBiasFactor="3"
+p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
 <bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.6"
-p:degressionFactor="0.94">
+p:feedInPremiumBiasFactor="2.5"
+p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
 <bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2.0"
-p:degressionFactor="0.94">
+p:feedInPremiumBiasFactor="4.0"
+p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
 <bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.2"
-p:degressionFactor="0.94">
+p:feedInPremiumBiasFactor="3.2"
+p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
 
 <!-- Renewable Energy Target NL -->
-	<bean id="renewableTenderTargetNL"
+	<bean id="renewableTargetNL"
 		class="emlab.gen.domain.policy.renewablesupport.RelativeRenewableTarget"
 		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap">
 		<property name="regulator" ref="regulatorNL" />
@@ -128,17 +128,6 @@ p:degressionFactor="0.94">
 		p:filename="/data/policyGoalNREAP_NL_DE_2050.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_target" />
 
-
-	<!-- Renewable Energy Target DE -->
-	<bean id="renewableTenderTargetDE"
-		class="emlab.gen.domain.policy.renewablesupport.RelativeRenewableTarget"
-		p:yearlyRenewableTargetTimeSeries-ref="de_nreap">
-		<property name="regulator" ref="regulatorDE" />
-	</bean>
-
-	<bean id="de_nreap" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/policyGoalNREAP_NL_DE_2050.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="de_target" />
 
 	<bean id="interconnectorBeneluxGermany" class="emlab.gen.domain.technology.Interconnector"
 		p:capacity="${interconnectorCapacity}">

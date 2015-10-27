@@ -113,8 +113,6 @@ public class CreatingFinancialReports extends AbstractClearElectricitySpotMarket
             financialPowerPlantReport.setCo2HedgingRevenue(
                     reps.powerPlantRepository.calculateCO2HedgingRevenueOfPowerPlant(plant, tick));
 
-            logger.warn("Fip Revenue of Power Plant as per financial report"
-                    + reps.powerPlantRepository.calculateFipRevenueOfPowerPlant(plant, tick));
             financialPowerPlantReport
                     .setFeedInPremiumRevenue(reps.powerPlantRepository.calculateFipRevenueOfPowerPlant(plant, tick));
 

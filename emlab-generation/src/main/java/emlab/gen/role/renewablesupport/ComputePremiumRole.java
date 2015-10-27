@@ -158,8 +158,9 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
 
                 long durationOfSupportScheme = scheme.getSupportSchemeDuration();
 
-                logger.warn("Fixed OM cost for technology " + plant.getTechnology().getName() + " is " + fixedOMCost
-                        + " and operatingCost is " + operatingCost);
+                // logger.warn("Fixed OM cost for technology " +
+                // plant.getTechnology().getName() + " is " + fixedOMCost
+                // + " and operatingCost is " + operatingCost);
 
                 TreeMap<Integer, Double> discountedProjectCapitalOutflow = calculateSimplePowerPlantInvestmentCashFlow(
                         (int) durationOfSupportScheme, (int) plant.getActualLeadtime(),
@@ -189,7 +190,8 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 if (scheme.isCostContainmentMechanismEnabled()) {
                     computeDegressionAndResetBiasFactor(scheme, biasFactor);
                 }
-                logger.warn("biasFactor is " + biasFactor + "for technology " + technology.getName());
+                // logger.warn("biasFactor is " + biasFactor + "for technology "
+                // + technology.getName());
                 // double biasFactor = 1.0d;
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
@@ -204,8 +206,10 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
                 baseCostFip.setEndTime(getCurrentTick() + scheme.getSupportSchemeDuration());
                 baseCostFip.persist();
 
-                logger.warn("LCOE in per MWH for technology " + plant.getTechnology().getName() + "for node "
-                        + baseCostFip.getNode().getNodeId() + " is , " + baseCostFip.getCostPerMWh());
+                // logger.warn("LCOE in per MWH for technology " +
+                // plant.getTechnology().getName() + "for node "
+                // + baseCostFip.getNode().getNodeId() + " is , " +
+                // baseCostFip.getCostPerMWh());
 
             }
         }
@@ -219,9 +223,13 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
         double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme);
         double degressionFactor = biasFactor.getDegressionFactor();
 
+        logger.warn("generationFromRenewables; " + generationFromRenewables);
+        logger.warn("renewableTargetInMwh; " + renewableTargetInMwh);
+
         if (generationFromRenewables >= renewableTargetInMwh) {
             double newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
             biasFactor.setFeedInPremiumBiasFactor(newBiasFactor);
+            logger.warn("DEGRESSING!!!");
         }
         // if expected generation exceeds target, degress by a certain
         // percentage.
