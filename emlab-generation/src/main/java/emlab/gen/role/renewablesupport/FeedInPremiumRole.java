@@ -197,9 +197,12 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
                             if (renewableSupportScheme.isAvgElectricityPriceBasedPremiumEnabled() == true) {
                                 supportPrice = (contract.getPricePerUnit() - emAvgPrice) * totalGenerationOfPlantInMwh;
+                                double supportPriceExact = contract.getPricePerUnit() * totalGenerationOfPlantInMwh
+                                        - sumEMR;
+                                logger.warn("supportPrice considering avg EM price" + supportPrice
+                                        + "support price exact" + supportPriceExact);
                             } else {
                                 supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh - sumEMR;
-
                             }
 
                             if (supportPrice < 0)

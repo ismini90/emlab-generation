@@ -44,7 +44,7 @@ public class RenewableSupportFipScheme {
 
     private boolean costContainmentMechanismEnabled;
 
-    private boolean AvgElectricityPriceBasedPremiumEnabled;
+    private boolean avgElectricityPriceBasedPremiumEnabled;
 
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
@@ -56,11 +56,11 @@ public class RenewableSupportFipScheme {
     }
 
     public boolean isAvgElectricityPriceBasedPremiumEnabled() {
-        return AvgElectricityPriceBasedPremiumEnabled;
+        return avgElectricityPriceBasedPremiumEnabled;
     }
 
     public void setAvgElectricityPriceBasedPremiumEnabled(boolean avgElectricityPriceBasedPremiumEnabled) {
-        AvgElectricityPriceBasedPremiumEnabled = avgElectricityPriceBasedPremiumEnabled;
+        this.avgElectricityPriceBasedPremiumEnabled = avgElectricityPriceBasedPremiumEnabled;
     }
 
     public boolean isCostContainmentMechanismEnabled() {
