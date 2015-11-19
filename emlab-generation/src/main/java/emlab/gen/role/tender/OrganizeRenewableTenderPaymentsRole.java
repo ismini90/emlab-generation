@@ -22,9 +22,13 @@ import agentspring.role.AbstractRole;
 import agentspring.role.Role;
 import agentspring.role.RoleComponent;
 import emlab.gen.domain.contract.CashFlow;
+import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
+import emlab.gen.domain.market.electricity.PowerPlantDispatchPlan;
+import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
 import emlab.gen.domain.policy.renewablesupport.TenderClearingPoint;
+import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.repository.Reps;
 
 /**
@@ -33,8 +37,8 @@ import emlab.gen.repository.Reps;
  */
 
 @RoleComponent
-public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableSupportSchemeTender> implements
-        Role<RenewableSupportSchemeTender> {
+public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
 
     @Autowired
     Reps reps;
@@ -43,31 +47,73 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
 
-        logger.warn("Organize Renewable Tender Payments Role started for; " + scheme);
-
         for (TenderBid currentTenderBid : reps.tenderBidRepository.findAllTenderBidsThatShouldBePaidInTimeStep(scheme,
                 getCurrentTick())) {
 
             TenderClearingPoint tenderClearingPoint = reps.tenderClearingPointRepository
                     .findOneClearingPointForTimeAndRenewableSupportSchemeTender(currentTenderBid.getTime(), scheme);
 
-            logger.warn("scheme; " + scheme);
-            logger.warn("Bidder of this tender bid is: " + currentTenderBid.getBidder());
-
-            logger.warn("Start time of the bid is: " + currentTenderBid.getStart() + " and belongs to scheme: "
-                    + scheme);
-            logger.warn("Production amount is: " + currentTenderBid.getAcceptedAmount() + " subsidy amount is "
-                    + tenderClearingPoint.getPrice());
+            double annualTenderRevenue = currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice();
+            // Is the accepted amount generated every year?
+            double annualRevenueFromElectricityMarket = 0;
+            if (scheme.isExpostRevenueCalculation() == true) {
+                annualRevenueFromElectricityMarket = computeRevenueFromElectricityMarket(scheme, currentTenderBid);
+                annualTenderRevenue = annualTenderRevenue - annualRevenueFromElectricityMarket;
+            }
 
             reps.nonTransactionalCreateRepository.createCashFlow(scheme, currentTenderBid.getBidder(),
-                    currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice(), CashFlow.TENDER_SUBSIDY,
-                    getCurrentTick(), currentTenderBid.getPowerPlant());
-
-            logger.warn("" + (currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice()));
-
-            logger.warn("Power plant of this bid is: " + currentTenderBid.getPowerPlant());
+                    annualTenderRevenue, CashFlow.TENDER_SUBSIDY, getCurrentTick(), currentTenderBid.getPowerPlant());
 
         }
+
+    }
+
+    private double computeRevenueFromElectricityMarket(RenewableSupportSchemeTender scheme, TenderBid bid) {
+
+        double sumEMR = 0d;
+        double emAvgPrice = 0d;
+        double electricityPrice = 0d;
+        double totalGenerationOfPlantInMwh = 0d;
+        double totalAnnualGeneration = 0d;
+        double sumCostOfElectricity = 0d;
+        // the for loop below calculates the electricity
+        // market
+        // price the plant earned
+        // throughout the year, for its total production
+        PowerPlant plant = bid.getPowerPlant();
+        ElectricitySpotMarket eMarket = reps.marketRepository
+                .findElectricitySpotMarketForZone(scheme.getRegulator().getZone());
+
+        for (SegmentLoad segmentLoad : eMarket.getLoadDurationCurve()) {
+            // logger.warn("Inside segment loop for
+            // calculating
+            // total production");
+
+            electricityPrice = reps.segmentClearingPointRepository.findOneSegmentClearingPointForMarketSegmentAndTime(
+                    getCurrentTick(), segmentLoad.getSegment(), eMarket, false).getPrice();
+            double hours = segmentLoad.getSegment().getLengthInHours();
+            totalAnnualGeneration += segmentLoad.getBaseLoad() * hours;
+            sumCostOfElectricity += electricityPrice * segmentLoad.getBaseLoad() * hours;
+
+            PowerPlantDispatchPlan ppdp = reps.powerPlantDispatchPlanRepository
+                    .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant, segmentLoad.getSegment(),
+                            getCurrentTick(), false);
+
+            if (ppdp.getStatus() < 0 || ppdp == null) {
+                electricityPrice = 0d;
+            } else if (ppdp.getStatus() >= 2) {
+                // do a sensitivity here to different
+                // averages of electricity prices.
+                sumEMR = sumEMR + electricityPrice * hours * ppdp.getAcceptedAmount();
+                totalGenerationOfPlantInMwh += hours * ppdp.getAcceptedAmount();
+            }
+
+        }
+
+        if (scheme.isRevenueByAverageElectricityPrice() == true)
+            return totalGenerationOfPlantInMwh * (sumCostOfElectricity / totalAnnualGeneration);
+        else
+            return sumEMR;
 
     }
 

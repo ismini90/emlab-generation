@@ -46,6 +46,10 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
 
     private boolean locationSpecificityEnabled;
 
+    private boolean expostRevenueCalculation;
+
+    private boolean revenueByAverageElectricityPrice;
+
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
 
@@ -60,6 +64,14 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
     // private long time;
     //
     // private double totalExpectedConsumption;
+
+    public boolean isExpostRevenueCalculation() {
+        return expostRevenueCalculation;
+    }
+
+    public void setExpostRevenueCalculation(boolean expostRevenueCalculation) {
+        this.expostRevenueCalculation = expostRevenueCalculation;
+    }
 
     public double getYearlyTenderDemandTarget() {
         return yearlyTenderDemandTarget;
@@ -146,6 +158,13 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
         this.supportSchemeDuration = supportSchemeDuration;
     }
 
+    public boolean isRevenueByAverageElectricityPrice() {
+        return revenueByAverageElectricityPrice;
+    }
+
+    public void setRevenueByAverageElectricityPrice(boolean revenueByAverageElectricityPrice) {
+        this.revenueByAverageElectricityPrice = revenueByAverageElectricityPrice;
+    }
     // public double getTotalExpectedConsumption() {
     // return totalExpectedConsumption;
     // }
