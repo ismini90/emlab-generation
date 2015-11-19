@@ -158,8 +158,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                             double emAvgPrice = 0d;
                             double electricityPrice = 0d;
                             double totalGenerationOfPlantInMwh = 0d;
-                            double totalAnnualGeneration = 0d;
-                            double sumCostOfElectricity = 0d;
+                            double totalHoursOfAnnualGeneration = 0d;
+                            double sumRevenueOfElectricity = 0d;
                             // the for loop below calculates the electricity
                             // market
                             // price the plant earned
@@ -175,8 +175,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                                                 segmentLoad.getSegment(), eMarket, false)
                                         .getPrice();
                                 double hours = segmentLoad.getSegment().getLengthInHours();
-                                totalAnnualGeneration += segmentLoad.getBaseLoad() * hours;
-                                sumCostOfElectricity += electricityPrice * segmentLoad.getBaseLoad() * hours;
+                                totalHoursOfAnnualGeneration += hours;
+                                sumRevenueOfElectricity += electricityPrice * hours;
 
                                 PowerPlantDispatchPlan ppdp = reps.powerPlantDispatchPlanRepository
                                         .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant,
@@ -193,7 +193,7 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
                             }
                             double supportPrice = 0d;
-                            emAvgPrice = sumCostOfElectricity / totalAnnualGeneration;
+                            emAvgPrice = sumRevenueOfElectricity / totalHoursOfAnnualGeneration;
 
                             if (renewableSupportScheme.isAvgElectricityPriceBasedPremiumEnabled() == true) {
                                 supportPrice = (contract.getPricePerUnit() - emAvgPrice) * totalGenerationOfPlantInMwh;
