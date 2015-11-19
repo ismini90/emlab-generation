@@ -71,11 +71,11 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
     private double computeRevenueFromElectricityMarket(RenewableSupportSchemeTender scheme, TenderBid bid) {
 
         double sumEMR = 0d;
-        double emAvgPrice = 0d;
+        double emAvgPriceBasedRevenue = 0d;
         double electricityPrice = 0d;
         double totalGenerationOfPlantInMwh = 0d;
-        double totalAnnualGeneration = 0d;
-        double sumCostOfElectricity = 0d;
+        double totalAnnualHoursOfGeneration = 0d;
+        double sumRevenueOfElectricity = 0d;
         // the for loop below calculates the electricity
         // market
         // price the plant earned
@@ -92,8 +92,8 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
             electricityPrice = reps.segmentClearingPointRepository.findOneSegmentClearingPointForMarketSegmentAndTime(
                     getCurrentTick(), segmentLoad.getSegment(), eMarket, false).getPrice();
             double hours = segmentLoad.getSegment().getLengthInHours();
-            totalAnnualGeneration += segmentLoad.getBaseLoad() * hours;
-            sumCostOfElectricity += electricityPrice * segmentLoad.getBaseLoad() * hours;
+            totalAnnualHoursOfGeneration += hours;
+            sumRevenueOfElectricity += electricityPrice * hours;
 
             PowerPlantDispatchPlan ppdp = reps.powerPlantDispatchPlanRepository
                     .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant, segmentLoad.getSegment(),
@@ -110,8 +110,10 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
 
         }
 
+        emAvgPriceBasedRevenue = totalGenerationOfPlantInMwh * (sumRevenueOfElectricity / totalAnnualHoursOfGeneration);
+
         if (scheme.isRevenueByAverageElectricityPrice() == true)
-            return totalGenerationOfPlantInMwh * (sumCostOfElectricity / totalAnnualGeneration);
+            return emAvgPriceBasedRevenue;
         else
             return sumEMR;
 

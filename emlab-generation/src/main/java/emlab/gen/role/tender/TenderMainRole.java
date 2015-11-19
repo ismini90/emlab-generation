@@ -32,8 +32,8 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender> implements
-        Role<RenewableSupportSchemeTender> {
+public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
 
     /*
      * (non-Javadoc)
@@ -48,6 +48,9 @@ public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender> i
 
     @Autowired
     SubmitTenderBidRole submitTenderBidRole;
+
+    @Autowired
+    SubmitTenderBidRoleExpostRevenuePayment submitTenderBidRoleExpostRevenuePayment;
 
     @Autowired
     ClearRenewableTenderRole clearRenewableTenderRole;
@@ -72,6 +75,11 @@ public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender> i
 
             for (EnergyProducer producer : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
                 submitTenderBidRole.act(producer);
+
+                if (scheme.isExpostRevenueCalculation() == true) {
+                    submitTenderBidRoleExpostRevenuePayment.act(producer);
+                }
+
             }
         }
 
