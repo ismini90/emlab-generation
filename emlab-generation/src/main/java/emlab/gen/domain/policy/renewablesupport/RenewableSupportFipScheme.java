@@ -23,6 +23,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import agentspring.simulation.SimulationParameter;
 import emlab.gen.domain.agent.Regulator;
+import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 
 /**
@@ -34,6 +35,9 @@ public class RenewableSupportFipScheme {
 
     @RelatedTo(type = "WITH_REGULATOR", elementClass = Regulator.class, direction = Direction.OUTGOING)
     private Regulator regulator;
+
+    @RelatedTo(type = "RES_SCHEME_FOR_ZONE", elementClass = Regulator.class, direction = Direction.OUTGOING)
+    private Zone zone;
 
     @RelatedTo(type = "TECHNOLOGIES_ELIGIBLE_ARE", elementClass = PowerGeneratingTechnology.class, direction = Direction.OUTGOING)
     private Set<PowerGeneratingTechnology> powerGeneratingTechnologiesEligible;
@@ -114,6 +118,14 @@ public class RenewableSupportFipScheme {
 
     public void setSupportSchemeDuration(long supportSchemeDuration) {
         this.supportSchemeDuration = supportSchemeDuration;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
     }
 
 }

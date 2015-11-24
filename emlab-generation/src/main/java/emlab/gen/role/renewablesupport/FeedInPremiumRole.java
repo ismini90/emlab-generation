@@ -153,7 +153,7 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     if (contract != null) {
                         if (getCurrentTick() <= (contract.getStart()
                                 + renewableSupportScheme.getSupportSchemeDuration())) {
-                            logger.warn("Inside contract payment loop");
+                            logger.warn("Inside contract payment loop for plant " + plant);
                             double sumEMR = 0d;
                             double emAvgPrice = 0d;
                             double electricityPrice = 0d;

@@ -365,12 +365,17 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 technology.getDepreciationTime(), (int) plant.getActualLeadtime(),
                                 plant.getActualInvestedCapital(), 0);
                         // Creation of in cashflow during operation
-                        TreeMap<Integer, Double> discountedProjectCashInflow = calculateSimplePowerPlantInvestmentCashFlow(
+                        TreeMap<Integer, Double> discountedProjectCashInflowElectricityMarket = calculateSimplePowerPlantInvestmentCashFlow(
                                 technology.getDepreciationTime(), (int) plant.getActualLeadtime(), 0, operatingProfit);
+
+                        TreeMap<Integer, Double> discountedProjectCashInflowFipSupport = calculateSimplePowerPlantInvestmentCashFlow(
+                                technology.getDepreciationTime(), (int) plant.getActualLeadtime(), 0, supportFromFip);
 
                         double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);// are
 
-                        double discountedOpProfit = npv(discountedProjectCashInflow, wacc);
+                        double discountedOpProfit = npv(discountedProjectCashInflowElectricityMarket, wacc);
+
+                        double discountedOpSupport = npv(discountedProjectCashInflowFipSupport, wacc);
 
                         double projectValue = discountedOpProfit + discountedCapitalCosts;
 
