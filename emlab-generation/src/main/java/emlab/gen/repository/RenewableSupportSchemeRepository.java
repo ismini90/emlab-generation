@@ -15,11 +15,14 @@
  ******************************************************************************/
 package emlab.gen.repository;
 
+import java.util.Set;
+
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.annotation.QueryType;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
+import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.policy.renewablesupport.BiasFactor;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 
@@ -33,8 +36,7 @@ public interface RenewableSupportSchemeRepository extends GraphRepository<Renewa
     public BiasFactor findBiasFactorGivenTechnologyNodeAndScheme(@Param("technology") String technologyName,
             @Param("node") String nodeName, @Param("scheme") RenewableSupportFipScheme scheme);
 
-    @Query(value = "g.v(scheme).in('BIASFACTOR_FOR_SUPPORTSCHEME').as('x').out('BIASFACTOR_FOR_NODE').filter{it.name==node}.back('x').out('BIASFACTOR_FOR_TECHNOLOGY').filter{it.name==technology}.back('x')", type = QueryType.Gremlin)
-    public BiasFactor findSchemeGivenZone(@Param("Zone") String technologyName, @Param("node") String nodeName,
-            @Param("scheme") RenewableSupportFipScheme scheme);
+    @Query(value = "g.v(zone).in('RES_SCHEME_FOR_ZONE')", type = QueryType.Gremlin)
+    public Set<RenewableSupportFipScheme> findSchemesGivenZone(@Param("zone") Zone zone);
 
 }

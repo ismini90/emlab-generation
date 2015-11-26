@@ -36,7 +36,7 @@ public class RenewableSupportFipScheme {
     @RelatedTo(type = "WITH_REGULATOR", elementClass = Regulator.class, direction = Direction.OUTGOING)
     private Regulator regulator;
 
-    @RelatedTo(type = "RES_SCHEME_FOR_ZONE", elementClass = Regulator.class, direction = Direction.OUTGOING)
+    @RelatedTo(type = "RES_SCHEME_FOR_ZONE", elementClass = Zone.class, direction = Direction.OUTGOING)
     private Zone zone;
 
     @RelatedTo(type = "TECHNOLOGIES_ELIGIBLE_ARE", elementClass = PowerGeneratingTechnology.class, direction = Direction.OUTGOING)
@@ -49,6 +49,8 @@ public class RenewableSupportFipScheme {
     private boolean costContainmentMechanismEnabled;
 
     private boolean avgElectricityPriceBasedPremiumEnabled;
+
+    private boolean emRevenuePaidExpost;
 
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
@@ -73,6 +75,14 @@ public class RenewableSupportFipScheme {
 
     public void setCostContainmentMechanismEnabled(boolean costContainmentMechanismEnabled) {
         this.costContainmentMechanismEnabled = costContainmentMechanismEnabled;
+    }
+
+    public boolean isEmRevenuePaidExpost() {
+        return emRevenuePaidExpost;
+    }
+
+    public void setEmRevenuePaidExpost(boolean emRevenuePaidExpost) {
+        this.emRevenuePaidExpost = emRevenuePaidExpost;
     }
 
     public void setName(String name) {

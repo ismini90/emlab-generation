@@ -64,7 +64,7 @@
 		<property name="zone" ref="nl" />
 	</bean>
 	
-			<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
+<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
 p:numberOfYearsLookingBackToForecastDemand="4"
 p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 		p:debtRatioOfInvestments="0.7">
@@ -72,10 +72,9 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 </bean>
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="15"
-p:costContainmentMechanismEnabled="true"
-p:avgElectricityPriceBasedPremiumEnabled="true" >
+p:supportSchemeDuration="15" p:emRevenuePaidExpost="true" >
 <property name="regulator" ref="regulatorNL"/>
+<property name="zone" ref="nl"/>
 <property name="powerGeneratingTechnologiesEligible">
 			<set>
 				<ref bean="photovoltaicPGT" />
@@ -87,7 +86,7 @@ p:avgElectricityPriceBasedPremiumEnabled="true" >
 </bean>
 
 <bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="3"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="2">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -95,7 +94,7 @@ p:degressionFactor="2">
 </bean>
 
 <bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -103,7 +102,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -111,7 +110,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
