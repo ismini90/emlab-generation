@@ -52,6 +52,8 @@ public class RenewableSupportFipScheme {
 
     private boolean emRevenuePaidExpost;
 
+    private long futureSchemeStartTime;
+
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
 
@@ -59,6 +61,14 @@ public class RenewableSupportFipScheme {
 
     public String getName() {
         return name;
+    }
+
+    public long getFutureSchemeStartTime() {
+        return futureSchemeStartTime;
+    }
+
+    public void setFutureSchemeStartTime(long futureSchemeStartTime) {
+        this.futureSchemeStartTime = futureSchemeStartTime;
     }
 
     public boolean isAvgElectricityPriceBasedPremiumEnabled() {

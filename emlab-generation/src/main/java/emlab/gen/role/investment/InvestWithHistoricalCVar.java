@@ -555,7 +555,7 @@ public class InvestWithHistoricalCVar<T extends EnergyProducer> extends GenericI
         // Find Clearing Points for the last 5 years (counting current year
         // as one of the last 5 years).
         Iterable<BaseCostFip> BaseCostFipSet = reps.baseCostFipRepository
-                .findAllBaseCostFipsForTechnologyLocationAndTimeRange(node, technology,
+                .findAllBaseCostFipsForTechnologyLocationAndTimeRange(node.getName(), technology,
                         getCurrentTick() - (agent.getNumberOfYearsBacklookingForForecasting() - 1), getCurrentTick());
 
         SimpleRegression gtr = new SimpleRegression();

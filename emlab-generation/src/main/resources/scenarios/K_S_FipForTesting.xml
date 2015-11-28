@@ -33,7 +33,7 @@
 
 		<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="demandNL-1" />
+		p:delimiter="," p:variableName="demandNL-2" />
 		
 
 	<!-- Substances -->
@@ -64,17 +64,19 @@
 		<property name="zone" ref="nl" />
 	</bean>
 	
-			<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
+<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
 p:numberOfYearsLookingBackToForecastDemand="4"
 p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 		p:debtRatioOfInvestments="0.7">
 <property name="zone" ref="nl"/>
 </bean>
 
+
+
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="15"
-p:costContainmentMechanismEnabled="true" >
+p:supportSchemeDuration="15" p:emRevenuePaidExpost="true" p:futureSchemeStartTime="5" >
 <property name="regulator" ref="regulatorNL"/>
+<property name="zone" ref="nl"/>
 <property name="powerGeneratingTechnologiesEligible">
 			<set>
 				<ref bean="photovoltaicPGT" />
@@ -86,15 +88,15 @@ p:costContainmentMechanismEnabled="true" >
 </bean>
 
 <bean id="biasFactorNLPV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="3"
-p:degressionFactor="0.06">
+p:feedInPremiumBiasFactor="1"
+p:degressionFactor="2">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
 <bean id="biasFactorNLWind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="2.5"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -102,7 +104,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNLWindoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="4.0"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -110,12 +112,14 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNLbiomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="3.2"
+p:feedInPremiumBiasFactor="1"
 p:degressionFactor="0.06">
 <property name="node" ref="beneluxNode"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
+
+
 
 <!-- Renewable Energy Target NL -->
 	<bean id="renewableTargetNL"
@@ -331,19 +335,19 @@ p:degressionFactor="0.06">
 
 				<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/coalPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="coalPrice-1" />
+		p:delimiter="," p:variableName="coalPrice-2" />
 				<bean id="gasPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/gasPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="gasPrice-1" />
+		p:delimiter="," p:variableName="gasPrice-2" />
 				<bean id="biomassPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/biomassPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="biomassPrice-1" />
+		p:delimiter="," p:variableName="biomassPrice-2" />
 				<bean id="uraniumPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/uraniumPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="uraniumPrice-1" />
+		p:delimiter="," p:variableName="uraniumPrice-2" />
 				<bean id="lignitePrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/lignitePrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="lignitePrice-1" />
+		p:delimiter="," p:variableName="lignitePrice-2" />
 
 	<!-- Agents -->
 	<bean id="coalSupplier" class="emlab.gen.domain.agent.CommoditySupplier">
@@ -396,30 +400,6 @@ p:degressionFactor="0.06">
 		p:investorMarket-ref="beneluxElectricitySpotMarket"/>
 	<bean id="energyProducerB" class="emlab.gen.domain.agent.EnergyProducer"
 		p:name="Energy Producer B" p:cash="${startCash}"
-		p:investmentRole-ref="standardInvestmentRole"
-		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
-		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
-		p:equityInterestRate="0.12" p:loanInterestRate="0.09"
-		p:debtRatioOfInvestments="0.7"
-		p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
-		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
-		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}" 
-		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="beneluxElectricitySpotMarket"/>
-	<bean id="energyProducerC" class="emlab.gen.domain.agent.EnergyProducer"
-		p:name="Energy Producer C" p:cash="${startCash}"
-		p:investmentRole-ref="standardInvestmentRole"
-		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
-		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
-		p:equityInterestRate="0.12" p:loanInterestRate="0.09"
-		p:debtRatioOfInvestments="0.7"
-		p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
-		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
-		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}" 
-		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="beneluxElectricitySpotMarket"/>
-	<bean id="energyProducerD" class="emlab.gen.domain.agent.EnergyProducer"
-		p:name="Energy Producer D" p:cash="${startCash}"
 		p:investmentRole-ref="standardInvestmentRole"
 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -929,32 +909,7 @@ p:degressionFactor="0.06">
 		p:filename="/data/learningCurves.csv" p:startingYear="-50"
 		p:delimiter="," p:variableName="PV_Eff" />
 
-	<bean id="nuclearPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="Nuclear" p:capacity="1000" p:investmentCostTimeSeries-ref="nuclearInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="nuclearFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="nuclearEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="25"
-		p:minimumRunningHours="5000"
-		p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="40"
-		p:expectedLeadtime="5" p:expectedPermittime="2" p:minimumFuelQuality="1"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="uranium" />
-			</set>
-		</property>
-	</bean>
 
-	<bean id="nuclearInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="2874800" />
-	<bean id="nuclearFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="71870" />
-	<bean id="nuclearEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.00001" p:start=".33" />
 
 	<!-- Parameter file -->
 	<bean id="projectPropertyConfigurer"

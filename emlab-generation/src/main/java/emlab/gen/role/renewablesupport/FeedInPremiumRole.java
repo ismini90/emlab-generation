@@ -45,9 +45,9 @@ import emlab.gen.repository.Reps;
  *         supportPrice = baseCost*TotalGeneration - ElectricityMarketRevenue
  * 
  *         Assumption: when the policy is implemented for a certain country, all
- *         operational, eligible plants in that zone receive the premium by
- *         default. there is no need for an energy producer agent to voluntarily
- *         apply for the scheme.
+ *         operational, eligible plants - plants that have in that zone receive
+ *         the premium by default. there is no need for an energy producer agent
+ *         to voluntarily apply for the scheme.
  * 
  * 
  */
@@ -91,8 +91,9 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
                 if (getCurrentTick() >= 1) {
                     plantSet = reps.powerPlantRepository
-                            .findPowerPlantsStartingOperationThisTickByPowerGridNodeAndTechnology(node, technology,
-                                    getCurrentTick());
+                            .findPowerPlantsStartingOperationThisTickByPowerGridNodeAndTechnology(node,
+                                    technology.getName(), getCurrentTick());
+                    logger.warn("FIP role, plantSet" + plantSet);
                 } else {
                     plantSet = reps.powerPlantRepository.findOperationalPowerPlantsByPowerGridNodeAndTechnology(node,
                             technology, getCurrentTick());
@@ -107,20 +108,23 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
                     long contractFinishTime = finishedConstruction + renewableSupportScheme.getSupportSchemeDuration();
 
-                    logger.warn("Printing finished construction" + finishedConstruction + "and current tick "
-                            + getCurrentTick());
-                            // long timeNow = getCurrentTick();
+                    // logger.warn("Printing finished construction" +
+                    // finishedConstruction + "and current tick "
+                    // + getCurrentTick());
 
-                    // logger.warn("Inside contract creation loop");
+                    logger.warn("Inside contract creation loop");
                     // create a query to get base cost.
-                    BaseCostFip baseCost = reps.baseCostFipRepository.findOneBaseCostForTechnologyAndNodeAndTime(node,
-                            technology, getCurrentTick());
-                    contract = new SupportPriceContract();
-                    contract.setStart(getCurrentTick());
-                    contract.setPricePerUnit(baseCost.getCostPerMWh());
-                    contract.setFinish(contractFinishTime);
-                    contract.setPlant(plant);
-                    contract.persist();
+                    BaseCostFip baseCost = reps.baseCostFipRepository
+                            .findOneBaseCostForTechnologyAndNodeAndTime(node.getName(), technology, getCurrentTick());
+                    logger.warn("expected base cost query test FIP is " + baseCost);
+                    if (baseCost != null) {
+                        contract = new SupportPriceContract();
+                        contract.setStart(getCurrentTick());
+                        contract.setPricePerUnit(baseCost.getCostPerMWh());
+                        contract.setFinish(contractFinishTime);
+                        contract.setPlant(plant);
+                        contract.persist();
+                    }
 
                     // logger.warn("Contract price for plant of technology " +
                     // plant.getTechnology().getName()
@@ -152,7 +156,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     contract = reps.supportPriceContractRepository.findOneContractByPowerPlant(plant);
                     if (contract != null) {
                         if (getCurrentTick() <= (contract.getStart()
-                                + renewableSupportScheme.getSupportSchemeDuration())) {
+                                + renewableSupportScheme.getSupportSchemeDuration())
+                                && getCurrentTick() >= contract.getStart()) {
                             logger.warn("Inside contract payment loop for plant " + plant);
                             double sumEMR = 0d;
                             double emAvgPrice = 0d;
