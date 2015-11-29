@@ -344,6 +344,13 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                         .getLoadFactorForSegment(segmentLoad.getSegment());
                                 expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
                                         * plant.getActualNominalCapacity() * loadFactor;
+                                expectedAnnualVariableCost += expectedMarginalCost * hours
+                                        * plant.getActualNominalCapacity() * loadFactor;
+                                expectedAnnualVariableRevenue += expectedElectricityPrice * hours
+                                        * plant.getActualNominalCapacity() * loadFactor;
+                                double generationInSegment = hours * plant.getActualNominalCapacity() * loadFactor;
+                                expectedGeneration += generationInSegment;
+
                             } else {
 
                                 expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
