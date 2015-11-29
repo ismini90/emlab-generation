@@ -47,24 +47,30 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
 
+        double annualTenderRevenue = 0d;
+
         for (TenderBid currentTenderBid : reps.tenderBidRepository.findAllTenderBidsThatShouldBePaidInTimeStep(scheme,
                 getCurrentTick())) {
 
             TenderClearingPoint tenderClearingPoint = reps.tenderClearingPointRepository
                     .findOneClearingPointForTimeAndRenewableSupportSchemeTender(currentTenderBid.getTime(), scheme);
 
-            double annualTenderRevenue = currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice();
+            annualTenderRevenue = currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice();
             // Is the accepted amount generated every year?
             double annualRevenueFromElectricityMarket = 0;
             if (scheme.isExpostRevenueCalculation() == true) {
                 annualRevenueFromElectricityMarket = computeRevenueFromElectricityMarket(scheme, currentTenderBid);
                 annualTenderRevenue = annualTenderRevenue - annualRevenueFromElectricityMarket;
+                // if (annualTenderRevenue < 0)
+                // annualTenderRevenue = 0;
+
             }
 
             reps.nonTransactionalCreateRepository.createCashFlow(scheme, currentTenderBid.getBidder(),
                     annualTenderRevenue, CashFlow.TENDER_SUBSIDY, getCurrentTick(), currentTenderBid.getPowerPlant());
 
         }
+        logger.warn("____PAYMENT ROLE____ annualTenderRevenue" + annualTenderRevenue);
 
     }
 

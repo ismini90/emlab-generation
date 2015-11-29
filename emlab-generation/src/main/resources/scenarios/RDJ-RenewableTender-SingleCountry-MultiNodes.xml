@@ -41,7 +41,8 @@
 	<bean id="renewableSupportScheme"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="RenewableTender" p:futureTenderOperationStartTime="5"
-		p:supportSchemeDuration="15">
+		p:supportSchemeDuration="15"
+		p:expostRevenueCalculation="true">
 
 		<property name="regulator" ref="regulatorNL" />
 		<property name="powerGeneratingTechnologiesEligible">
@@ -50,7 +51,6 @@
 				<ref bean="windOffshorePGT" />
 				<ref bean="windPGT" />
 				<ref bean="biomassPGT" />
-				<ref bean="biogasPGT" />
 			</set>
 		</property>
 	</bean>
@@ -121,7 +121,7 @@
 		p:capacityMultiplicationFactor="1.0" p:name="nlNode1">
 		<property name="zone" ref="nl" />
 		<property name="hourlyDemand" ref="demandNL" />
-		</bean>
+	</bean>
 
 	<bean id="nlNode2" class="emlab.gen.domain.technology.PowerGridNode"
 		p:capacityMultiplicationFactor="1.0" p:name="nlNode2">
