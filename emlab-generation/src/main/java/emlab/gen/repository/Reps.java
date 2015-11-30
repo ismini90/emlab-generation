@@ -33,6 +33,15 @@ public class Reps {
     public BidRepository bidRepository;
 
     @Autowired
+    public BaseCostFipRepository baseCostFipRepository;
+
+    @Autowired
+    public SupportPriceContractRepository supportPriceContractRepository;
+
+    @Autowired
+    public RenewableSupportSchemeRepository renewableSupportSchemeRepository;
+
+    @Autowired
     public ClearingPointRepositoryOld clearingPointRepositoryOld;
 
     @Autowired

@@ -33,7 +33,15 @@ public class Regulator extends DecarbonizationAgent implements Agent {
     @RelatedTo(type = "OF_ZONE", elementClass = Zone.class, direction = Direction.OUTGOING)
     private Zone zone;
 
+    // Investment related parameters
     private int numberOfYearsLookingBackToForecastDemand;
+    @SimulationParameter(label = "Equity Interest Rate", from = 0, to = 1)
+    private double equityInterestRate;
+    @SimulationParameter(label = "Debt ratio in investments", from = 0, to = 1)
+    private double debtRatioOfInvestments;
+    // Loan
+    @SimulationParameter(label = "Loan Interest Rate", from = 0, to = 1)
+    private double loanInterestRate;
 
     // Capacity Market Related Parameters
 
@@ -81,6 +89,30 @@ public class Regulator extends DecarbonizationAgent implements Agent {
     // this.annualTotalExpectedRenewableGeneration =
     // annualTotalExpectedGeneration;
     // }
+
+    public double getEquityInterestRate() {
+        return equityInterestRate;
+    }
+
+    public void setEquityInterestRate(double equityInterestRate) {
+        this.equityInterestRate = equityInterestRate;
+    }
+
+    public double getDebtRatioOfInvestments() {
+        return debtRatioOfInvestments;
+    }
+
+    public void setDebtRatioOfInvestments(double debtRatioOfInvestments) {
+        this.debtRatioOfInvestments = debtRatioOfInvestments;
+    }
+
+    public double getLoanInterestRate() {
+        return loanInterestRate;
+    }
+
+    public void setLoanInterestRate(double loanInterestRate) {
+        this.loanInterestRate = loanInterestRate;
+    }
 
     public double getDemandTarget() {
         return demandTarget;
