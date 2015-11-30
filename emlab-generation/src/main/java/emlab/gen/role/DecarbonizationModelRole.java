@@ -60,8 +60,8 @@ import emlab.gen.role.operating.PayCO2AuctionRole;
 import emlab.gen.role.operating.PayCO2TaxRole;
 import emlab.gen.role.operating.PayForLoansRole;
 import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
-import emlab.gen.role.renewablesupport.ComputePremiumRole;
-import emlab.gen.role.renewablesupport.FeedInPremiumRole;
+import emlab.gen.role.pricewarranty.ComputePremiumRole;
+import emlab.gen.role.pricewarranty.FeedInPremiumRole;
 
 /**
  * Main model role.
