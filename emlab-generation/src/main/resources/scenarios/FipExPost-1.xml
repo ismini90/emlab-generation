@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2012 the original author or authors. Licensed under the Apache 
-	License, Version 2.0 (the "License"); you may not use this file except in 
-	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+<!-- Copyright 2012 the original author or authors. Licensed under the Apache
+	License, Version 2.0 (the "License"); you may not use this file except in
+	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 	the specific language governing permissions and limitations under the License. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
@@ -21,12 +21,12 @@
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
-		p:feedInPremiumImplemented="false">
+		p:feedInPremiumImplemented="true">
 	</bean>
 
 
 	<!-- Regulator -->
-<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
+<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL"
 p:numberOfYearsLookingBackToForecastDemand="5"
 p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 		p:debtRatioOfInvestments="0.7">
@@ -39,10 +39,10 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 	</bean>
 
 
-	<!-- Feed in Premium 
+	<!-- Feed in Premium -->
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="15" 
+p:supportSchemeDuration="15"
 p:emRevenuePaidExpost="true"
 p:futureSchemeStartTime="5" >
 <property name="regulator" ref="regulatorNL"/>
@@ -57,7 +57,7 @@ p:futureSchemeStartTime="5" >
 </property>
 </bean>
 
-<bean id="biasFactorNL1PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL1PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="2">
 <property name="node" ref="nlNode1"> </property>
@@ -65,7 +65,7 @@ p:degressionFactor="2">
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL1Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL1Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
@@ -73,7 +73,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL1Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL1Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
@@ -81,7 +81,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
-<bean id="biasFactorNL1biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL1biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
@@ -89,7 +89,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL2PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL2PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="2">
 <property name="node" ref="nlNode2"> </property>
@@ -97,7 +97,7 @@ p:degressionFactor="2">
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL2Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL2Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode2"> </property>
@@ -105,7 +105,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL2Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL2Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode2"> </property>
@@ -113,7 +113,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
-<bean id="biasFactorNL2biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL2biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode2"> </property>
@@ -121,7 +121,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL3PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL3PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="2">
 <property name="node" ref="nlNode3"> </property>
@@ -129,7 +129,7 @@ p:degressionFactor="2">
 <property name="technology" ref = "photovoltaicPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL3Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL3Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode3"> </property>
@@ -137,7 +137,7 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windPGT" ></property>
 </bean>
 
-<bean id="biasFactorNL1W3ndoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL1W3ndoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode3"> </property>
@@ -145,14 +145,13 @@ p:degressionFactor="0.06">
 <property name="technology" ref = "windOffshorePGT" ></property>
 </bean>
 
-<bean id="biasFactorNL3biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
+<bean id="biasFactorNL3biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
 p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode3"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
--->
 
 
 
@@ -169,7 +168,7 @@ p:degressionFactor="0.06">
 
 		<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="demandNL-2" />
+		p:delimiter="," p:variableName="demandNL-1"/>
 
 	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendDE"
 		p:start="${demandGrowthDEStart}" p:min="${demandGrowthDEMin}" p:max="${demandGrowthDEMax}"
@@ -233,22 +232,22 @@ p:degressionFactor="0.06">
 		<property name="zone" ref="nl" />
 	</bean>
 
-	
 
-	
+
+
 	<!-- PowerGrid DE -->
 	<bean id="deNode1" class="emlab.gen.domain.technology.PowerGridNode"
 		p:capacityMultiplicationFactor="1.0" p:name="deNode1">
 		<property name="zone" ref="de" />
 		<property name="hourlyDemand" ref="demandDE" />
 	</bean>
-	
+
 <!-- 	<bean id="deNode2" class="emlab.gen.domain.technology.PowerGridNode" -->
 <!-- 		p:capacityMultiplicationFactor="1.0" p:name="deNode2"> -->
 <!-- 		<property name="zone" ref="de" /> -->
 <!-- 		<property name="hourlyDemand" ref="demandDE" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="deNode3" class="emlab.gen.domain.technology.PowerGridNode" -->
 <!-- 		p:capacityMultiplicationFactor="1.0" p:name="deNode3"> -->
 <!-- 		<property name="zone" ref="de" /> -->
@@ -267,7 +266,7 @@ p:degressionFactor="0.06">
 
 
 	<!-- Intermittent Production Profiles -->
-		
+
 
 	<!-- Photovoltaic nodes Netherlands (1-3 nodes)-->
 	<bean id="photovoltaicNodeNL1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
@@ -277,7 +276,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode1"></property>
 	</bean>
-	
+
 		<bean id="photovoltaicNodeNL2" class="emlab.gen.domain.technology.IntermittentResourceProfile"
 		p:filename="/data/multiNodeProduction_NL_solarPV.csv"
 		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
@@ -285,7 +284,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode2"></property>
 	</bean>
-	
+
 		<bean id="photovoltaicNodeNL3" class="emlab.gen.domain.technology.IntermittentResourceProfile"
 		p:filename="/data/multiNodeProduction_NL_solarPV.csv"
 		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
@@ -293,7 +292,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode3"></property>
 	</bean>
-			
+
 
 	<!-- Wind onshore nodes Netherlands (1-3 nodes)-->
 	<bean id="windOnSpeedNodeNL1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
@@ -303,7 +302,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="windPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode1"></property>
 	</bean>
-	
+
 	<bean id="windOnSpeedNodeNL2" class="emlab.gen.domain.technology.IntermittentResourceProfile"
 		p:filename="/data/multiNodeProduction_NL_windOn.csv"
 		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
@@ -311,7 +310,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="windPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode2"></property>
 	</bean>
-	
+
 	<bean id="windOnSpeedNodeNL3" class="emlab.gen.domain.technology.IntermittentResourceProfile"
 		p:filename="/data/multiNodeProduction_NL_windOn.csv"
 		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
@@ -319,7 +318,7 @@ p:degressionFactor="0.06">
 		<property name="intermittentTechnology" ref="windPGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode3"></property>
 	</bean>
-		
+
 
 	<!-- Wind offshore nodes Netherlands (1-3 nodes)-->
 	<bean id="windOffSpeedNodeNL1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
@@ -355,7 +354,7 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode1"></property> -->
 <!-- 	</bean> -->
-	
+
 <!-- 		<bean id="photovoltaicNodeDE2" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_solarPV.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -363,7 +362,7 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode2"></property> -->
 <!-- 	</bean> -->
-	
+
 <!-- 		<bean id="photovoltaicNodeDE3" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_solarPV.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -371,10 +370,10 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="photovoltaicPGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode3"></property> -->
 <!-- 	</bean> -->
-	
+
 
 	<!-- Wind onshore nodes Germany (1-3 nodes)-->
-	
+
 <!-- 	<bean id="windOnSpeedNodeDE1" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_windOn.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -382,7 +381,7 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="windPGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode1"></property> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="windOnSpeedNodeDE2" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_windOn.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -390,7 +389,7 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="windPGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode2"></property> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="windOnSpeedNodeDE3" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_windOn.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -408,7 +407,7 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="windOffshorePGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode1"></property> -->
 <!-- 	</bean> -->
-	
+
 <!-- 		<bean id="windOffSpeedNodeDE2" class="emlab.gen.domain.technology.IntermittentResourceProfile" -->
 <!-- 		p:filename="/data/multiNodeProduction_DE_windOff.csv" -->
 <!-- 		p:timeSeriesAreInDifferentColumns="true" p:delimiter="," -->
@@ -424,11 +423,11 @@ p:degressionFactor="0.06">
 <!-- 		<property name="intermittentTechnology" ref="windOffshorePGT"></property> -->
 <!-- 		<property name="intermittentProductionNode" ref="deNode3"></property> -->
 <!-- 	</bean> -->
-	
+
 
 
 	<!-- PowerGenerationTechnology Node Limits in MW  NL-->
-	<!-- from file Potential_capacity_generation_FLH_perBand_de_nl_biomass_biogas 
+	<!-- from file Potential_capacity_generation_FLH_perBand_de_nl_biomass_biogas
 		and compressed3_Potential_capacity_generation_FLH_perBand_de_nl_solar_wind -->
 
 
@@ -439,21 +438,21 @@ p:degressionFactor="0.06">
 		<property name="powerGeneratingTechnology" ref="lignitePGT" />
 		<property name="powerGridNode" ref="nlNode1" />
 	</bean>
-	
+
 		<bean id="ligniteNodeLimitNL2"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="lignitePGT" />
 		<property name="powerGridNode" ref="nlNode2" />
 	</bean>
-	
+
 		<bean id="ligniteNodeLimitNL3"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="lignitePGT" />
 		<property name="powerGridNode" ref="nlNode3" />
 	</bean>
-		
+
 
 	<!-- biomass node limits NL -->
 	<bean id="biomassLimitNL1"
@@ -462,22 +461,22 @@ p:degressionFactor="0.06">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode1" />
 	</bean>
-	
+
 	<bean id="biomassLimitNL2"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode2" />
 	</bean>
-	
+
 	<bean id="biomassLimitNL3"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode3" />
 	</bean>
-		
-	
+
+
 	<!-- biogas node limits NL -->
 	<bean id="biogasNodeLimitNL1"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
@@ -485,22 +484,22 @@ p:degressionFactor="0.06">
 		<property name="powerGeneratingTechnology" ref="biogasPGT" />
 		<property name="powerGridNode" ref="nlNode1" />
 	</bean>
-	
+
 	<bean id="biogasNodeLimitNL2"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="biogasPGT" />
 		<property name="powerGridNode" ref="nlNode2" />
 	</bean>
-	
+
 	<bean id="biogasNodeLimitNL3"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
 		p:permanentUpperCapacityLimit="0">
 		<property name="powerGeneratingTechnology" ref="biogasPGT" />
 		<property name="powerGridNode" ref="nlNode3" />
 	</bean>
-	
-	
+
+
 	<!-- photovoltaic node limits NL -->
 	<bean id="photovoltaicNodeLimitNL1"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
@@ -523,7 +522,7 @@ p:degressionFactor="0.06">
 		<property name="powerGridNode" ref="nlNode3" />
 	</bean>
 
-	
+
 	<!-- Wind onshore node limits NL -->
 	<bean id="windNodeLimitNL1"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
@@ -570,86 +569,86 @@ p:degressionFactor="0.06">
 	</bean>
 
 
-	
-	
+
+
 		<!-- PowerGenerationTechnology Node Limits in MW  DE-->
-	<!-- from file Potential_capacity_generation_FLH_perBand_de_nl_biomass_biogas 
-		and Potential_capacity_generation_FLH_perBand_de_nl_solar_wind 
-		
+	<!-- from file Potential_capacity_generation_FLH_perBand_de_nl_biomass_biogas
+		and Potential_capacity_generation_FLH_perBand_de_nl_solar_wind
+
 		Germany has lignite, biomas, and biogass and nuclear also zero
-		
+
 		-->
-		
-		<!-- lignite node limits DE -->	
+
+		<!-- lignite node limits DE -->
 <!-- 	<bean id="ligniteNodeLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="lignitePGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode1" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 		<bean id="ligniteNodeLimitDE2" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="lignitePGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode2" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 		<bean id="ligniteNodeLimitDE3" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="lignitePGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode3" /> -->
 <!-- 	</bean> -->
-	
 
-		<!-- biomass node limits DE --> 
+
+		<!-- biomass node limits DE -->
 <!-- 	<bean id="biomassLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="9272.7"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biomassPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode1" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="biomassLimitDE2" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biomassPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode2" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="biomassLimitDE3" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biomassPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode3" /> -->
 <!-- 	</bean> -->
-	
-	
-		<!-- biogas node limits DE --> 
+
+
+		<!-- biogas node limits DE -->
 <!-- 	<bean id="biogasNodeLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="1842.9"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biogasPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode1" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="biogasNodeLimitDE2" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biogasPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode2" /> -->
 <!-- 	</bean> -->
-	
+
 <!-- 	<bean id="biogasNodeLimitDE3" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="0"> -->
 <!-- 		<property name="powerGeneratingTechnology" ref="biogasPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode3" /> -->
 <!-- 	</bean> -->
-	
-	
-	 	<!-- photovoltaic node limits DE --> 
+
+
+	 	<!-- photovoltaic node limits DE -->
 <!-- 	<bean id="photovoltaicNodeLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="2538.0"> -->
@@ -670,9 +669,9 @@ p:degressionFactor="0.06">
 <!-- 		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" /> -->
 <!-- 		<property name="powerGridNode" ref="deNode3" /> -->
 <!-- 	</bean> -->
-		
 
-		<!-- Wind onshore node limits DE --> 
+
+		<!-- Wind onshore node limits DE -->
 <!-- 	<bean id="windNodeLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="15228.5"> -->
@@ -695,7 +694,7 @@ p:degressionFactor="0.06">
 <!-- 	</bean> -->
 
 
-	 	<!-- Wind offshore node limits DE --> 
+	 	<!-- Wind offshore node limits DE -->
 <!-- 	<bean id="windOffshoreNodeLimitDE1" -->
 <!-- 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit" -->
 <!-- 		p:permanentUpperCapacityLimit="6912.7"> -->
@@ -1031,20 +1030,21 @@ p:degressionFactor="0.06">
 		p:substance-ref="co2" />
 
 	<!-- Fuel Prices -->
-	<bean id="coalPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${coalPriceStart}" p:min="${coalPriceMin}" p:max="${coalPriceMax}"
-		p:top="${coalPriceTop}" />
-	<bean id="gasPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${gasPriceStart}" p:min="${gasPriceMin}" p:max="${gasPriceMax}"
-		p:top="${gasPriceTop}" />
-	<bean id="biomassPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${biomassPriceStart}" p:min="${biomassPriceMin}" p:max="${biomassPriceMax}"
-		p:top="${biomassPriceTop}" />
-	<bean id="uraniumPrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="${uraniumPriceStart}" p:min="${uraniumPriceMin}" p:max="${uraniumPriceMax}"
-		p:top="${uraniumPriceTop}" />
-	<bean id="lignitePrice" class="emlab.gen.trend.TriangularTrend"
-		p:start="5.14" p:min="0.99" p:max="1.01" p:top="1.00" />
+	<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/stochasticFuelPrices/coalPrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="coalPrice-1" />
+	<bean id="gasPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/stochasticFuelPrices/gasPrice.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="gasPrice-1" />
+	<bean id="biomassPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/stochasticFuelPrices/biomassPrice.csv"
+		p:startingYear="0" p:delimiter="," p:variableName="biomassPrice-1" />
+	<bean id="uraniumPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/stochasticFuelPrices/uraniumPrice.csv"
+		p:startingYear="0" p:delimiter="," p:variableName="uraniumPrice-1" />
+	<bean id="lignitePrice" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/stochasticFuelPrices/lignitePrice.csv"
+		p:startingYear="0" p:delimiter="," p:variableName="lignitePrice-1" />
 
 	<!-- Agents -->
 	<bean id="coalSupplier" class="emlab.gen.domain.agent.CommoditySupplier">
@@ -1217,7 +1217,7 @@ p:degressionFactor="0.06">
 			</list>
 		</property>
 	</bean>
-	
+
 <!-- 		<bean id="DEPortfolio" class="emlab.gen.domain.factory.ElectricityProducerFactory"> -->
 <!-- 		<property name="capacityMargin" value="0.25" /> -->
 <!-- 		<property name="portfolioShares"> -->
@@ -1289,7 +1289,7 @@ p:degressionFactor="0.06">
 <!-- 				<ref bean="energyProducerE" /> -->
 <!-- 				<ref bean="energyProducerF" /> -->
 <!-- 				<ref bean="energyProducerG" /> -->
-<!-- 				<ref bean="energyProducerH" /> --> 
+<!-- 				<ref bean="energyProducerH" /> -->
 <!-- 			</list> -->
 <!-- 		</property> -->
 <!-- 	</bean> -->
@@ -1758,4 +1758,3 @@ p:degressionFactor="0.06">
 
 
 </beans>
-

@@ -21,17 +21,15 @@
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
-		p:feedInPremiumImplemented="false">
+		p:renewableTenderSchemeImplemented="true">
 	</bean>
 
 
 	<!-- Regulator -->
-<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL" 
-p:numberOfYearsLookingBackToForecastDemand="5"
-p:equityInterestRate="0.12" p:loanInterestRate="0.09"
-		p:debtRatioOfInvestments="0.7">
-<property name="zone" ref="nl"/>
-</bean>
+	<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator"
+		p:name="regulator" p:numberOfYearsLookingBackToForecastDemand="4">
+		<property name="zone" ref="nl" />
+	</bean>
 
 	<bean id="regulatorDE" class="emlab.gen.domain.agent.Regulator"
 		p:name="regulator" p:numberOfYearsLookingBackToForecastDemand="4">
@@ -39,125 +37,27 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 	</bean>
 
 
-	<!-- Feed in Premium 
+	<!-- Renewable Tender Scheme -->
+	<bean id="renewableSupportScheme"
+		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
+		p:name="RenewableTender" p:futureTenderOperationStartTime="5"
+		p:supportSchemeDuration="15"
+		p:expostRevenueCalculation=“true”>
 
-<bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="15" 
-p:emRevenuePaidExpost="true"
-p:futureSchemeStartTime="5" >
-<property name="regulator" ref="regulatorNL"/>
-<property name="zone" ref="nl"/>
-<property name="powerGeneratingTechnologiesEligible">
+		<property name="regulator" ref="regulatorNL" />
+		<property name="powerGeneratingTechnologiesEligible">
 			<set>
 				<ref bean="photovoltaicPGT" />
 				<ref bean="windOffshorePGT" />
 				<ref bean="windPGT" />
 				<ref bean="biomassPGT" />
 			</set>
-</property>
-</bean>
-
-<bean id="biasFactorNL1PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="2">
-<property name="node" ref="nlNode1"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "photovoltaicPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL1Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode1"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL1Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode1"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windOffshorePGT" ></property>
-</bean>
-
-<bean id="biasFactorNL1biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode1"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "biomassPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL2PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="2">
-<property name="node" ref="nlNode2"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "photovoltaicPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL2Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode2"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL2Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode2"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windOffshorePGT" ></property>
-</bean>
-
-<bean id="biasFactorNL2biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode2"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "biomassPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL3PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="2">
-<property name="node" ref="nlNode3"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "photovoltaicPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL3Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode3"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windPGT" ></property>
-</bean>
-
-<bean id="biasFactorNL1W3ndoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode3"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "windOffshorePGT" ></property>
-</bean>
-
-<bean id="biasFactorNL3biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor" 
-p:feedInPremiumBiasFactor="1.01"
-p:degressionFactor="0.06">
-<property name="node" ref="nlNode3"> </property>
-<property name="scheme" ref="renewableSupportScheme"></property>
-<property name="technology" ref = "biomassPGT" ></property>
-</bean>
--->
+		</property>
+	</bean>
 
 
-
-<!-- Renewable Energy Target NL -->
-	<bean id="renewableTargetNL"
+	<!-- Renewable Energy Target -->
+	<bean id="renewableTenderTarget"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForTender"
 		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap">
 		<property name="regulator" ref="regulatorNL" />
@@ -167,9 +67,9 @@ p:degressionFactor="0.06">
 		p:filename="/data/policyGoalNREAP_NL_DE_2050.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_target" />
 
-		<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="demandNL-2" />
+	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendNL"
+		p:start="${demandGrowthNLStart}" p:min="${demandGrowthNLMin}" p:max="${demandGrowthNLMax}"
+		p:top="${demandGrowthNLTop}" />
 
 	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendDE"
 		p:start="${demandGrowthDEStart}" p:min="${demandGrowthDEMin}" p:max="${demandGrowthDEMax}"
@@ -1753,9 +1653,10 @@ p:degressionFactor="0.06">
 	<bean id="projectPropertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location"
-			value="classpath:scenarios/K_FiP_S_MultiNodes.properties" />
+			value="classpath:scenarios/RDJ_RenewableTender_SingleCountry_MultiNodes.properties" />
 	</bean>
 
 
 </beans>
+
 

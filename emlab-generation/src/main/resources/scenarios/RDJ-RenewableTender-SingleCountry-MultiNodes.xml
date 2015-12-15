@@ -42,7 +42,7 @@
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="RenewableTender" p:futureTenderOperationStartTime="5"
 		p:supportSchemeDuration="15"
-		p:expostRevenueCalculation="true">
+		p:expostRevenueCalculation="false">
 
 		<property name="regulator" ref="regulatorNL" />
 		<property name="powerGeneratingTechnologiesEligible">

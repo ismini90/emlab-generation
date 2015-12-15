@@ -239,12 +239,14 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     // " will not invest in {} technology because there's too
                     // much capacity planned by him",
                     // technology);
-                } else if (capacityInPipelineInMarket > 0.2 * marketInformation.maxExpectedLoad) {
+                    // } else if (capacityInPipelineInMarket > 0.2 *
+                    // marketInformation.maxExpectedLoad) {
                     // logger.warn("Not investing because more than 20% of
                     // demand in pipeline.");
 
-                } else if ((capacityOfTechnologyInPipeline > 2.0 * operationalCapacityOfTechnology)
-                        && capacityOfTechnologyInPipeline > 9000) { // TODO:
+                    // } else if ((capacityOfTechnologyInPipeline > 2.0 *
+                    // operationalCapacityOfTechnology)
+                    // && capacityOfTechnologyInPipeline > 9000) { // TODO:
                     // reflects that you cannot expand a technology out of zero.
                     // logger.warn(agent +
                     // " will not invest in {} technology because there's too
@@ -329,10 +331,6 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                         double expectedElectricityPrice = marketInformation.expectedElectricityPricesPerSegment
                                 .get(segmentLoad.getSegment());
-                        if (scheme != null) {
-                            if (!scheme.isEmRevenuePaidExpost())
-                                expectedElectricityPrice += expectedBaseCost;
-                        }
 
                         double hours = segmentLoad.getSegment().getLengthInHours();
                         if (expectedMarginalCost <= expectedElectricityPrice) {
@@ -387,10 +385,6 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                         double fixedOMCost = calculateFixedOperatingCost(plant, getCurrentTick());
 
-                        // logger.warn(" expected base cost " +
-                        // plant.getTechnology().getName() + "for node "
-                        // + node.getNodeId() + " is , " + supportFromFip);
-
                         // if condition to make sure support is zero if FiP
                         // scheme for a certain country is not on, based on the
                         // existence of BaseCost objects.
@@ -410,6 +404,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double operatingCost = expectedAnnualVariableCost + fixedOMCost;
                         double operatingRevenue = expectedAnnualVariableRevenue;
                         double operatingProfit = operatingRevenue - operatingCost;
+                        double operatingProfitCheck = expectedGrossProfit - fixedOMCost;
 
                         // Calculation of weighted average cost of capital,
                         // based on the companies debt-ratio
@@ -432,7 +427,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double discountedOpRevenue = npv(discountedProjectOperatingRevenue, wacc);
                         double discountedOpCost = npv(discountedProjectOperatingCost, wacc);
 
-                        if (scheme != null && expectedBaseCost > 0) {
+                        if (scheme != null && expectedBaseCost > 0
+                                && (scheme.getPowerGeneratingTechnologiesEligible().contains(technology))) {
                             if (scheme.isEmRevenuePaidExpost()) {
                                 operatingRevenue = expectedBaseCost * plant.getAnnualFullLoadHours()
                                         * plant.getActualNominalCapacity();
@@ -455,6 +451,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double projectValue = discountedOpRevenue + discountedCapitalCosts + discountedOpCost;
 
                         // *****FOR VERIFICATION
+                        logger.warn("operatingProfit =" + operatingProfit);
+                        logger.warn("operatingProfitCheck =" + operatingProfitCheck);
 
                         double projectCost = -discountedCapitalCosts - discountedOpCost;
                         logger.warn("for plant:" + plant + "disCapitalCost in Inv Role is" + -discountedCapitalCosts
@@ -464,7 +462,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         logger.warn("discountedRevenue =" + discountedOpRevenue);
                         logger.warn("expectedBaseCost" + expectedBaseCost + "for plant" + plant + "in tick"
                                 + futureTimePoint);
-                        logger.warn("project value per MW is " + projectValue);
+                        logger.warn("project value per MW is " + projectValue / plant.getActualNominalCapacity());
 
                         // *****END VERIFICATION
 

@@ -64,7 +64,7 @@ import emlab.gen.role.AbstractEnergyProducerRole;
  */
 
 @RoleComponent
-public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProducer>implements Role<EnergyProducer> {
+public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProducer> implements Role<EnergyProducer> {
 
     @Transient
     @Autowired
@@ -88,14 +88,10 @@ public class ComputePremiumRole extends AbstractEnergyProducerRole<EnergyProduce
         Iterable<PowerGeneratingTechnology> eligibleTechnologies = scheme.getPowerGeneratingTechnologiesEligible();
 
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
-            // for (PowerGeneratingTechnology technology :
-            // reps.powerGeneratingTechnologyRepository.findAll()) {
+
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
             if (technology.isIntermittent() && model.isNoPrivateIntermittentRESInvestment())
                 continue;
-            // logger.warn(
-            // "Calculating for " + technology.getName() + ", for Nodes: " +
-            // possibleInstallationNodes.toString());
 
             for (PowerGridNode node : reps.powerGridNodeRepository.findAllPowerGridNodesByZone(regulator.getZone())) {
 

@@ -67,7 +67,7 @@ import emlab.gen.util.MapValueComparator;
  */
 
 @RoleComponent
-public class SubmitTenderBidRole extends AbstractEnergyProducerRole<EnergyProducer>implements Role<EnergyProducer> {
+public class SubmitTenderBidRole extends AbstractEnergyProducerRole<EnergyProducer> implements Role<EnergyProducer> {
 
     @Transient
     @Autowired
@@ -172,17 +172,7 @@ public class SubmitTenderBidRole extends AbstractEnergyProducerRole<EnergyProduc
                 plant.specifyNotPersist(getCurrentTick(), agent, node, technology);
 
                 noOfPlantsConsider++;
-                logger.warn("FOR no of plants considered " + noOfPlantsConsider);
 
-                logger.warn("SubmitBid 168 - Agent " + agent + " looking at technology at tick " + getCurrentTick()
-                        + " in tech " + technology);
-
-                // logger.warn(" agent is " + agent + " with technology " +
-                // technology + " and plant " + plant
-                // + " in node " + node);
-
-                // if too much capacity of this technology in the pipeline (not
-                // limited to the 5 years)
                 double expectedInstalledCapacityOfTechnology = reps.powerPlantRepository
                         .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology,
                                 futureTimePoint);
@@ -276,33 +266,29 @@ public class SubmitTenderBidRole extends AbstractEnergyProducerRole<EnergyProduc
                             .get(segmentLoad.getSegment());
                     double hours = segmentLoad.getSegment().getLengthInHours();
 
-                    if (expectedMarginalCost <= expectedElectricityPrice) {
+                    runningHours = runningHours + hours;
+                    if (technology.isIntermittent()) {
 
-                        runningHours = runningHours + hours;
-                        if (technology.isIntermittent()) {
+                        expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
+                                * plant.getActualNominalCapacity()
+                                * reps.intermittentTechnologyNodeLoadFactorRepository
+                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
+                                        .getLoadFactorForSegment(segmentLoad.getSegment());
 
-                            expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
-                                    * plant.getActualNominalCapacity()
-                                    * reps.intermittentTechnologyNodeLoadFactorRepository
-                                            .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node,
-                                                    technology)
-                                            .getLoadFactorForSegment(segmentLoad.getSegment());
+                        totalAnnualExpectedGenerationOfPlant += hours * plant.getActualNominalCapacity()
+                                * reps.intermittentTechnologyNodeLoadFactorRepository
+                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
+                                        .getLoadFactorForSegment(segmentLoad.getSegment());
 
-                            totalAnnualExpectedGenerationOfPlant += hours * plant.getActualNominalCapacity()
-                                    * reps.intermittentTechnologyNodeLoadFactorRepository
-                                            .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node,
-                                                    technology)
-                                            .getLoadFactorForSegment(segmentLoad.getSegment());
+                    } else {
+                        expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours * plant
+                                .getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
 
-                        } else {
-                            expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours * plant
-                                    .getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
+                        totalAnnualExpectedGenerationOfPlant += hours * plant.getAvailableCapacity(futureTimePoint,
+                                segmentLoad.getSegment(), numberOfSegments);
 
-                            totalAnnualExpectedGenerationOfPlant += hours * plant.getAvailableCapacity(futureTimePoint,
-                                    segmentLoad.getSegment(), numberOfSegments);
-
-                        }
                     }
+
                 }
 
                 double fixedOMCost = calculateFixedOperatingCost(plant, getCurrentTick());

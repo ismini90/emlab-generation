@@ -21,7 +21,7 @@
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
-		p:feedInPremiumImplemented="false">
+		p:feedInPremiumImplemented="true">
 	</bean>
 
 
@@ -39,7 +39,7 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 	</bean>
 
 
-	<!-- Feed in Premium 
+	<!-- Feed in Premium -->
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
 p:supportSchemeDuration="15" 
@@ -152,7 +152,7 @@ p:degressionFactor="0.06">
 <property name="scheme" ref="renewableSupportScheme"></property>
 <property name="technology" ref = "biomassPGT" ></property>
 </bean>
--->
+
 
 
 
@@ -1758,5 +1758,4 @@ p:degressionFactor="0.06">
 
 
 </beans>
-
 
