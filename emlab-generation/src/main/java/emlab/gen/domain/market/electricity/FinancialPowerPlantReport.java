@@ -49,6 +49,10 @@ public class FinancialPowerPlantReport {
 
     double co2HedgingRevenue;
 
+    double tenderRevenue;
+
+    double feedInPremiumRevenue;
+
     double overallRevenue;
 
     double commodityCosts;
@@ -188,6 +192,22 @@ public class FinancialPowerPlantReport {
 
     public void setPowerPlantStatus(int powerPlantStatus) {
         this.powerPlantStatus = powerPlantStatus;
+    }
+
+    public double getTenderRevenue() {
+        return tenderRevenue;
+    }
+
+    public void setTenderRevenue(double tenderRevenue) {
+        this.tenderRevenue = tenderRevenue;
+    }
+
+    public double getFeedInPremiumRevenue() {
+        return feedInPremiumRevenue;
+    }
+
+    public void setFeedInPremiumRevenue(double feedInPremiumRevenue) {
+        this.feedInPremiumRevenue = feedInPremiumRevenue;
     }
 
 }

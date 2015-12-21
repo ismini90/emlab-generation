@@ -201,13 +201,24 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                             emAvgPrice = sumRevenueOfElectricity / totalHoursOfAnnualGeneration;
 
                             if (renewableSupportScheme.isAvgElectricityPriceBasedPremiumEnabled() == true) {
-                                supportPrice = (contract.getPricePerUnit() - emAvgPrice) * totalGenerationOfPlantInMwh;
-                                double supportPriceExact = contract.getPricePerUnit() * totalGenerationOfPlantInMwh
-                                        - sumEMR;
-                                logger.warn("supportPrice considering avg EM price" + supportPrice
-                                        + "support price exact" + supportPriceExact);
+                                if (renewableSupportScheme.isEmRevenuePaidExpost() == true) {
+                                    supportPrice = (contract.getPricePerUnit() - emAvgPrice)
+                                            * totalGenerationOfPlantInMwh;
+                                    double supportPriceExact = contract.getPricePerUnit() * totalGenerationOfPlantInMwh
+                                            - sumEMR;
+                                    logger.warn("supportPrice considering avg EM price" + supportPrice
+                                            + "support price exact" + supportPriceExact);
+                                } else {
+                                    supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh;
+                                }
+
                             } else {
-                                supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh - sumEMR;
+                                if (renewableSupportScheme.isEmRevenuePaidExpost() == true) {
+                                    supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh - sumEMR;
+                                } else {
+                                    supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh;
+                                }
+
                             }
 
                             // if (supportPrice < 0)

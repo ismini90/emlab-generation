@@ -443,8 +443,30 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 discountedOpRevenue = npv(discountedProjectOperatingRevenue, wacc);
                                 discountedOpCost = npv(discountedProjectOperatingCost, wacc);
 
-                                logger.warn("Plant eligible for Subsidy is " + plant + " it gets operatingProfit of "
-                                        + operatingProfit);
+                            } else {
+                                operatingRevenue = operatingRevenue + expectedBaseCost * plant.getAnnualFullLoadHours()
+                                        * plant.getActualNominalCapacity(); // check
+                                                                            // the
+                                                                            // working
+                                                                            // of
+                                                                            // biomass
+                                                                            // or
+                                                                            // biogas
+                                                                            // here
+                                // operatingRevenue and investment here depends
+                                // on marginalCost<marginalPrice.
+                                // should depend instead on marginalCost<
+                                // (marginalPrice+premium.)
+                                operatingCost = expectedMarginalCost * plant.getAnnualFullLoadHours()
+                                        * plant.getActualNominalCapacity() + fixedOMCost;
+                                discountedProjectOperatingRevenue = calculateSimplePowerPlantInvestmentCashFlow(
+                                        (int) scheme.getSupportSchemeDuration(), (int) plant.getActualLeadTime(), 0,
+                                        operatingRevenue);
+                                discountedProjectOperatingCost = calculateSimplePowerPlantInvestmentCashFlow(
+                                        technology.getDepreciationTime(), (int) plant.getActualLeadTime(), 0,
+                                        -operatingCost);
+                                discountedOpRevenue = npv(discountedProjectOperatingRevenue, wacc);
+                                discountedOpCost = npv(discountedProjectOperatingCost, wacc);
                             }
 
                         }

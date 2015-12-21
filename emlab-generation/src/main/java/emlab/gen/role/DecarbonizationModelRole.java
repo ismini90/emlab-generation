@@ -61,7 +61,7 @@ import emlab.gen.role.operating.PayCO2AuctionRole;
 import emlab.gen.role.operating.PayCO2TaxRole;
 import emlab.gen.role.operating.PayForLoansRole;
 import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
-import emlab.gen.role.pricewarranty.ComputePremiumRole;
+import emlab.gen.role.pricewarranty.ComputePremiumRoleExPost;
 import emlab.gen.role.pricewarranty.FeedInPremiumRole;
 import emlab.gen.role.tender.TenderMainRole;
 
@@ -72,7 +72,7 @@ import emlab.gen.role.tender.TenderMainRole;
  *
  */
 @ScriptComponent
-public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>implements Role<DecarbonizationModel> {
+public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel> implements Role<DecarbonizationModel> {
 
     @Autowired
     private PayCO2TaxRole payCO2TaxRole;
@@ -132,7 +132,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private FeedInPremiumRole feedInPremiumRole;
     @Autowired
-    private ComputePremiumRole computePremiumRole;
+    private ComputePremiumRoleExPost computePremiumRole;
 
     @Autowired
     Reps reps;
@@ -412,7 +412,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         Timer financialReports = new Timer();
         financialReports.start();
 
-        creatingFinancialReports.act(model);
+        // creatingFinancialReports.act(model);
 
         financialReports.stop();
         logger.warn("        took: {} seconds.", financialReports.seconds());
