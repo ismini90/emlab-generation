@@ -95,18 +95,19 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
     public void act(T agent) {
 
         long futureTimePoint = getCurrentTick() + agent.getInvestmentFutureTimeHorizon();
-        logger.warn(agent + " is looking at timepoint " + futureTimePoint);
+        // logger.warn(agent + " is looking at timepoint " + futureTimePoint);
 
         // ==== Expectations ===
 
         Map<Substance, Double> expectedFuelPrices = predictFuelPrices(agent, futureTimePoint);
-        logger.warn("expectedFuelPrices in Inv Alg" + expectedFuelPrices);
+        // logger.warn("expectedFuelPrices in Inv Alg" + expectedFuelPrices);
 
         // CO2
         Map<ElectricitySpotMarket, Double> expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(
                 futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick());
 
-        logger.warn("{} expects CO2 prices {}", agent.getName(), expectedCO2Price);
+        // logger.warn("{} expects CO2 prices {}", agent.getName(),
+        // expectedCO2Price);
 
         Map<ElectricitySpotMarket, Double> expectedCO2PriceOld = determineExpectedCO2PriceInclTax(futureTimePoint,
                 agent.getNumberOfYearsBacklookingForForecasting(), getCurrentTick());
@@ -272,13 +273,15 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                     double expectedMarginalCost = determineExpectedMarginalCost(plant, expectedFuelPrices,
                             expectedCO2Price.get(market));
-                    logger.warn("expected marginal cost of plant" + plant + "is " + expectedMarginalCost);
+                    // logger.warn("expected marginal cost of plant" + plant +
+                    // "is " + expectedMarginalCost);
                     double runningHours = 0d;
                     double totalFlh = 0d;
                     double flh = 0d;
                     double expectedGrossProfit = 0d;
                     double expectedAnnualVariableCost = 0d;
                     double expectedAnnualVariableRevenue = 0d;
+                    double expectedAnnualVariableRevenueByRenewableScheme = 0d;
                     double expectedGeneration = 0d;
                     double loadFactor = 0d;
                     long numberOfSegments = reps.segmentRepository.count();
@@ -292,7 +295,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     // the scheme must not be defined
                     Set<RenewableSupportFipScheme> schemeSet = reps.renewableSupportSchemeRepository
                             .findSchemesGivenZone(market.getZone());
-                    logger.warn("scheme Set is " + schemeSet);
+                    // logger.warn("scheme Set is " + schemeSet);
 
                     if ((schemeSet.size() > 1) && (!schemeSet.isEmpty())) {
                         for (RenewableSupportFipScheme i : schemeSet) {
@@ -317,7 +320,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             baseCostFip = reps.baseCostFipRepository.findOneBaseCostForTechnologyAndNodeAndTime(
                                     node.getName(), technology, futureTimePoint);
                             expectedBaseCost = baseCostFip.getCostPerMWh();
-                            logger.warn("expected base cost query test is " + expectedBaseCost);
+                            // logger.warn("expected base cost query test is " +
+                            // expectedBaseCost);
                         }
 
                         else
@@ -331,14 +335,20 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                         double expectedElectricityPrice = marketInformation.expectedElectricityPricesPerSegment
                                 .get(segmentLoad.getSegment());
-
                         double hours = segmentLoad.getSegment().getLengthInHours();
+                        if (technology.isIntermittent()) {
+                            loadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
+                                    .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
+                                    .getLoadFactorForSegment(segmentLoad.getSegment());
+                            expectedAnnualVariableRevenueByRenewableScheme += expectedElectricityPrice * hours
+                                    * plant.getActualNominalCapacity() * loadFactor;
+
+                        }
+
                         if (expectedMarginalCost <= expectedElectricityPrice) {
                             runningHours += hours;
                             if (technology.isIntermittent()) {
-                                loadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
-                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
-                                        .getLoadFactorForSegment(segmentLoad.getSegment());
+
                                 expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
                                         * plant.getActualNominalCapacity() * loadFactor;
                                 expectedAnnualVariableCost += expectedMarginalCost * hours
@@ -403,8 +413,10 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                         double operatingCost = expectedAnnualVariableCost + fixedOMCost;
                         double operatingRevenue = expectedAnnualVariableRevenue;
-                        double operatingProfit = operatingRevenue - operatingCost;
-                        double operatingProfitCheck = expectedGrossProfit - fixedOMCost;
+                        // double operatingProfit = operatingRevenue -
+                        // operatingCost;
+                        // double operatingProfitCheck = expectedGrossProfit -
+                        // fixedOMCost;
 
                         // Calculation of weighted average cost of capital,
                         // based on the companies debt-ratio
@@ -444,15 +456,15 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 discountedOpCost = npv(discountedProjectOperatingCost, wacc);
 
                             } else {
-                                operatingRevenue = operatingRevenue + expectedBaseCost * plant.getAnnualFullLoadHours()
-                                        * plant.getActualNominalCapacity(); // check
-                                                                            // the
-                                                                            // working
-                                                                            // of
-                                                                            // biomass
-                                                                            // or
-                                                                            // biogas
-                                                                            // here
+                                operatingRevenue = expectedAnnualVariableRevenueByRenewableScheme + expectedBaseCost
+                                        * plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity(); // check
+                                                                                                             // the
+                                                                                                             // working
+                                                                                                             // of
+                                                                                                             // biomass
+                                                                                                             // or
+                                                                                                             // biogas
+                                                                                                             // here
                                 // operatingRevenue and investment here depends
                                 // on marginalCost<marginalPrice.
                                 // should depend instead on marginalCost<
@@ -473,18 +485,21 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double projectValue = discountedOpRevenue + discountedCapitalCosts + discountedOpCost;
 
                         // *****FOR VERIFICATION
-                        logger.warn("operatingProfit =" + operatingProfit);
-                        logger.warn("operatingProfitCheck =" + operatingProfitCheck);
 
                         double projectCost = -discountedCapitalCosts - discountedOpCost;
-                        logger.warn("for plant:" + plant + "disCapitalCost in Inv Role is" + -discountedCapitalCosts
-                                + "total Generation is" + expectedGeneration + "flh is"
-                                + plant.getAnnualFullLoadHours());
-                        logger.warn("discountedOpCost =" + discountedOpCost);
-                        logger.warn("discountedRevenue =" + discountedOpRevenue);
-                        logger.warn("expectedBaseCost" + expectedBaseCost + "for plant" + plant + "in tick"
-                                + futureTimePoint);
-                        logger.warn("project value per MW is " + projectValue / plant.getActualNominalCapacity());
+                        // logger.warn("for plant:" + plant + "disCapitalCost in
+                        // Inv Role is" + -discountedCapitalCosts
+                        // + "total Generation is" + expectedGeneration + "flh
+                        // is"
+                        // + plant.getAnnualFullLoadHours());
+                        // logger.warn("discountedOpCost =" + discountedOpCost);
+                        // logger.warn("discountedRevenue =" +
+                        // discountedOpRevenue);
+                        // logger.warn("expectedBaseCost" + expectedBaseCost +
+                        // "for plant" + plant + "in tick"
+                        // + futureTimePoint);
+                        // logger.warn("project value per MW is " + projectValue
+                        // / plant.getActualNominalCapacity());
 
                         // *****END VERIFICATION
 
@@ -492,8 +507,10 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             highestValue = projectValue / plant.getActualNominalCapacity();
                             bestTechnology = plant.getTechnology();
                             bestNode = node;
-                            logger.warn("Plant " + plant + " is getting invested in at projectvalue per MW of "
-                                    + projectValue / plant.getActualNominalCapacity());
+                            // logger.warn("Plant " + plant + " is getting
+                            // invested in at projectvalue per MW of "
+                            // + projectValue /
+                            // plant.getActualNominalCapacity());
 
                         }
                     }

@@ -64,7 +64,8 @@ import emlab.gen.role.AbstractEnergyProducerRole;
  */
 
 @RoleComponent
-public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyProducer> implements Role<EnergyProducer> {
+public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyProducer>
+        implements Role<EnergyProducer> {
 
     @Transient
     @Autowired
@@ -111,12 +112,12 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 // ==== Expectations ===
 
                 Map<Substance, Double> expectedFuelPrices = predictFuelPrices(producer, futureTimePoint);
-                logger.warn("expected fuel prices" + expectedFuelPrices);
+                // logger.warn("expected fuel prices" + expectedFuelPrices);
 
                 // CO2
                 Map<ElectricitySpotMarket, Double> expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(
                         futureTimePoint, producer.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick());
-                logger.warn("expected CO2 price" + expectedCO2Price);
+                // logger.warn("expected CO2 price" + expectedCO2Price);
 
                 double annualMarginalCost = 0d;
                 double totalGenerationinMWh = 0d;
@@ -132,7 +133,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
                 double expectedMarginalCost = determineExpectedMarginalCost(plant, expectedFuelPrices,
                         expectedCO2Price.get(eMarket));
-                logger.warn("expected marginal cost in fip role for plant " + plant + "is " + expectedMarginalCost);
+                // logger.warn("expected marginal cost in fip role for plant " +
+                // plant + "is " + expectedMarginalCost);
 
                 totalGenerationinMWh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
                 annualMarginalCost = totalGenerationinMWh * expectedMarginalCost;
@@ -183,15 +185,19 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
                 // FOR VERIFICATION
                 double projectCost = discountedCapitalCosts + discountedOpCost;
-                logger.warn("discountedOpCost in FipRole is" + discountedOpCost + "total Generation is"
-                        + totalGenerationinMWh + "flh is" + plant.getAnnualFullLoadHours());
-                logger.warn("discountedCapCost in FipRole is " + discountedCapitalCosts);
+                // logger.warn("discountedOpCost in FipRole is" +
+                // discountedOpCost + "total Generation is"
+                // + totalGenerationinMWh + "flh is" +
+                // plant.getAnnualFullLoadHours());
+                // logger.warn("discountedCapCost in FipRole is " +
+                // discountedCapitalCosts);
 
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
                         / (totalGenerationinMWh * factorDiscountedGeneration);
-                logger.warn(
-                        "expectedBaseCost in fipRole for plant" + plant + "in tick" + futureTimePoint + "is " + lcoe);
+                // logger.warn(
+                // "expectedBaseCost in fipRole for plant" + plant + "in tick" +
+                // futureTimePoint + "is " + lcoe);
 
                 BaseCostFip baseCostFip = new BaseCostFip();
 
@@ -219,13 +225,13 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
         double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme);
         double degressionFactor = biasFactor.getDegressionFactor();
 
-        logger.warn("generationFromRenewables; " + generationFromRenewables);
-        logger.warn("renewableTargetInMwh; " + renewableTargetInMwh);
+        // logger.warn("generationFromRenewables; " + generationFromRenewables);
+        // logger.warn("renewableTargetInMwh; " + renewableTargetInMwh);
 
         if (generationFromRenewables >= renewableTargetInMwh) {
             double newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
             biasFactor.setFeedInPremiumBiasFactor(newBiasFactor);
-            logger.warn("DEGRESSING!!!");
+            // logger.warn("DEGRESSING!!!");
         }
         // if expected generation exceeds target, degress by a certain
         // percentage.
@@ -240,7 +246,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
         double targetFactor;
         Zone zone = scheme.getRegulator().getZone();
 
-        logger.warn("Calculate Renewable Target Role started of zone: " + zone);
+        // logger.warn("Calculate Renewable Target Role started of zone: " +
+        // zone);
 
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(zone);
 
@@ -271,7 +278,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
             // logger.warn("demand factor is: " + demandFactor);
 
         }
-        logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
+        // logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
         // renewable target for tender operation start year in MWh is
         double renewableTargetInMwh = targetFactor * totalExpectedConsumption;
 

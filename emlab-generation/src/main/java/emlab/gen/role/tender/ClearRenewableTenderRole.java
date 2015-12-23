@@ -46,7 +46,7 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
     @Transactional
     public void act(Regulator regulator) {
 
-        logger.warn("Clear Renewable Tender Role started for: " + regulator);
+        // logger.warn("Clear Renewable Tender Role started for: " + regulator);
 
         Zone zone = regulator.getZone();
         RenewableSupportSchemeTender scheme = reps.renewableSupportSchemeTenderRepository
@@ -102,12 +102,14 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
 
                 // it collects a bid partially if that bid fulfills the quota
                 // partially
-                else if (tenderQuota - (sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount()) < clearingEpsilon) {
+                else if (tenderQuota
+                        - (sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount()) < clearingEpsilon) {
                     acceptedSubsidyPrice = currentTenderBid.getPrice();
                     currentTenderBid.setStatus(Bid.PARTLY_ACCEPTED);
                     currentTenderBid.setAcceptedAmount((tenderQuota - sumOfTenderBidQuantityAccepted));
 
-                    // logger.warn("Tender Quota minus sumofTenderBidQAccepted: "
+                    // logger.warn("Tender Quota minus sumofTenderBidQAccepted:
+                    // "
                     // + (tenderQuota - sumOfTenderBidQuantityAccepted));
                     //
                     // logger.warn("PARTLYbidder; " +
@@ -156,8 +158,9 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
             tenderClearingPoint.setVolume(sumOfTenderBidQuantityAccepted);
             tenderClearingPoint.setTime(getCurrentTick());
             tenderClearingPoint.persist();
-            logger.warn("Tender CLEARED at price {} and volume " + tenderClearingPoint.getVolume(),
-                    tenderClearingPoint.getPrice());
+            // logger.warn("Tender CLEARED at price {} and volume " +
+            // tenderClearingPoint.getVolume(),
+            // tenderClearingPoint.getPrice());
 
         } else {
             TenderClearingPoint tenderClearingPoint = new TenderClearingPoint();
@@ -168,8 +171,9 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
             tenderClearingPoint.setRenewableSupportSchemeTender(scheme);
             tenderClearingPoint.setTime(getCurrentTick());
             tenderClearingPoint.persist();
-            logger.warn("Tender UNCLEARED at price {} and volume " + tenderClearingPoint.getVolume(),
-                    tenderClearingPoint.getPrice());
+            // logger.warn("Tender UNCLEARED at price {} and volume " +
+            // tenderClearingPoint.getVolume(),
+            // tenderClearingPoint.getPrice());
 
         }
 

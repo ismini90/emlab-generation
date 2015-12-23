@@ -73,7 +73,7 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
     @Override
     public void act(EnergyProducer agent) {
 
-        logger.warn("Submit Tender Bid Role started for: " + agent);
+        // logger.warn("Submit Tender Bid Role started for: " + agent);
 
         long futureTimePoint = getCurrentTick() + agent.getInvestmentFutureTimeHorizon();
         ElectricitySpotMarket market = agent.getInvestorMarket();
@@ -88,7 +88,7 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
 
         for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
 
-            logger.warn("eligible are: " + technology);
+            // logger.warn("eligible are: " + technology);
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
 
@@ -121,16 +121,18 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
 
             for (PowerGridNode node : possibleInstallationNodes) {
 
-                logger.warn("node: " + node);
+                // logger.warn("node: " + node);
 
                 PowerPlant plant = new PowerPlant();
                 plant.specifyNotPersist(getCurrentTick(), agent, node, technology);
 
                 noOfPlantsConsider++;
-                logger.warn("FOR no of plants considered " + noOfPlantsConsider);
+                // logger.warn("FOR no of plants considered " +
+                // noOfPlantsConsider);
 
-                logger.warn("SubmitBid 168 - Agent " + agent + " looking at technology at tick " + getCurrentTick()
-                        + " in tech " + technology);
+                // logger.warn("SubmitBid 168 - Agent " + agent + " looking at
+                // technology at tick " + getCurrentTick()
+                // + " in tech " + technology);
 
                 // logger.warn(" agent is " + agent + " with technology " +
                 // technology + " and plant " + plant
@@ -202,12 +204,12 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
                 // ==== Expectations ===
 
                 Map<Substance, Double> expectedFuelPrices = predictFuelPrices(agent, futureTimePoint);
-                logger.warn("expected fuel prices" + expectedFuelPrices);
+                // logger.warn("expected fuel prices" + expectedFuelPrices);
 
                 // CO2
                 Map<ElectricitySpotMarket, Double> expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(
                         futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick());
-                logger.warn("expected CO2 price" + expectedCO2Price);
+                // logger.warn("expected CO2 price" + expectedCO2Price);
 
                 Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
                 for (Substance fuel : technology.getFuels()) {
@@ -219,7 +221,8 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
 
                 double expectedMarginalCost = determineExpectedMarginalCost(plant, expectedFuelPrices,
                         expectedCO2Price.get(market));
-                logger.warn("expected marginal cost in fip role for plant " + plant + "is " + expectedMarginalCost);
+                // logger.warn("expected marginal cost in fip role for plant " +
+                // plant + "is " + expectedMarginalCost);
                 // insert here
 
                 double annualMarginalCost = 0d;
@@ -272,7 +275,8 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
                     for (long i = 1; i <= numberOfPlants; i++) {
 
                         noOfPlantsBid++;
-                        logger.warn("FOR pp - no of plants Bid; " + noOfPlantsBid);
+                        // logger.warn("FOR pp - no of plants Bid; " +
+                        // noOfPlantsBid);
 
                         long start = getCurrentTick() + plant.calculateActualLeadtime()
                                 + plant.calculateActualPermittime();
@@ -283,11 +287,15 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractEnergyProdu
                         bid.specifyAndPersist(totalGenerationinMWh, null, agent, zone, node, start, finish,
                                 bidPricePerMWh, technology, getCurrentTick(), Bid.SUBMITTED, scheme);
 
-                        logger.warn("SubmitBid 454 - Agent " + agent + " ,generation " + totalGenerationinMWh
-                                + " ,plant " + plant + " ,zone " + zone + " ,node " + node + " ,start " + start
-                                + " ,finish " + finish + " ,bid price " + bidPricePerMWh + " ,tech " + technology
-                                + " ,current tick " + getCurrentTick() + " ,status " + Bid.SUBMITTED + " ,scheme "
-                                + scheme);
+                        // logger.warn("SubmitBid 454 - Agent " + agent + "
+                        // ,generation " + totalGenerationinMWh
+                        // + " ,plant " + plant + " ,zone " + zone + " ,node " +
+                        // node + " ,start " + start
+                        // + " ,finish " + finish + " ,bid price " +
+                        // bidPricePerMWh + " ,tech " + technology
+                        // + " ,current tick " + getCurrentTick() + " ,status "
+                        // + Bid.SUBMITTED + " ,scheme "
+                        // + scheme);
 
                     } // end for loop for tender bids
 

@@ -70,7 +70,8 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
                     annualTenderRevenue, CashFlow.TENDER_SUBSIDY, getCurrentTick(), currentTenderBid.getPowerPlant());
 
         }
-        logger.warn("____PAYMENT ROLE____ annualTenderRevenue" + annualTenderRevenue);
+        // logger.warn("____PAYMENT ROLE____ annualTenderRevenue" +
+        // annualTenderRevenue);
 
     }
 

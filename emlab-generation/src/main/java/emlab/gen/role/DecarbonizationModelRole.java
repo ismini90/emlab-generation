@@ -61,6 +61,7 @@ import emlab.gen.role.operating.PayCO2AuctionRole;
 import emlab.gen.role.operating.PayCO2TaxRole;
 import emlab.gen.role.operating.PayForLoansRole;
 import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
+import emlab.gen.role.pricewarranty.ComputePremiumRoleExAnte;
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExPost;
 import emlab.gen.role.pricewarranty.FeedInPremiumRole;
 import emlab.gen.role.tender.TenderMainRole;
@@ -132,7 +133,9 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private FeedInPremiumRole feedInPremiumRole;
     @Autowired
-    private ComputePremiumRoleExPost computePremiumRole;
+    private ComputePremiumRoleExAnte computePremiumRoleExAnte;
+    @Autowired
+    private ComputePremiumRoleExPost computePremiumRoleExPost;
 
     @Autowired
     Reps reps;
@@ -401,7 +404,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         if (model.isFeedInPremiumImplemented()) {
             logger.warn(" 6a. Run Feed In Premium Scheme");
             for (RenewableSupportFipScheme scheme : reps.renewableSupportSchemeRepository.findAll()) {
-                computePremiumRole.act(scheme);
+                computePremiumRoleExPost.act(scheme);
                 feedInPremiumRole.act(scheme);
             }
             timerMarket.stop();
@@ -412,7 +415,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         Timer financialReports = new Timer();
         financialReports.start();
 
-        // creatingFinancialReports.act(model);
+        creatingFinancialReports.act(model);
 
         financialReports.stop();
         logger.warn("        took: {} seconds.", financialReports.seconds());

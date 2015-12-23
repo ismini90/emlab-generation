@@ -40,7 +40,7 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regulator>implements Role<Regulator> {
+public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regulator> implements Role<Regulator> {
 
     @Transient
     @Autowired
@@ -54,7 +54,8 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regu
     @Transactional
     public void act(Regulator regulator) {
 
-        logger.warn("Create Power Plants Of Accepted Tender Bids Role started for: " + regulator);
+        // logger.warn("Create Power Plants Of Accepted Tender Bids Role started
+        // for: " + regulator);
 
         Zone zone = regulator.getZone();
         RenewableSupportSchemeTender scheme = reps.renewableSupportSchemeTenderRepository
@@ -66,7 +67,7 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regu
 
         for (TenderBid currentTenderBid : acceptedTenderBidsByTime) {
 
-            logger.warn("current accepted bid: " + currentTenderBid);
+            // logger.warn("current accepted bid: " + currentTenderBid);
 
             // PowerPlant plant = currentTenderBid.getPowerPlant();
             PowerPlant plant = new PowerPlant();
@@ -96,9 +97,11 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regu
             // Create the loan
             plant.createOrUpdateLoan(loan);
 
-            logger.warn("CreatingPowerPlant 69 - Agent " + bidder + " at tick " + getCurrentTick() + " in tech "
-                    + currentTenderBid.getTechnology() + " with plant name " + plant.getName() + " in zone "
-                    + currentTenderBid.getZone());
+            // logger.warn("CreatingPowerPlant 69 - Agent " + bidder + " at tick
+            // " + getCurrentTick() + " in tech "
+            // + currentTenderBid.getTechnology() + " with plant name " +
+            // plant.getName() + " in zone "
+            // + currentTenderBid.getZone());
         }
         // Remove the non accepted bid power plants
 

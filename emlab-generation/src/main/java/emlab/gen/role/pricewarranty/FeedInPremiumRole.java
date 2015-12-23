@@ -93,7 +93,7 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     plantSet = reps.powerPlantRepository
                             .findPowerPlantsStartingOperationThisTickByPowerGridNodeAndTechnology(node,
                                     technology.getName(), getCurrentTick());
-                    logger.warn("FIP role, plantSet" + plantSet);
+                    // logger.warn("FIP role, plantSet" + plantSet);
                 } else {
                     plantSet = reps.powerPlantRepository.findOperationalPowerPlantsByPowerGridNodeAndTechnology(node,
                             technology, getCurrentTick());
@@ -112,11 +112,12 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     // finishedConstruction + "and current tick "
                     // + getCurrentTick());
 
-                    logger.warn("Inside contract creation loop");
+                    // logger.warn("Inside contract creation loop");
                     // create a query to get base cost.
                     BaseCostFip baseCost = reps.baseCostFipRepository
                             .findOneBaseCostForTechnologyAndNodeAndTime(node.getName(), technology, getCurrentTick());
-                    logger.warn("expected base cost query test FIP is " + baseCost);
+                    // logger.warn("expected base cost query test FIP is " +
+                    // baseCost);
                     if (baseCost != null) {
                         contract = new SupportPriceContract();
                         contract.setStart(getCurrentTick());
@@ -158,7 +159,8 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                         if (getCurrentTick() <= (contract.getStart()
                                 + renewableSupportScheme.getSupportSchemeDuration())
                                 && getCurrentTick() >= contract.getStart()) {
-                            logger.warn("Inside contract payment loop for plant " + plant);
+                            // logger.warn("Inside contract payment loop for
+                            // plant " + plant);
                             double sumEMR = 0d;
                             double emAvgPrice = 0d;
                             double electricityPrice = 0d;
@@ -224,10 +226,13 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                             // if (supportPrice < 0)
                             // supportPrice = 0;
                             // payment
-                            logger.warn("Base Cost " + contract.getPricePerUnit());
-                            logger.warn("Total Generation " + totalGenerationOfPlantInMwh);
-                            logger.warn("Revenue from EM " + sumEMR);
-                            logger.warn("_______PAYMENT__________Annual Subsidy " + supportPrice);
+                            // logger.warn("Base Cost " +
+                            // contract.getPricePerUnit());
+                            // logger.warn("Total Generation " +
+                            // totalGenerationOfPlantInMwh);
+                            // logger.warn("Revenue from EM " + sumEMR);
+                            // logger.warn("_______PAYMENT__________Annual
+                            // Subsidy " + supportPrice);
                             createCashFlow(regulator, plant, supportPrice);
 
                         }
