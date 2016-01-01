@@ -3,7 +3,7 @@ source("rConfig.R")
 source("batchRunAnalysis.R")
 
 #File and folder initiation
-nameFile <- "SingleTech"
+nameFile <- "SuperTechSpec"
 analysisFolder <- "~/Desktop/emlabGen/output/"
 analysisFolder <- paste(analysisFolder, nameFile, "/", sep="")
 analysisFolder

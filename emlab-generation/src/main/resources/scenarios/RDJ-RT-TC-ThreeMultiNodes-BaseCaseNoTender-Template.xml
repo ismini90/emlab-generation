@@ -20,8 +20,9 @@
 		p:co2TradingImplemented="false" p:realRenewableDataImplemented="true"
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03"
+		p:noPrivateIntermittentRESInvestment="false"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
-		p:renewableTenderSchemeImplemented="true">
+		p:renewableTenderSchemeImplemented="false">
 	</bean>
 
 
@@ -114,11 +115,11 @@
 	<!-- Demand growth -->
 	<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="demandNL-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="demandNL-#repetitionNumber" />
 
 	<bean id="demandGrowthTrendDE" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthDE.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="demandDE-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="demandDE-#repetitionNumber" />
 
 
 	<!-- Substances -->
@@ -959,21 +960,22 @@
 
 
 	<!-- Fuel Prices -->
+
 	<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/coalPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="coalPrice-1" />
+		p:delimiter="," p:variableName="coalPrice-#repetitionNumber" />
 	<bean id="gasPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/gasPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="gasPrice-1" />
+		p:delimiter="," p:variableName="gasPrice-#repetitionNumber" />
 	<bean id="biomassPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/biomassPrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="biomassPrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="biomassPrice-#repetitionNumber" />
 	<bean id="uraniumPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/uraniumPrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="uraniumPrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="uraniumPrice-#repetitionNumber" />
 	<bean id="lignitePrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/lignitePrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="lignitePrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="lignitePrice-#repetitionNumber" />
 
 	<!-- Agents -->
 	<bean id="coalSupplier" class="emlab.gen.domain.agent.CommoditySupplier">
@@ -1125,7 +1127,7 @@
 		class="emlab.gen.role.investment.InvestInPowerGenerationTechnologiesStandard" />
 
 
-	<!-- Initial portfolios You still have to check the initial fractions -->
+	<!-- Initial portfolios -->
 
 	<bean id="powerPlantManufacturer" class="emlab.gen.domain.agent.PowerPlantManufacturer"
 		p:name="Power Plant Manufacturer" />
@@ -1292,7 +1294,6 @@
 			</list>
 		</property>
 	</bean>
-
 
 
 	<!-- CO2 Tax -->

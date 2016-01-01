@@ -22,6 +22,7 @@ def check_that_dict_has_equal_length(resultDict):
 
 def read_query_of_runid(path, runName, runId, queryName, resultDict):
     filename = runId + "-" + queryName
+    print(queryName)
     filepath = path + runName + "/" + filename
     json_data = open(filepath, 'r')
     resultList = []
@@ -235,7 +236,7 @@ def write_csv_for_run_name(path, runName, ignoredQueries):
     for runId in runIds:
         resultDict = read_runId_to_dictionary(path, runName,
         runId, ignoredQueries)
-        print 
+        print
 
 
 def write_first_runid_dictionary_to_csv(path, runName, runId,

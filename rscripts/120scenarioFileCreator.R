@@ -4,6 +4,7 @@
 # that need to be replaced with #
 xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/FipExAnteTemplate.xml"
 filestump<-'FipExAnte-'
+filestump<-'TechSpecFullTwoCountriesInfCap-'
 # Step 2 building the scenarios: make separate data vectors
 noOfRepetitions = 120 
 for(runID in seq(1:noOfRepetitions))

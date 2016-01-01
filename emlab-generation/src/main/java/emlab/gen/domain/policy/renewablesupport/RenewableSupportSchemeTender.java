@@ -40,6 +40,26 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
     @RelatedTo(type = "TECHNOLOGIES_ELIGIBLE_ARE", elementClass = PowerGeneratingTechnology.class, direction = Direction.OUTGOING)
     private Set<PowerGeneratingTechnology> powerGeneratingTechnologiesEligible;
 
+    private double annualRenewableTargetInMwh;
+
+    public double getAnnualRenewableTargetInMwh() {
+        return annualRenewableTargetInMwh;
+    }
+
+    public void setAnnualRenewableTargetInMwh(double annualRenewableTargetInMwh) {
+        this.annualRenewableTargetInMwh = annualRenewableTargetInMwh;
+    }
+
+    private PowerGeneratingTechnology currentTechnologyUnderConsideration;
+
+    public PowerGeneratingTechnology getCurrentTechnologyUnderConsideration() {
+        return currentTechnologyUnderConsideration;
+    }
+
+    public void setCurrentTechnologyUnderConsideration(PowerGeneratingTechnology currentTechnologyUnderConsideration) {
+        this.currentTechnologyUnderConsideration = currentTechnologyUnderConsideration;
+    }
+
     private boolean technologySpecificityEnabled;
 
     private boolean jointTargetImplemented;
@@ -63,7 +83,15 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
 
     // private long time;
     //
-    // private double totalExpectedConsumption;
+    private double annualExpectedConsumption;
+
+    public double getAnnualExpectedConsumption() {
+        return annualExpectedConsumption;
+    }
+
+    public void setAnnualExpectedConsumption(double annualExpectedConsumption) {
+        this.annualExpectedConsumption = annualExpectedConsumption;
+    }
 
     public boolean isExpostRevenueCalculation() {
         return expostRevenueCalculation;

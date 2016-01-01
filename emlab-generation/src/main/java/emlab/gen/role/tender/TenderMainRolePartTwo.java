@@ -32,8 +32,8 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender>
-        implements Role<RenewableSupportSchemeTender> {
+public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTender> implements
+        Role<RenewableSupportSchemeTender> {
 
     /*
      * (non-Javadoc)
@@ -43,50 +43,49 @@ public class TenderMainRole extends AbstractRole<RenewableSupportSchemeTender>
     @Autowired
     Reps reps;
 
-    @Autowired
-    CalculateRenewableTargetForTenderRole calculateRenewableTargetForTenderRole;
+    // @Autowired
+    // CalculateRenewableTargetForTenderRole
+    // calculateRenewableTargetForTenderRole;
+    //
+    // @Autowired
+    // SubmitTenderBidRole submitTenderBidRole;
 
     @Autowired
-    SubmitTenderBidRole submitTenderBidRole;
+    FilterTenderBidsWithSufficientCashForDownpaymentRole filterTenderBidsWithSufficientCashflowRole;
 
-    @Autowired
-    SubmitTenderBidRoleExpostRevenuePayment submitTenderBidRoleExpostRevenuePayment;
-
-    @Autowired
-    ClearRenewableTenderRole clearRenewableTenderRole;
-
-    @Autowired
-    CreatePowerPlantsOfAcceptedTenderBidsRole createPowerPlantsOfAcceptedTenderBidsRole;
-
-    @Autowired
-    OrganizeRenewableTenderPaymentsRole organizeRenewableTenderPaymentsRole;
+    // @Autowired
+    // ClearRenewableTenderRole clearRenewableTenderRole;
+    //
+    // @Autowired
+    // CreatePowerPlantsOfAcceptedTenderBidsRole
+    // createPowerPlantsOfAcceptedTenderBidsRole;
+    //
+    // @Autowired
+    // OrganizeRenewableTenderPaymentsRole organizeRenewableTenderPaymentsRole;
 
     @Override
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
 
-        calculateRenewableTargetForTenderRole.act(scheme);
+        // calculateRenewableTargetForTenderRole.act(scheme);
+        //
+        // submitTenderBidRole.act(scheme);
 
+        // this role needs to be adjusted for the techspec feature
         Regulator regulator = scheme.getRegulator();
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
 
-        double tenderTarget = regulator.getAnnualRenewableTargetInMwh();
-        if (tenderTarget > 0) {
+        for (EnergyProducer producer : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
+            filterTenderBidsWithSufficientCashflowRole.act(producer);
 
-            for (EnergyProducer producer : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
-                submitTenderBidRole.act(producer);
-
-                if (scheme.isExpostRevenueCalculation() == true) {
-                    submitTenderBidRoleExpostRevenuePayment.act(producer);
-                }
-
-            }
         }
 
-        clearRenewableTenderRole.act(regulator);
+        // clearRenewableTenderRole.act(scheme);
+        //
+        // createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
+        //
+        // organizeRenewableTenderPaymentsRole.act(scheme);
 
-        createPowerPlantsOfAcceptedTenderBidsRole.act(regulator);
-
-        organizeRenewableTenderPaymentsRole.act(scheme);
     }
+
 }

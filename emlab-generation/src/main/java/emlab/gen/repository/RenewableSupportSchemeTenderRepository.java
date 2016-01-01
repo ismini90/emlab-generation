@@ -39,6 +39,13 @@ public interface RenewableSupportSchemeTenderRepository extends GraphRepository<
     @Query(value = "g.v(agent).out('INVESTOR_MARKET').out('ZONE').in('OF_ZONE').in('WITH_REGULATOR').supportSchemeDuration", type = QueryType.Gremlin)
     public long determineSupportSchemeDurationForEnergyProducer(@Param("agent") EnergyProducer agent);
 
+    @Query(value = "g.v(agent).out('INVESTOR_MARKET').out('ZONE').in('OF_ZONE').in('WITH_REGULATOR')._()", type = QueryType.Gremlin)
+    public Iterable<RenewableSupportSchemeTender> determineSpecificSupportSchemeForEnergyProducer(
+            @Param("agent") EnergyProducer agent);
+
+    @Query(value = "g.v(zone).filter{it.name == zone}.in('OF_ZONE').in('WITH_REGULATOR').out('TECHNOLOGIES_ELIGIBLE_ARE')", type = QueryType.Gremlin)
+    public Iterable<RenewableSupportSchemeTender> findAllSpecificSupportSchemesByZone(@Param("zone") Zone zone);
+
     @Query(value = "g.v(zone).in('OF_ZONE').in('WITH_REGULATOR')", type = QueryType.Gremlin)
     public RenewableSupportSchemeTender determineSupportSchemeForZone(@Param("zone") Zone zone);
 

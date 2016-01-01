@@ -22,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import agentspring.role.AbstractRole;
 import agentspring.role.Role;
 import agentspring.role.RoleComponent;
-import emlab.gen.domain.agent.Regulator;
-import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.Bid;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
@@ -34,8 +32,8 @@ import emlab.gen.repository.Reps;
  * @author rjjdejeu
  */
 @RoleComponent
-public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements Role<Regulator> {
-
+public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
     @Autowired
     Reps reps;
 
@@ -44,21 +42,23 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
 
     @Override
     @Transactional
-    public void act(Regulator regulator) {
+    public void act(RenewableSupportSchemeTender scheme) {
 
-        // logger.warn("Clear Renewable Tender Role started for: " + regulator);
+        logger.warn("Clear Renewable Tender Role started for: " + scheme);
 
-        Zone zone = regulator.getZone();
-        RenewableSupportSchemeTender scheme = reps.renewableSupportSchemeTenderRepository
-                .determineSupportSchemeForZone(zone);
+        // Zone zone = regulator.getZone();
+        // RenewableSupportSchemeTender scheme =
+        // reps.renewableSupportSchemeTenderRepository
+        // .determineSupportSchemeForZone(zone);
 
         // logger.warn("scheme is: " + scheme);
 
         // Initialize a sorted list for tender bids
-        Iterable<TenderBid> sortedTenderBidsbyPriceAndZone = null;
-        sortedTenderBidsbyPriceAndZone = reps.tenderBidRepository.findAllSortedTenderBidsbyTime(getCurrentTick(), zone);
+        Iterable<TenderBid> sortedTenderBidsbyPriceAndScheme = null;
+        sortedTenderBidsbyPriceAndScheme = reps.tenderBidRepository
+                .findAllSubmittedSortedTenderBidsbyTime(getCurrentTick(), scheme);
 
-        double tenderQuota = regulator.getAnnualRenewableTargetInMwh();
+        double tenderQuota = scheme.getAnnualRenewableTargetInMwh();
         // logger.warn("TenderQuota; " + tenderQuota);
         double sumOfTenderBidQuantityAccepted = 0d;
         double acceptedSubsidyPrice = 0d;
@@ -75,7 +75,9 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
 
         // Goes through the list of the bids that are sorted on ascending order
         // by price
-        for (TenderBid currentTenderBid : sortedTenderBidsbyPriceAndZone) {
+        for (TenderBid currentTenderBid : sortedTenderBidsbyPriceAndScheme) {
+
+            // logger.warn("current Tender bid; " + currentTenderBid);
 
             // if the tender is not cleared yet, it collects complete bids
             if (isTheTenderCleared == false) {
@@ -104,30 +106,35 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
                 // partially
                 else if (tenderQuota
                         - (sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount()) < clearingEpsilon) {
-                    acceptedSubsidyPrice = currentTenderBid.getPrice();
-                    currentTenderBid.setStatus(Bid.PARTLY_ACCEPTED);
-                    currentTenderBid.setAcceptedAmount((tenderQuota - sumOfTenderBidQuantityAccepted));
-
-                    // logger.warn("Tender Quota minus sumofTenderBidQAccepted:
-                    // "
-                    // + (tenderQuota - sumOfTenderBidQuantityAccepted));
+                    // acceptedSubsidyPrice = currentTenderBid.getPrice();
+                    // currentTenderBid.setStatus(Bid.PARTLY_ACCEPTED);
+                    // currentTenderBid.setAcceptedAmount((tenderQuota -
+                    // sumOfTenderBidQuantityAccepted));
                     //
-                    // logger.warn("PARTLYbidder; " +
-                    // currentTenderBid.getBidder());
-                    // logger.warn("PARTLYbidAmount; " +
-                    // currentTenderBid.getAmount());
-                    // logger.warn("PARTLYacceptedSubsidyPrice; " +
-                    // acceptedSubsidyPrice);
-                    // logger.warn("PARTLYTechnology; " +
-                    // currentTenderBid.getTechnology());
-                    // logger.warn("PARTLYStatus; " +
-                    // currentTenderBid.getStatus());
-
-                    sumOfTenderBidQuantityAccepted = sumOfTenderBidQuantityAccepted
-                            + currentTenderBid.getAcceptedAmount();
+                    // //
+                    // "
+                    // // + (tenderQuota - sumOfTenderBidQuantityAccepted));
+                    // //
+                    // // logger.warn("PARTLYbidder; " +
+                    // // currentTenderBid.getBidder());
+                    // // logger.warn("PARTLYbidAmount; " +
+                    // // currentTenderBid.getAmount());
+                    // // logger.warn("PARTLYacceptedSubsidyPrice; " +
+                    // // acceptedSubsidyPrice);
+                    // // logger.warn("PARTLYTechnology; " +
+                    // // currentTenderBid.getTechnology());
+                    // // logger.warn("PARTLYStatus; " +
+                    // // currentTenderBid.getStatus());
+                    //
+                    // sumOfTenderBidQuantityAccepted =
+                    // sumOfTenderBidQuantityAccepted
+                    // + currentTenderBid.getAcceptedAmount();
 
                     // logger.warn("PARTLYsumOfTenderBidQuantityAccepted; " +
                     // sumOfTenderBidQuantityAccepted);
+
+                    currentTenderBid.setStatus(Bid.FAILED);
+                    currentTenderBid.setAcceptedAmount(0);
 
                     isTheTenderCleared = true;
 
@@ -152,7 +159,6 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
 
         if (isTheTenderCleared == true) {
             TenderClearingPoint tenderClearingPoint = new TenderClearingPoint();
-            // logger.warn("Tender CLEARED at price: " + acceptedSubsidyPrice);
             tenderClearingPoint.setPrice(acceptedSubsidyPrice);
             tenderClearingPoint.setRenewableSupportSchemeTender(scheme);
             tenderClearingPoint.setVolume(sumOfTenderBidQuantityAccepted);
@@ -164,8 +170,6 @@ public class ClearRenewableTenderRole extends AbstractRole<Regulator> implements
 
         } else {
             TenderClearingPoint tenderClearingPoint = new TenderClearingPoint();
-            // logger.warn("MARKET UNCLEARED at price: " +
-            // acceptedSubsidyPrice);
             tenderClearingPoint.setPrice(acceptedSubsidyPrice);
             tenderClearingPoint.setVolume(sumOfTenderBidQuantityAccepted);
             tenderClearingPoint.setRenewableSupportSchemeTender(scheme);

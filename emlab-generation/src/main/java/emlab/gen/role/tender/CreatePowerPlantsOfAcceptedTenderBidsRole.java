@@ -26,10 +26,8 @@ import agentspring.role.RoleComponent;
 import emlab.gen.domain.agent.BigBank;
 import emlab.gen.domain.agent.EnergyProducer;
 import emlab.gen.domain.agent.PowerPlantManufacturer;
-import emlab.gen.domain.agent.Regulator;
 import emlab.gen.domain.contract.CashFlow;
 import emlab.gen.domain.contract.Loan;
-import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
 import emlab.gen.domain.technology.PowerPlant;
@@ -40,8 +38,8 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regulator> implements Role<Regulator> {
-
+public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
     @Transient
     @Autowired
     Reps reps;
@@ -52,14 +50,15 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regu
 
     @Override
     @Transactional
-    public void act(Regulator regulator) {
+    public void act(RenewableSupportSchemeTender scheme) {
 
-        // logger.warn("Create Power Plants Of Accepted Tender Bids Role started
+        logger.warn("Create Power Plants Of Accepted Tender Bids Role started for: " + scheme);
         // for: " + regulator);
 
-        Zone zone = regulator.getZone();
-        RenewableSupportSchemeTender scheme = reps.renewableSupportSchemeTenderRepository
-                .determineSupportSchemeForZone(zone);
+        // Zone zone = regulator.getZone();
+        // RenewableSupportSchemeTender scheme =
+        // reps.renewableSupportSchemeTenderRepository
+        // .determineSupportSchemeForZone(zone);
 
         // Initialize the accepted bids
         Iterable<TenderBid> acceptedTenderBidsByTime = null;
@@ -97,36 +96,11 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Regu
             // Create the loan
             plant.createOrUpdateLoan(loan);
 
-            // logger.warn("CreatingPowerPlant 69 - Agent " + bidder + " at tick
-            // " + getCurrentTick() + " in tech "
-            // + currentTenderBid.getTechnology() + " with plant name " +
-            // plant.getName() + " in zone "
-            // + currentTenderBid.getZone());
         }
-        // Remove the non accepted bid power plants
 
-        /*
-         * Iterable<TenderBid> sortedTenderBidsbyPriceAndZone = null;
-         * sortedTenderBidsbyPriceAndZone =
-         * reps.tenderBidRepository.findAllSortedTenderBidsbyTime(getCurrentTick
-         * (), zone); for (TenderBid currentBid :
-         * sortedTenderBidsbyPriceAndZone) { if (currentBid.getStatus() ==
-         * Bid.FAILED) {
-         * currentBid.getPowerPlant().dismantlePowerPlant(getCurrentTick());
-         * 
-         * }
-         * 
-         * }
-         */
-        // Remove the dummy power plant
-        // for (PowerPlant plant : reps.powerPlantRepository.findAll()) {
-        // if (plant.isRenewableTenderDummyPowerPlant() == true) {
-        // plant.dismantlePowerPlant(getCurrentTick());
-        //
-        // }
-        // }
     }
 
+    @Transactional
     private void createSpreadOutDownPayments(EnergyProducer agent, PowerPlantManufacturer manufacturer,
             double totalDownPayment, PowerPlant plant) {
         int buildingTime = (int) plant.getActualLeadTime();

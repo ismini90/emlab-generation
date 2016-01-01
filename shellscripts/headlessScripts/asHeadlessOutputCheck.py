@@ -284,14 +284,14 @@ def write_following_runids_to_csv(path, runName, runId, resultDict, noOfTicks):
             singleTickDict.update({"runId": runId})
             csvwriter.writerow(singleTickDict)
             i = i + 1
-            
+
 def file_len(fname):
     with open(fname) as f:
         for i, l in enumerate(f):
             pass
     return i + 1
 
-#Checks 1. Which RunIds are missing due to a missing log file. 
+#Checks 1. Which RunIds are missing due to a missing log file.
 #Checks 2. Which RunIds have missing queries
 #Checks 3. Which Queries are missing in the RunIds that have missing queries
 def checkOutputFolderForIncompleteRuns(path, runName, noOfRuns, expectedNoOfTicks, ignoreRunIdsWithUnexpectedTicks):
@@ -299,11 +299,12 @@ def checkOutputFolderForIncompleteRuns(path, runName, noOfRuns, expectedNoOfTick
     ignoredRunIds=set()
     runIdsWithUnexpectedNoOfTicks=set()
     missingRunIdsBasedOnLog=set()
-    runIdDict = {} 
+    runIdDict = {}
     maxNoOfQueries = 0
+    noOfRuns = int(noOfRuns)
     for i in range(1,noOfRuns):
         runIdStr = runName + "-" + `i`
-        #Checks 1. Which RunIds are missing due to a missing log file. 
+        #Checks 1. Which RunIds are missing due to a missing log file.
         doesLogExist = os.path.isfile(path + runName + "/" + runIdStr + ".log")
         queries = glob.glob(path + runName + "/" + runIdStr + "-*")
         noOfQueries = len(queries)
@@ -384,7 +385,7 @@ def main(outputPath, runName, noOfRuns, noOfTicks, ignoreRunIdsWithUnexpectedTic
     if len(ignoredRunIds) > 0:
         if ignoreRunIdsWithUnexpectedTicks:
             print("WARNING, ignored runIds due to missing queries and unexpected tick length: " + `ignoredRunIds`)
-        else: 
+        else:
             print("WARNING, ignored runIds due to missing queries: " + `ignoredRunIds`)
     if len(ignoredQueries) > 0:
         print("WARNING, ignored queries due to missing ticks: " + `ignoredQueries`)

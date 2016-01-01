@@ -30,9 +30,20 @@ import emlab.gen.domain.policy.renewablesupport.TenderBid;
  */
 public interface TenderBidRepository extends GraphRepository<TenderBid> {
 
+    // This sorts the submitted tender bids by price and investor
+    @Query(value = "g.v(zone).out('ZONE').filter{it.investor == bidder}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
+    public Iterable<TenderBid> findAllSortedTenderBidsbyTimeAndInvestor(@Param("tick") long time,
+            @Param("bidder") String agentName, @Param("zone") Zone zone);
+
+    // This sorts the submitted tender bids by price and investor
+    @Query(value = "g.v(scheme).in('TENDERBID_SUPPORTSCHEME').filter{it.investor == bidder}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
+    public Iterable<TenderBid> findAllSortedTenderBidsbyTimeAndInvestor(@Param("tick") long time,
+            @Param("bidder") String agentName, @Param("scheme") RenewableSupportSchemeTender scheme);
+
     // This sorts the submitted tender bids by price
-    @Query(value = "g.v(zone).out('ZONE').filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
-    public Iterable<TenderBid> findAllSortedTenderBidsbyTime(@Param("tick") long time, @Param("zone") Zone zone);
+    @Query(value = "g.v(scheme).in('TENDERBID_SUPPORTSCHEME').filter{it.status == 1}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
+    public Iterable<TenderBid> findAllSubmittedSortedTenderBidsbyTime(@Param("tick") long time,
+            @Param("scheme") RenewableSupportSchemeTender scheme);
 
     // This returns the (partly) accepted bids for the current tick, needed to
     // create the corresponding power plant

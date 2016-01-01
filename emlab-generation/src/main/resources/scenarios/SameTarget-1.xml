@@ -20,6 +20,7 @@
 		p:co2TradingImplemented="false" p:realRenewableDataImplemented="true"
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03"
+		p:noPrivateIntermittentRESInvestment="false"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
 		p:renewableTenderSchemeImplemented="true">
 	</bean>
@@ -108,7 +109,7 @@
 
 	<bean id="de_nreap" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/policyGoalNREAP_NL_DE_2050.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="de_target" />
+		p:delimiter="," p:variableName="nl_target" />
 
 
 	<!-- Demand growth -->
@@ -959,6 +960,7 @@
 
 
 	<!-- Fuel Prices -->
+
 	<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/coalPrice.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="coalPrice-1" />
@@ -1125,7 +1127,7 @@
 		class="emlab.gen.role.investment.InvestInPowerGenerationTechnologiesStandard" />
 
 
-	<!-- Initial portfolios You still have to check the initial fractions -->
+	<!-- Initial portfolios -->
 
 	<bean id="powerPlantManufacturer" class="emlab.gen.domain.agent.PowerPlantManufacturer"
 		p:name="Power Plant Manufacturer" />
@@ -1292,7 +1294,6 @@
 			</list>
 		</property>
 	</bean>
-
 
 
 	<!-- CO2 Tax -->

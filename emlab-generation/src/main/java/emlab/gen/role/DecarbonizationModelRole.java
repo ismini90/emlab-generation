@@ -61,10 +61,13 @@ import emlab.gen.role.operating.PayCO2AuctionRole;
 import emlab.gen.role.operating.PayCO2TaxRole;
 import emlab.gen.role.operating.PayForLoansRole;
 import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
+import emlab.gen.role.tender.TenderMainRolePartOne;
+import emlab.gen.role.tender.TenderMainRolePartThree;
+import emlab.gen.role.tender.TenderMainRolePartTwo;
+
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExAnte;
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExPost;
 import emlab.gen.role.pricewarranty.FeedInPremiumRole;
-import emlab.gen.role.tender.TenderMainRole;
 
 /**
  * Main model role.
@@ -80,7 +83,11 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private PayCO2AuctionRole payCO2AuctionRole;
     @Autowired
-    private TenderMainRole tenderMainRole;
+    private TenderMainRolePartOne tenderMainRolePartOne;
+    @Autowired
+    private TenderMainRolePartTwo tenderMainRolePartTwo;
+    @Autowired
+    private TenderMainRolePartThree tenderMainRolePartThree;
     @Autowired
     private GenericInvestmentRole<EnergyProducer> genericInvestmentRole;
     @Autowired
@@ -386,13 +393,39 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
 
         if (model.isRenewableTenderSchemeImplemented()) {
 
-            logger.warn(" 6.a Running Renewable Tender Scheme");
+            logger.warn(" 6.a1 Running Renewable Tender Scheme Part One");
 
             timerMarket.reset();
             timerMarket.start();
 
             for (RenewableSupportSchemeTender scheme : reps.renewableSupportSchemeTenderRepository.findAll()) {
-                tenderMainRole.act(scheme);
+                tenderMainRolePartOne.act(scheme);
+
+                timerMarket.stop();
+                logger.warn("        took: {} seconds.", timerMarket.seconds());
+
+            }
+
+            logger.warn(" 6.a2 Running Renewable Tender Scheme Part Two");
+
+            timerMarket.reset();
+            timerMarket.start();
+
+            for (RenewableSupportSchemeTender scheme : reps.renewableSupportSchemeTenderRepository.findAll()) {
+                tenderMainRolePartTwo.act(scheme);
+
+                timerMarket.stop();
+                logger.warn("        took: {} seconds.", timerMarket.seconds());
+
+            }
+
+            logger.warn(" 6.a3 Running Renewable Tender Scheme Part Three");
+
+            timerMarket.reset();
+            timerMarket.start();
+
+            for (RenewableSupportSchemeTender scheme : reps.renewableSupportSchemeTenderRepository.findAll()) {
+                tenderMainRolePartThree.act(scheme);
 
                 timerMarket.stop();
                 logger.warn("        took: {} seconds.", timerMarket.seconds());

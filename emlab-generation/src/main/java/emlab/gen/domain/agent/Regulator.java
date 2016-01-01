@@ -68,15 +68,17 @@ public class Regulator extends DecarbonizationAgent implements Agent {
     private double feedInPremiumFactor;
 
     // Tender parameters
-    private double annualRenewableTargetInMwh;
-
-    public double getAnnualRenewableTargetInMwh() {
-        return annualRenewableTargetInMwh;
-    }
-
-    public void setAnnualRenewableTargetInMwh(double annualRenewableTargetInMwh) {
-        this.annualRenewableTargetInMwh = annualRenewableTargetInMwh;
-    }
+    // moved to RenewableSupportSchemeTender
+    // private double annualRenewableTargetInMwh;
+    //
+    // public double getAnnualRenewableTargetInMwh() {
+    // return annualRenewableTargetInMwh;
+    // }
+    //
+    // public void setAnnualRenewableTargetInMwh(double
+    // annualRenewableTargetInMwh) {
+    // this.annualRenewableTargetInMwh = annualRenewableTargetInMwh;
+    // }
 
     // private double annualTotalExpectedRenewableGeneration;
     //

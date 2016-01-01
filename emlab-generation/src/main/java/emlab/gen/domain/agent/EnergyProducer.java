@@ -22,6 +22,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import agentspring.agent.Agent;
 import agentspring.simulation.SimulationParameter;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
+import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.role.investment.GenericInvestmentRole;
 
 @NodeEntity
@@ -32,6 +33,17 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
 
     @RelatedTo(type = "INVESTOR_MARKET", elementClass = ElectricitySpotMarket.class, direction = Direction.OUTGOING)
     private ElectricitySpotMarket investorMarket;
+
+    @RelatedTo(type = "INVESTOR_SCHEME", elementClass = RenewableSupportSchemeTender.class, direction = Direction.OUTGOING)
+    private RenewableSupportSchemeTender scheme;
+
+    public RenewableSupportSchemeTender getScheme() {
+        return scheme;
+    }
+
+    public void setScheme(RenewableSupportSchemeTender scheme) {
+        this.scheme = scheme;
+    }
 
     @SimulationParameter(label = "Price Mark-Up for spotmarket (as multiplier)", from = 1, to = 2)
     private double priceMarkUp;
@@ -125,8 +137,7 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
         return dismantlingProlongingYearsAfterTechnicalLifetime;
     }
 
-    public void setDismantlingProlongingYearsAfterTechnicalLifetime(
-            int dismantlingProlongingYearsAfterTechnicalLifetime) {
+    public void setDismantlingProlongingYearsAfterTechnicalLifetime(int dismantlingProlongingYearsAfterTechnicalLifetime) {
         this.dismantlingProlongingYearsAfterTechnicalLifetime = dismantlingProlongingYearsAfterTechnicalLifetime;
     }
 

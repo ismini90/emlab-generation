@@ -53,6 +53,26 @@ public class TenderBid extends Bid {
 
     private long finish;
 
+    private String investor;
+
+    public String getInvestor() {
+        return investor;
+    }
+
+    public void setInvestor(String investor) {
+        this.investor = investor;
+    }
+
+    private double cashNeededForPlantDownpayments;
+
+    public double getCashNeededForPlantDownpayments() {
+        return cashNeededForPlantDownpayments;
+    }
+
+    public void setCashNeededForPlantDownpayments(double cashNeededForPlantDownpayments) {
+        this.cashNeededForPlantDownpayments = cashNeededForPlantDownpayments;
+    }
+
     public long getStart() {
         return start;
     }
@@ -111,7 +131,8 @@ public class TenderBid extends Bid {
 
     public void specifyNotPersist(double amount, PowerPlant plant, EnergyProducer agent, Zone zone, PowerGridNode node,
             long startTime, long finishTime, double bidPricePerMWh, PowerGeneratingTechnology technology,
-            long currentTime, int status, RenewableSupportSchemeTender scheme) {
+            long currentTime, int status, RenewableSupportSchemeTender scheme, double cashNeededForPlantDownpayments,
+            String investor) {
         this.setAmount(amount);
         this.setPowerPlant(plant);
         this.setBidder(agent);
@@ -124,6 +145,8 @@ public class TenderBid extends Bid {
         this.setTime(currentTime);
         this.setStatus(status);
         this.setRenewableSupportSchemeTender(scheme);
+        this.setCashNeededForPlantDownpayments(cashNeededForPlantDownpayments);
+        this.setInvestor(investor);
 
     }
 
@@ -135,15 +158,17 @@ public class TenderBid extends Bid {
     @Transactional
     public void specifyAndPersist(double amount, PowerPlant plant, EnergyProducer agent, Zone zone, PowerGridNode node,
             long startTime, long finishTime, double bidPricePerMWh, PowerGeneratingTechnology technology,
-            long currentTime, int status, RenewableSupportSchemeTender scheme) {
+            long currentTime, int status, RenewableSupportSchemeTender scheme, double cashNeededForPlantDownpayments,
+            String investor) {
         this.persist();
         this.specifyNotPersist(amount, plant, agent, zone, node, startTime, finishTime, bidPricePerMWh, technology,
-                currentTime, status, scheme);
+                currentTime, status, scheme, cashNeededForPlantDownpayments, investor);
 
     }
 
     @Override
     public String toString() {
-        return "for " + getZone() + " price: " + getPrice() + " amount: " + getAmount();
+        return "for " + getBidder() + " price: " + getPrice() + " amount: " + getAmount() + " cash needed downpayment "
+                + cashNeededForPlantDownpayments + " " + getRenewableSupportSchemeTender() + " tech " + getTechnology();
     }
 }

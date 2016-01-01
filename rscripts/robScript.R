@@ -1735,3 +1735,92 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #                          "Change Welfare Producer H ExcSub","Change Welfare Producer H IncSub",
 #                          "Change Welfare Producer I ExcSub","Change Welfare Producer I IncSub")
 # write.csv(DataTable, "DataTableProdWelfareChange.csv")
+
+
+meanProfitA=0 
+meanProfitB=0
+meanProfitC=0 
+meanProfitD=0 
+meanProfitE=0
+meanProfitF=0
+meanProfitG=0
+meanProfitH=0
+meanProfitI=0
+
+for(j in 0:39) {
+  meanProfitA[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdA, tick == j))
+  meanProfitB[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdB, tick == j))
+  meanProfitC[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdC, tick == j))
+  meanProfitD[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdD, tick == j))
+  meanProfitE[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdE, tick == j))
+  meanProfitF[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdF, tick == j))
+  meanProfitG[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdG, tick == j))
+  meanProfitH[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdH, tick == j))
+  meanProfitI[j] <- mean(subset(bigDF$ProfitProducersYearlyIncludingTenderSubsidy_ProfitProdI, tick == j))
+}
+
+meanProfitA
+meanProfitB
+meanProfitC
+meanProfitD 
+meanProfitE
+meanProfitF
+meanProfitG
+meanProfitH
+meanProfitI
+
+DataTable <- c(meanProfitA)
+DataTable <- rbind(DataTable, c(meanProfitB))
+DataTable <- rbind(DataTable, c(meanProfitC))
+DataTable <- rbind(DataTable, c(meanProfitD))
+DataTable <- rbind(DataTable, c(meanProfitE))
+DataTable <- rbind(DataTable, c(meanProfitF))
+DataTable <- rbind(DataTable, c(meanProfitG))
+DataTable <- rbind(DataTable, c(meanProfitH))
+DataTable <- rbind(DataTable, c(meanProfitI))
+colnames(DataTable) <- c(nameFile)
+rownames(DataTable) <- c("A","B","C","D","E","F","G","H","I")
+write.csv(DataTable, "DataTableIncomeDistribution.csv")
+meanIncomeDistribution <- melt(DataTable)
+
+ggplot(meanIncomeDistribution, aes(X2, value, fill = X1)) + 
+  guides(fill=guide_legend(title=NULL)) +
+  scale_fill_manual(values=producerPalette) +
+  geom_area(stat = "identity") + 
+  xlab("Year") + 
+  ylab("Eur") +
+  ggtitle("Income distribution")
+ggsave(filename = paste(filePrefix, "incomeDistributionplot.png", sep=""))
+
+
+meanProfitExcSubA=0 
+meanProfitExcSubB=0
+meanProfitExcSubC=0 
+meanProfitExcSubD=0 
+meanProfitExcSubE=0
+meanProfitExcSubF=0
+meanProfitExcSubG=0
+meanProfitExcSubH=0
+meanProfitExcSubI=0
+
+for(j in 0:39) {
+  meanProfitExcSubA[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdA, tick == j))
+  meanProfitExcSubB[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdB, tick == j))
+  meanProfitExcSubC[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdC, tick == j))
+  meanProfitExcSubD[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdD, tick == j))
+  meanProfitExcSubE[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdE, tick == j))
+  meanProfitExcSubF[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdF, tick == j))
+  meanProfitExcSubG[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdG, tick == j))
+  meanProfitExcSubH[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdH, tick == j))
+  meanProfitExcSubI[j] <- mean(subset(bigDF$ProfitProducersYearlyExcludingTenderSubsidy_ProfitProdI, tick == j))
+}
+
+meanProfitExcSubA
+meanProfitExcSubB
+meanProfitExcSubC
+meanProfitExcSubD 
+meanProfitExcSubE
+meanProfitExcSubF
+meanProfitExcSubG
+meanProfitExcSubH
+meanProfitExcSubI
