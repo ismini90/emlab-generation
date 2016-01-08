@@ -95,6 +95,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
 
         Iterable<PowerGeneratingTechnology> eligibleTechnologies = scheme.getPowerGeneratingTechnologiesEligible();
 
+        Map<PowerGeneratingTechnology, Double> baseCostMap = new HashMap<PowerGeneratingTechnology, Double>();
+
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
@@ -257,20 +259,57 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 // logger.warn("expectedBaseCost in fipRole for plant" + plant +
                 // "in tick" + futureTimePoint + "is "
                 // + fiPremium);
+                if (scheme.isTechnologySpecificityEnabled() == true) {
+                    BaseCostFip baseCostFip = new BaseCostFip();
 
-                BaseCostFip baseCostFip = new BaseCostFip();
-
-                baseCostFip.setCostPerMWh(fiPremium);
-                baseCostFip.setStartTime(futureTimePoint);
-                baseCostFip.setNode(node);
-                baseCostFip.setTechnology(technology);
-                baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
-                baseCostFip.persist();
+                    baseCostFip.setCostPerMWh(fiPremium);
+                    baseCostFip.setStartTime(futureTimePoint);
+                    baseCostFip.setNode(node);
+                    baseCostFip.setTechnology(technology);
+                    baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
+                    baseCostFip.persist();
+                } else {
+                    baseCostMap.put(technology, fiPremium);
+                }
 
                 // logger.warn("LCOE in per MWH for technology " +
                 // plant.getTechnology().getName() + "for node "
                 // + baseCostFip.getNode().getNodeId() + " is , " +
                 // baseCostFip.getCostPerMWh());
+
+            }
+        }
+
+        if (scheme.isTechnologySpecificityEnabled() == false) {
+
+            MapValueComparator comp = new MapValueComparator(baseCostMap);
+            TreeMap<PowerGeneratingTechnology, Double> meritOrderBaseCost = new TreeMap<PowerGeneratingTechnology, Double>(
+                    comp);
+            meritOrderBaseCost.putAll(baseCostMap);
+
+            double totalPotentialAvailable = 0d;
+            double renewableGenerationAccepted = 0d;
+            double baseCostFipTechNeutral = 0d;
+
+            double renewableTargetInMwh = computeRenewableGenerationTarget(scheme);
+
+            for (Entry<PowerGeneratingTechnology, Double> technologyCost : meritOrderBaseCost.entrySet()) {
+                PowerGeneratingTechnology technology = technologyCost.getKey();
+                double technologyPotential = 0d;
+                // Determine available capacity in the future in this
+                // segment
+                // technologyPotential =
+                // plant.getExpectedAvailableCapacity(time,
+                // segmentLoad.getSegment(),
+                // numberOfSegments);
+                totalPotentialAvailable += technologyPotential;
+                // logger.warn("Capacity of plant " + plant.toString() +
+                // " is " +
+                // plantCapacity/plant.getActualNominalCapacity());
+                if (renewableGenerationAccepted < renewableTargetInMwh) {
+                    renewableGenerationAccepted += technologyPotential;
+                    baseCostFipTechNeutral = technologyCost.getValue();
+                }
 
             }
         }
