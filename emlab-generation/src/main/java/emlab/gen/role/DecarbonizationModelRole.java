@@ -61,13 +61,12 @@ import emlab.gen.role.operating.PayCO2AuctionRole;
 import emlab.gen.role.operating.PayCO2TaxRole;
 import emlab.gen.role.operating.PayForLoansRole;
 import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
-import emlab.gen.role.tender.TenderMainRolePartOne;
-import emlab.gen.role.tender.TenderMainRolePartThree;
-import emlab.gen.role.tender.TenderMainRolePartTwo;
-
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExAnte;
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExPost;
 import emlab.gen.role.pricewarranty.FeedInPremiumRole;
+import emlab.gen.role.tender.TenderMainRolePartOne;
+import emlab.gen.role.tender.TenderMainRolePartThree;
+import emlab.gen.role.tender.TenderMainRolePartTwo;
 
 /**
  * Main model role.
@@ -129,7 +128,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private RenewableAdaptiveCO2CapRole renewableAdaptiveCO2CapRole;
     @Autowired
-    MarketStabilityReserveRole marketStabilityReserveRole;
+    private MarketStabilityReserveRole marketStabilityReserveRole;
     @Autowired
     private DetermineResidualLoadCurvesForTwoCountriesRole determineResidualLoadCurve;
     @Autowired

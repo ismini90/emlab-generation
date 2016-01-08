@@ -2,9 +2,9 @@
 
 # Step 1 building the scenarios: insert dataframe and read the scenario file. Name parameters
 # that need to be replaced with #
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/FipExAnteTemplate.xml"
-filestump<-'FipExAnte-'
-filestump<-'TechSpecFullTwoCountriesInfCap-'
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/TenderExAnteTechSpecTemplate.xml"
+filestump<-'TenderExAnteTechSpec-'
+#filestump<-'TechSpecFullTwoCountriesInfCap-'
 # Step 2 building the scenarios: make separate data vectors
 noOfRepetitions = 120 
 for(runID in seq(1:noOfRepetitions))
@@ -19,3 +19,5 @@ for(runID in seq(1:noOfRepetitions))
 #KBaseCase
 #FipExPost
 #FipExAnte
+#TenderExPostTechSpec
+#TenderExAnteTechSpec

@@ -29,8 +29,8 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTender> implements
-        Role<RenewableSupportSchemeTender> {
+public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
 
     /*
      * (non-Javadoc)
@@ -45,6 +45,9 @@ public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTe
 
     @Autowired
     SubmitTenderBidRole submitTenderBidRole;
+
+    @Autowired
+    SubmitTenderBidRoleExpostRevenuePayment submitTenderBidRoleExpostRevenuePayment;
 
     // @Autowired
     // FilterTenderBidsWithSufficientCashForDownpaymentRole
@@ -66,7 +69,13 @@ public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTe
 
         calculateRenewableTargetForTenderRole.act(scheme);
 
-        submitTenderBidRole.act(scheme);
+        if (scheme.isExpostRevenueCalculation() == true) {
+
+            submitTenderBidRoleExpostRevenuePayment.act(scheme);
+
+        } else {
+            submitTenderBidRole.act(scheme);
+        }
 
         // this role needs to be adjusted for the techspec feature
         // Regulator regulator = scheme.getRegulator();
