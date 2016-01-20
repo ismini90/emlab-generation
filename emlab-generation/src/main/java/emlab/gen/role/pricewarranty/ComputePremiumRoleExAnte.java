@@ -82,7 +82,7 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
     @Autowired
     Neo4jTemplate template;
 
-    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     @Transactional
     public void act(RenewableSupportFipScheme scheme) {
 
@@ -94,12 +94,15 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
 
         Iterable<PowerGeneratingTechnology> eligibleTechnologies = scheme.getPowerGeneratingTechnologiesEligible();
+        logger.warn("hello - out of technology loop");
 
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
             if (technology.isIntermittent() && model.isNoPrivateIntermittentRESInvestment())
                 continue;
+
+            logger.warn("hello - technology loop");
 
             for (PowerGridNode node : reps.powerGridNodeRepository.findAllPowerGridNodesByZone(regulator.getZone())) {
 
@@ -110,11 +113,9 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 EnergyProducer producer = reps.energyProducerRepository.findAll().iterator().next();
 
                 plant.specifyNotPersist(getCurrentTick(), producer, node, technology);
-                // logger.warn("creating a new power plant for " +
-                // producer.getName() + ", of technology "
-                // + plant.getTechnology().getName() + ", with node" +
-                // node.getName() + "for time "
-                // + futureTimePoint);
+                logger.warn("creating a new power plant for " + producer.getName() + ", of technology "
+                        + plant.getTechnology().getName() + ", with node" + node.getName() + "for time "
+                        + futureTimePoint);
 
                 // ==== Expectations ===
 
@@ -204,9 +205,7 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 long durationOfSupportScheme = scheme.getSupportSchemeDuration();
                 long finishedConstruction = plant.calculateActualPermittime() + plant.calculateActualLeadtime();
 
-                // logger.warn("Fixed OM cost for technology " +
-                // plant.getTechnology().getName() + " is " + fixedOMCost
-                // + " and operatingCost is " + operatingCost);
+                logger.warn("Expected Gross Profit is " + expectedGrossProfit);
 
                 TreeMap<Integer, Double> discountedProjectCapitalOutflow = calculateSimplePowerPlantInvestmentCashFlow(
                         (int) technology.getDepreciationTime(), (int) plant.getActualLeadTime(),

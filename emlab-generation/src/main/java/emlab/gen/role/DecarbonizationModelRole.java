@@ -436,7 +436,12 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         if (model.isFeedInPremiumImplemented()) {
             logger.warn(" 6a. Run Feed In Premium Scheme");
             for (RenewableSupportFipScheme scheme : reps.renewableSupportSchemeRepository.findAll()) {
-                computePremiumRoleExPost.act(scheme);
+
+                if (scheme.isEmRevenuePaidExpost()) {
+                    computePremiumRoleExPost.act(scheme);
+                } else {
+                    computePremiumRoleExAnte.act(scheme);
+                }
                 feedInPremiumRole.act(scheme);
             }
             timerMarket.stop();
