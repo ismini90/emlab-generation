@@ -18,24 +18,38 @@
 	<bean id="decarbonizationModel" class="emlab.gen.domain.agent.DecarbonizationModel"
 		p:name="Decarbonization Model" p:simulationLength="${simulationLength}"
 		p:co2TradingImplemented="false" p:realRenewableDataImplemented="true"
-		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
-		p:capDeviationCriterion="0.03"
+		p:co2BankingIsImplemented="false"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
+		p:centralForecastBacklookingYears="5"
+		p:centralForecastingYear="3" p:centralCO2TargetReversionSpeedFactor="3"
+		p:centralPrivateDiscountingRate="0.05" p:centralCO2BackSmoothingFactor="0"
+		p:stabilityReserveIsActive="false"
+		p:stabilityReserveFirstYearOfOperation="100"
+		p:stabilityReserveBankingFirstYear="0.8"
+		p:stabilityReserveBankingSecondYear="0.5"
+		p:stabilityReserveBankingThirdYear="0.2"
+		p:feedInPremiumImplemented="false"
 		p:renewableTenderSchemeImplemented="true">
 	</bean>
 
+	<!-- Interconnector -->
+	<!-- https://www.rvo.nl/sites/default/files/2015/05/IP01_Inpassingsplan%20DW380%20Toelichting%20en%20regels%2020150415%20-%20EXCL%20BIJLAGEN_vKT.pdf
+	says 2450 MW in (2014) with an expected increase to 3950 MW in 2017-->
+	<bean id="interconnectorNetherlandsGermany" class="emlab.gen.domain.technology.Interconnector"
+		p:capacity="0">
+		<property name="connections">
+			<set>
+				<ref bean="nlNode1" />
+				<ref bean="deNode1" />
+			</set>
+		</property>
+	</bean>
 
 	<!-- Regulator -->
 	<bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator"
 		p:name="regulator" p:numberOfYearsLookingBackToForecastDemand="4">
 		<property name="zone" ref="nl" />
 	</bean>
-
-	<bean id="regulatorDE" class="emlab.gen.domain.agent.Regulator"
-		p:name="regulator" p:numberOfYearsLookingBackToForecastDemand="4">
-		<property name="zone" ref="de" />
-	</bean>
-
 
 	<!-- Renewable Tender Scheme -->
 	<bean id="renewableSupportScheme"
@@ -51,6 +65,7 @@
 				<ref bean="windOffshorePGT" />
 				<ref bean="windPGT" />
 				<ref bean="biomassPGT" />
+				<ref bean="biogasPGT" />
 			</set>
 		</property>
 	</bean>
@@ -58,7 +73,7 @@
 
 	<!-- Renewable Energy Target -->
 	<bean id="renewableTenderTarget"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForTender"
+		class="emlab.gen.domain.policy.renewablesupport.RenewableTarget"
 		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap">
 		<property name="regulator" ref="regulatorNL" />
 	</bean>
@@ -76,24 +91,28 @@
 		p:top="${demandGrowthDETop}" />
 
 
-	<!-- Substances -->
-	<bean id="coal" class="emlab.gen.domain.technology.Substance"
-		p:name="Coal" p:quality="1" p:energyDensity="29308" p:co2Density="2.78426"
-		p:unit="tSKE" />
-	<bean id="lignite" class="emlab.gen.domain.technology.Substance"
-		p:name="Lignite" p:quality="1" p:energyDensity="3600" p:co2Density="0.41"
-		p:unit="MWh_th" />
-	<bean id="naturalgas" class="emlab.gen.domain.technology.Substance"
-		p:name="Natural Gas" p:quality="1" p:energyDensity="36" p:co2Density="0.00187" />
-	<bean id="biomass" class="emlab.gen.domain.technology.Substance"
-		p:name="Biomass" p:quality="0.5" p:energyDensity="25000" p:co2Density="0" />
-	<bean id="uranium" class="emlab.gen.domain.technology.Substance"
-		p:name="Uranium" p:quality="1" p:energyDensity="3888000000"
-		p:co2Density="0" />
-	<bean id="electricity" class="emlab.gen.domain.technology.Substance"
-		p:name="Electricity" p:quality="1" p:energyDensity="0" p:co2Density="0" />
-	<bean id="co2" class="emlab.gen.domain.technology.Substance"
-		p:name="CO2" p:quality="1" p:energyDensity="0" p:co2Density="1" />
+		<!-- Substances -->
+		<bean id="coal" class="emlab.gen.domain.technology.Substance"
+			p:name="Coal" p:quality="1" p:energyDensity="1000" p:co2Density="0.095"
+			p:unit="GJ" />
+		<bean id="lignite" class="emlab.gen.domain.technology.Substance"
+			p:name="Lignite" p:quality="1" p:energyDensity="1000" p:co2Density="0.11389"
+			p:unit="GJ" />
+		<bean id="naturalgas" class="emlab.gen.domain.technology.Substance"
+			p:name="Natural Gas" p:quality="1" p:energyDensity="1000"
+			p:co2Density="0.05194" p:unit="GJ" />
+		<bean id="biomass" class="emlab.gen.domain.technology.Substance"
+			p:name="Biomass" p:quality="0.5" p:energyDensity="1000" p:co2Density="0"
+			p:unit="GJ" />
+		<bean id="uranium" class="emlab.gen.domain.technology.Substance"
+			p:name="Uranium" p:quality="1" p:energyDensity="1000" p:co2Density="0"
+			p:unit="GJ" />
+		<bean id="electricity" class="emlab.gen.domain.technology.Substance"
+			p:name="Electricity" p:quality="1" p:energyDensity="0" p:co2Density="0"
+			p:unit="MWh_el" />
+		<bean id="co2" class="emlab.gen.domain.technology.Substance"
+			p:name="CO2" p:quality="1" p:energyDensity="0" p:co2Density="1"
+			p:unit="tCO2" />
 
 
 	<!-- Zones -->
@@ -101,18 +120,7 @@
 	<bean id="de" class="emlab.gen.domain.gis.Zone" p:name="Country B" />
 
 
-	<!-- Interconnector -->
-	<!-- https://www.rvo.nl/sites/default/files/2015/05/IP01_Inpassingsplan%20DW380%20Toelichting%20en%20regels%2020150415%20-%20EXCL%20BIJLAGEN_vKT.pdf
-	says 2450 MW in (2014) with an expected increase to 3950 MW in 2017-->
-	<bean id="interconnectorNetherlandsGermany" class="emlab.gen.domain.technology.Interconnector"
-		p:capacity="0">
-		<property name="connections">
-			<set>
-				<ref bean="nlNode1" />
-				<ref bean="deNode1" />
-			</set>
-		</property>
-	</bean>
+
 
 
 	<!-- PowerGrid NL -->
@@ -619,47 +627,47 @@
 
 
 	<!-- Segments of load duration curves -->
-	<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="10" p:segmentID="20" />
-	<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="50" p:segmentID="19" />
-	<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="18" />
-	<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="17" />
-	<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="16" />
-	<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="15" />
-	<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="14" />
-	<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="13" />
-	<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="12" />
-	<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="11" />
-	<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="10" />
-	<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="9" />
-	<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="8" />
-	<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="7" />
-	<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="6" />
-	<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="5" />
-	<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="576" p:segmentID="4" />
-	<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="50" p:segmentID="3" />
-	<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="9" p:segmentID="2" />
-	<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment"
-		p:lengthInHours="1" p:segmentID="1" />
-
+	<!-- Segments of load duration curves -->
+	<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="17"
+		p:segmentID="20" />
+	<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="77"
+		p:segmentID="19" />
+	<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="187"
+		p:segmentID="18" />
+	<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="293"
+		p:segmentID="17" />
+	<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="294"
+		p:segmentID="16" />
+	<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="306"
+		p:segmentID="15" />
+	<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="346"
+		p:segmentID="14" />
+	<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="450"
+		p:segmentID="13" />
+	<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="649"
+		p:segmentID="12" />
+	<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="933"
+		p:segmentID="11" />
+	<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="894"
+		p:segmentID="10" />
+	<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="711"
+		p:segmentID="9" />
+	<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="630"
+		p:segmentID="8" />
+	<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="549"
+		p:segmentID="7" />
+	<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="571"
+		p:segmentID="6" />
+	<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="666"
+		p:segmentID="5" />
+	<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="544"
+		p:segmentID="4" />
+	<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="351"
+		p:segmentID="3" />
+	<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="207"
+		p:segmentID="2" />
+	<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="85"
+		p:segmentID="1" />
 	<!-- Markets -->
 	<!-- Electricity Spot Country A -->
 	<bean id="NetherlandsElectricitySpotMarket"
@@ -1017,22 +1025,23 @@
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
 		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
-<!-- 	<bean id="energyProducerD" class="emlab.gen.domain.agent.EnergyProducer" -->
-<!-- 		p:name="Energy Producer D" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole" -->
-<!-- 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3" -->
-<!-- 		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" -->
-<!-- 		p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09" -->
-<!-- 		p:debtRatioOfInvestments="0.7" -->
-<!-- 		p:dismantlingProlongingYearsAfterTechnicalLifetime="0" -->
-<!-- 		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5" -->
-<!-- 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}" -->
-<!-- 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}" -->
-<!-- 		p:investorMarket-ref="NetherlandsElectricitySpotMarket" /> -->
+
+	<bean id="energyProducerD" class="emlab.gen.domain.agent.EnergyProducer"
+			p:name="Energy Producer D" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
+			p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
+			p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
+			p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+			p:debtRatioOfInvestments="0.7"
+			p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
+			p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
+			p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
+			p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
+			p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
+
+
 
 	<bean id="standardInvestmentRole"
 		class="emlab.gen.role.investment.InvestInPowerGenerationTechnologiesStandard" />
-
-
 
 	<!-- Initial portfolios -->
 
@@ -1043,57 +1052,52 @@
 		p:name="Power Plant Maintainer" />
 
 	<!-- Power plant Factory -->
+	<!-- Power plant Factory -->
 	<bean id="NLPortfolio" class="emlab.gen.domain.factory.ElectricityProducerFactory">
-		<property name="capacityMargin" value="0.25" />
+	<property name="capacityMargin" value="0.55" />
 		<property name="portfolioShares">
 			<map>
 				<entry>
 					<key>
-						<ref bean="coalPulverizedSuperCritical" />
-					</key>
-					<value>0.33</value>
-				</entry>
-				<entry>
-					<key>
 						<ref bean="CCGT" />
 					</key>
-					<value>0.40</value>
+					<value>0.485</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="OCGT" />
 					</key>
-					<value>0.16</value>
+					<value>0.232</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="biomassPGT" />
 					</key>
-					<value>0.365</value>
+					<value>0.076</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="nuclearPGT" />
 					</key>
-					<value>0.03</value>
+					<value>0.019</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="windPGT" />
 					</key>
-					<value>0.2606</value>
+					<value>0.114</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="windOffshorePGT" />
 					</key>
-					<value>0.0024</value>
+					<value>0.041</value>
 				</entry>
 				<entry>
 					<key>
 						<ref bean="photovoltaicPGT" />
 					</key>
-					<value>0.001</value>
+					<value>0.033</value>
 				</entry>
 				<entry>
 					<key>
@@ -1106,6 +1110,8 @@
 		<property name="nodes">
 			<set>
 				<ref bean="nlNode1" />
+				<ref bean="nlNode2" />
+				<ref bean="nlNode3" />
 			</set>
 		</property>
 		<property name="market" ref="NetherlandsElectricitySpotMarket" />
@@ -1114,87 +1120,10 @@
 				<ref bean="energyProducerA" />
 				<ref bean="energyProducerB" />
 				<ref bean="energyProducerC" />
-<!-- 				<ref bean="energyProducerD" /> -->
+				<ref bean="energyProducerD" />
 			</list>
 		</property>
 	</bean>
-
-<!-- 		<bean id="DEPortfolio" class="emlab.gen.domain.factory.ElectricityProducerFactory"> -->
-<!-- 		<property name="capacityMargin" value="0.25" /> -->
-<!-- 		<property name="portfolioShares"> -->
-<!-- 			<map> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="coalPulverizedSuperCritical" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.33</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="CCGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.40</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="OCGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.16</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="biomassPGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.00</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="nuclearPGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.03</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="windPGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.5744</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="windOffshorePGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.00</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="photovoltaicPGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.0166</value> -->
-<!-- 				</entry> -->
-<!-- 				<entry> -->
-<!-- 					<key> -->
-<!-- 						<ref bean="biogasPGT" /> -->
-<!-- 					</key> -->
-<!-- 					<value>0.00</value> -->
-<!-- 				</entry> -->
-<!-- 			</map> -->
-<!-- 		</property> -->
-<!-- 		<property name="nodes"> -->
-<!-- 			<set> -->
-<!-- 				<ref bean="deNode1" /> -->
-<!-- 			</set> -->
-<!-- 		</property> -->
-<!-- 		<property name="market" ref="GermanyElectricitySpotMarket" /> -->
-<!-- 		<property name="producers"> -->
-<!-- 			<list> -->
-<!-- 				<ref bean="energyProducerE" /> -->
-<!-- 				<ref bean="energyProducerF" /> -->
-<!-- 				<ref bean="energyProducerG" /> -->
-<!-- 				<ref bean="energyProducerH" /> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
-
 
 	<!-- CO2 Tax -->
 	<bean id="co2TaxTrend" class="emlab.gen.trend.StepTrend" p:start="${co2TaxStart}"
@@ -1237,6 +1166,8 @@
 
 
 	<!-- Power Generation Technologies -->
+
+	<!--
 	<bean id="coalPulverizedSuperCritical" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 		p:name="CoalPSC" p:capacity="758" p:investmentCostTimeSeries-ref="coalPSCInvestmentCostTimeSeries"
 		p:fixedOperatingCostTimeSeries-ref="coalPSCFixedOperatingCostTimeSeries"
@@ -1258,13 +1189,14 @@
 		</property>
 	</bean>
 
+
 	<bean id="coalPSCInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0" p:start="1365530" />
 	<bean id="coalPSCFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0" p:start="40970" />
 	<bean id="coalPSCEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0.0032724641" p:start=".44" />
-
+-->
 
 	<bean id="lignitePGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 		p:name="Lignite" p:capacity="1000" p:investmentCostTimeSeries-ref="ligniteInvestmentCostTimeSeries"

@@ -22,13 +22,18 @@ import org.springframework.data.repository.query.Param;
 
 import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
+import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
 
 public interface PowerGridNodeRepository extends GraphRepository<PowerGridNode> {
 
-	@Query("START zone=node({zone}) match (zone)<-[:REGION]-(powergridnode) WHERE powergridnode.__type__ = 'emlab.gen.domain.technology.PowerGridNode' RETURN powergridnode")
-	Iterable<PowerGridNode> findAllPowerGridNodesByZone(@Param("zone") Zone zone);
-	
-	@Query(value="g.v(market).out('ZONE').in('REGION').next()", type=QueryType.Gremlin)
-	PowerGridNode findFirstPowerGridNodeByElectricitySpotMarket(@Param("market") ElectricitySpotMarket esm);
+    @Query("START zone=node({zone}) match (zone)<-[:REGION]-(powergridnode) WHERE powergridnode.__type__ = 'emlab.gen.domain.technology.PowerGridNode' RETURN powergridnode")
+    Iterable<PowerGridNode> findAllPowerGridNodesByZone(@Param("zone") Zone zone);
+
+    @Query(value = "g.v(market).out('ZONE').in('REGION').next()", type = QueryType.Gremlin)
+    PowerGridNode findFirstPowerGridNodeByElectricitySpotMarket(@Param("market") ElectricitySpotMarket esm);
+
+    @Query(value = "nodeLimit = g.v(node).in('NODEPGTLIMIT_NODE').as('x').out('NODEPGTLIMIT_PGT').filter{it == technology}.back('x').permanentUpperCapacityLimit; ", type = QueryType.Gremlin)
+    Double findPowerGeneratingTechnologyNodeLimitByNodeAndTechnology(@Param("node") PowerGridNode node,
+            @Param("technology") PowerGeneratingTechnology technology);
 }

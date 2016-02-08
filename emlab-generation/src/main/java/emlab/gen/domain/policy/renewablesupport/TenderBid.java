@@ -46,7 +46,7 @@ public class TenderBid extends Bid {
     @RelatedTo(type = "TENDERBID_SUPPORTSCHEME", elementClass = RenewableSupportSchemeTender.class, direction = Direction.OUTGOING)
     private RenewableSupportSchemeTender renewableSupportSchemeTender;
 
-    @RelatedTo(type = "ZONE", elementClass = Zone.class, direction = Direction.INCOMING)
+    @RelatedTo(type = "TENDERBID_ZONE", elementClass = Zone.class, direction = Direction.INCOMING)
     private Zone zone;
 
     private long start;

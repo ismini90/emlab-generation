@@ -66,7 +66,7 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
 
             }
 
-            reps.nonTransactionalCreateRepository.createCashFlow(scheme, currentTenderBid.getBidder(),
+            reps.nonTransactionalCreateRepository.createCashFlow(scheme.getRegulator(), currentTenderBid.getBidder(),
                     annualTenderRevenue, CashFlow.TENDER_SUBSIDY, getCurrentTick(), currentTenderBid.getPowerPlant());
 
         }

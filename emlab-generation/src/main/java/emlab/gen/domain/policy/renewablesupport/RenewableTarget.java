@@ -29,9 +29,8 @@ import emlab.gen.trend.TimeSeriesImpl;
  * @author Kaveri3012
  *
  */
-
 @NodeEntity
-public class RelativeRenewableTarget {
+public class RenewableTarget {
 
     @RelatedTo(type = "SET_BY_REGULATOR", elementClass = Regulator.class, direction = Direction.INCOMING)
     Regulator regulator;
@@ -44,6 +43,8 @@ public class RelativeRenewableTarget {
 
     @RelatedTo(type = "TARGET_TREND", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
     TimeSeriesCSVReader yearlyRenewableTargetTimeSeries;
+
+    private boolean targetTechnologySpecific;
 
     public Regulator getRegulator() {
         return regulator;
@@ -75,6 +76,14 @@ public class RelativeRenewableTarget {
 
     public void setYearlyRenewableTargetTimeSeries(TimeSeriesCSVReader yearlyRenewableTargetTimeSeries) {
         this.yearlyRenewableTargetTimeSeries = yearlyRenewableTargetTimeSeries;
+    }
+
+    public boolean isTargetTechnologySpecific() {
+        return targetTechnologySpecific;
+    }
+
+    public void setTargetTechnologySpecific(boolean isTargetTechnologySpecific) {
+        this.targetTechnologySpecific = isTargetTechnologySpecific;
     }
 
 }

@@ -36,6 +36,13 @@ public interface BaseCostFipRepository extends GraphRepository<BaseCostFip> {
     public BaseCostFip findOneBaseCostForTechnologyAndNodeAndTime(@Param("nodeName") String nodeName,
             @Param("tech") PowerGeneratingTechnology technology, @Param("tick") long tick);
 
+    @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.policy.renewablesupport.BaseCostFip']].filter{it.startTime==tick}", type = QueryType.Gremlin)
+    public BaseCostFip findOneTechnologyNeutralBaseCostForTime(@Param("tick") long tick);
+
+    @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.policy.renewablesupport.BaseCostFip']].filter{it.startTime>=timeFrom && it.startTime<=timeTo}", type = QueryType.Gremlin)
+    public Iterable<BaseCostFip> findAllTechnologyNeutralBaseCostForTimeRange(@Param("timeFrom") long timeFrom,
+            @Param("timeTo") long timeTo);
+
     @Query(value = "g.v(tech).in('BASECOST_FOR_TECHNOLOGY').as('x').out('BASECOST_FOR_LOCATION').filter{it.name==nodeName}.back('x').filter{it.startTime>=timeFrom && it.startTime<=timeTo}", type = QueryType.Gremlin)
     Iterable<BaseCostFip> findAllBaseCostFipsForTechnologyLocationAndTimeRange(@Param("nodeName") String nodeName,
             @Param("tech") PowerGeneratingTechnology technology, @Param("timeFrom") long timeFrom,

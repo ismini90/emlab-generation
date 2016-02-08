@@ -40,6 +40,9 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
     @RelatedTo(type = "TECHNOLOGIES_ELIGIBLE_ARE", elementClass = PowerGeneratingTechnology.class, direction = Direction.OUTGOING)
     private Set<PowerGeneratingTechnology> powerGeneratingTechnologiesEligible;
 
+    // This target is for the 'actual target' that the regulator must set each
+    // year
+    // taking into account the existing/planned investment for that year.
     private double annualRenewableTargetInMwh;
 
     public double getAnnualRenewableTargetInMwh() {
@@ -72,8 +75,6 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
 
     @SimulationParameter(label = "Support Scheme Duration", from = 0, to = 50)
     private long supportSchemeDuration;
-
-    private String scheme;
 
     private long futureTenderOperationStartTime;
 
@@ -115,18 +116,6 @@ public class RenewableSupportSchemeTender extends DecarbonizationAgent implement
 
     public void setFutureTenderOperationStartTime(long futureTimePointTender) {
         this.futureTenderOperationStartTime = futureTimePointTender;
-    }
-
-    public String getScheme() {
-        return scheme;
-    }
-
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
-    }
-
-    public String toString() {
-        return "Scheme " + scheme;
     }
 
     public double getExpectedRenewableGeneration() {

@@ -223,16 +223,6 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
                             }
 
-                            // if (supportPrice < 0)
-                            // supportPrice = 0;
-                            // payment
-                            // logger.warn("Base Cost " +
-                            // contract.getPricePerUnit());
-                            // logger.warn("Total Generation " +
-                            // totalGenerationOfPlantInMwh);
-                            // logger.warn("Revenue from EM " + sumEMR);
-                            // logger.warn("_______PAYMENT__________Annual
-                            // Subsidy " + supportPrice);
                             createCashFlow(regulator, plant, supportPrice);
 
                         }

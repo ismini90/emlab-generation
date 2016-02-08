@@ -52,7 +52,6 @@ import emlab.gen.domain.policy.PowerGeneratingTechnologyTarget;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
-import emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit;
 import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.domain.technology.Substance;
@@ -165,10 +164,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
 
-            if (technology.isIntermittent() && model.isNoPrivateIntermittentRESInvestment())
-                continue;
-
             Iterable<PowerGridNode> possibleInstallationNodes;
+            double nodeLimitNonIntermittentTechnology = 0d;
 
             /*
              * For dispatchable technologies just choose a random node. For
@@ -180,6 +177,22 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 possibleInstallationNodes = new LinkedList<PowerGridNode>();
                 ((LinkedList<PowerGridNode>) possibleInstallationNodes).add(
                         reps.powerGridNodeRepository.findAllPowerGridNodesByZone(market.getZone()).iterator().next());
+
+                LinkedList<Double> PGNodeLimitlist = new LinkedList<Double>();
+
+                // for (PowerGridNode nodeItem : reps.powerGridNodeRepository
+                // .findAllPowerGridNodesByZone(market.getZone())) {
+                //
+                // logger.warn("For PG Node limits: node is " +
+                // nodeItem.getName() + "technology is "
+                // + technology.getName());
+                // PGNodeLimitlist.add(reps.powerGridNodeRepository
+                // .findPowerGeneratingTechnologyNodeLimitByNodeAndTechnology(nodeItem,
+                // technology));
+                // nodeLimitNonIntermittentTechnology =
+                // Collections.max(PGNodeLimitlist);
+                // }
+
             }
 
             // logger.warn("Calculating for " + technology.getName() +
@@ -203,11 +216,19 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             ? technologyTargetCapacity : expectedInstalledCapacityOfTechnology;
                 }
                 double pgtNodeLimit = Double.MAX_VALUE;
-                PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
-                        .findOneByTechnologyAndNode(technology, plant.getLocation());
-                if (pgtLimit != null) {
-                    pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint);
-                }
+
+                // if (technology.isIntermittent()) {
+                // PowerGeneratingTechnologyNodeLimit pgtLimit =
+                // reps.powerGeneratingTechnologyNodeLimitRepository
+                // .findOneByTechnologyAndNode(technology, plant.getLocation());
+                // if (pgtLimit != null) {
+                // pgtNodeLimit =
+                // pgtLimit.getUpperCapacityLimit(futureTimePoint);
+                // }
+                // } else {
+                // pgtNodeLimit = nodeLimitNonIntermittentTechnology;
+                // }
+
                 double expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
                         .calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(plant.getLocation(),
                                 technology, futureTimePoint);
@@ -231,8 +252,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     // " will not invest in {} technology because there's too
                     // much of this type in the market",
                     // technology);
-                } else if ((expectedInstalledCapacityOfTechnologyInNode
-                        + plant.getActualNominalCapacity()) > pgtNodeLimit) {
+                    // } else if ((expectedInstalledCapacityOfTechnologyInNode
+                    // + plant.getActualNominalCapacity()) > pgtNodeLimit) {
 
                 } else if (expectedOwnedCapacityInMarketOfThisTechnology > expectedOwnedTotalCapacityInMarket
                         * technology.getMaximumInstalledCapacityFractionPerAgent()) {
@@ -295,38 +316,59 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     // the scheme must not be defined
                     Set<RenewableSupportFipScheme> schemeSet = reps.renewableSupportSchemeRepository
                             .findSchemesGivenZone(market.getZone());
-                    // logger.warn("scheme Set is " + schemeSet);
+                            // logger.warn("scheme Set is " + schemeSet);
 
-                    if ((schemeSet.size() > 1) && (!schemeSet.isEmpty())) {
+                    // If statement to check if an Fip Scheme exists
+                    if ((schemeSet.size() >= 1) && (!schemeSet.isEmpty())) {
+                        // for loop to go through each scheme, if there are more
+                        // than one, and pick the one which includes the current
+                        // technology ...if technology specific.
                         for (RenewableSupportFipScheme i : schemeSet) {
+                            // logger.warn("scheme is " + i.getName());
                             // ADJUST IF LOOP FOR LOCATION SPECIFICITY WHEN
                             // ENABLED - simply add a logical AND toi the iff
                             // statemnt below to filter for location
-                            if (i.getPowerGeneratingTechnologiesEligible().contains(technology)) {
+                            Zone zoneScheme = i.getRegulator().getZone();
+                            if (i.getPowerGeneratingTechnologiesEligible().contains(technology)
+                                    && market.getZone().getName() == zoneScheme.getName()) {
                                 scheme = i;
                                 break;
                             } else {
                                 scheme = null;
                             }
                         }
-                    } else if (!schemeSet.isEmpty()) {
-                        scheme = schemeSet.iterator().next();
                     }
 
-                    if (scheme != null && (scheme.getPowerGeneratingTechnologiesEligible().contains(technology))) {
-                        BaseCostFip baseCostFip;
-                        if ((scheme.getFutureSchemeStartTime() + getCurrentTick()) == futureTimePoint) {
+                    // logger.warn("scheme is " + scheme.getName());
 
+                    // find Fip Schemes
+                    if (scheme != null && (scheme.getPowerGeneratingTechnologiesEligible().contains(technology))) {
+                        BaseCostFip baseCostFip = null;
+                        if ((scheme.getFutureSchemeStartTime() + getCurrentTick()) == futureTimePoint
+                                && scheme.isTechnologySpecificityEnabled()) {
                             baseCostFip = reps.baseCostFipRepository.findOneBaseCostForTechnologyAndNodeAndTime(
                                     node.getName(), technology, futureTimePoint);
-                            expectedBaseCost = baseCostFip.getCostPerMWh();
-                            // logger.warn("expected base cost query test is " +
-                            // expectedBaseCost);
+                            // logger.warn("For technology" +
+                            // technology.getName() + "for node" +
+                            // node.getName()
+                            // + "Expected Base cost " +
+                            // baseCostFip.getCostPerMWh());
+                        } else if (scheme.getFutureSchemeStartTime() + getCurrentTick() == futureTimePoint
+                                && !scheme.isTechnologySpecificityEnabled()) {
+                            baseCostFip = reps.baseCostFipRepository
+                                    .findOneTechnologyNeutralBaseCostForTime(futureTimePoint);
+                        } else {
+                            expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
+                                    technology, scheme.isTechnologySpecificityEnabled());
+                            // logger.warn("For technology" +
+                            // technology.getName() + "for node" +
+                            // node.getName()
+                            // + "Expected Base cost " +
+                            // baseCostFip.getCostPerMWh());
                         }
 
-                        else
-                            expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
-                                    technology);
+                        if (baseCostFip != null)
+                            expectedBaseCost = baseCostFip.getCostPerMWh();
                     }
 
                     // TODO somehow the prices of long-term contracts could also
@@ -498,8 +540,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         // logger.warn("expectedBaseCost" + expectedBaseCost +
                         // "for plant" + plant + "in tick"
                         // + futureTimePoint);
-                        // logger.warn("project value per MW is " + projectValue
-                        // / plant.getActualNominalCapacity());
+                        // logger.warn(
+                        // "project value per MW is " + projectValue + "for
+                        // technology" + technology.getName());
 
                         // *****END VERIFICATION
 
@@ -584,16 +627,24 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
      */
 
     public double predictSubsidyFip(EnergyProducer agent, long futureTimeStartScheme, PowerGridNode node,
-            PowerGeneratingTechnology technology) {
+            PowerGeneratingTechnology technology, boolean isTechSpecificityEnabled) {
         // Fuel Prices
         double expectedBaseCostFip = 0d;
         // Find Clearing Points for the last 5 years (counting current year
         // as one of the last 5 years).
-        Iterable<BaseCostFip> BaseCostFipSet = reps.baseCostFipRepository
-                .findAllBaseCostFipsForTechnologyLocationAndTimeRange(node.getName(), technology,
-                        getCurrentTick() + futureTimeStartScheme
-                                - (agent.getNumberOfYearsBacklookingForForecasting() - 1),
-                        getCurrentTick() + futureTimeStartScheme);
+        Iterable<BaseCostFip> BaseCostFipSet = null;
+
+        if (!isTechSpecificityEnabled) {
+            BaseCostFipSet = reps.baseCostFipRepository
+                    .findAllBaseCostFipsForTechnologyLocationAndTimeRange(node.getName(), technology,
+                            getCurrentTick() + futureTimeStartScheme
+                                    - (agent.getNumberOfYearsBacklookingForForecasting() - 1),
+                            getCurrentTick() + futureTimeStartScheme);
+        } else {
+            BaseCostFipSet = reps.baseCostFipRepository.findAllTechnologyNeutralBaseCostForTimeRange(
+                    getCurrentTick() + futureTimeStartScheme - (agent.getNumberOfYearsBacklookingForForecasting() - 1),
+                    getCurrentTick() + futureTimeStartScheme);
+        }
 
         SimpleRegression gtr = new SimpleRegression();
         if (BaseCostFipSet != null) {

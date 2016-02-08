@@ -15,8 +15,11 @@
  ******************************************************************************/
 package emlab.gen.role.pricewarranty;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -41,7 +44,7 @@ import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
 import emlab.gen.domain.policy.renewablesupport.BiasFactor;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
-import emlab.gen.domain.policy.renewablesupport.RenewableTargetForTender;
+import emlab.gen.domain.policy.renewablesupport.RenewableTarget;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.PowerPlant;
@@ -49,6 +52,7 @@ import emlab.gen.domain.technology.Substance;
 import emlab.gen.domain.technology.SubstanceShareInFuelMix;
 import emlab.gen.repository.Reps;
 import emlab.gen.role.AbstractEnergyProducerRole;
+import emlab.gen.util.MapValueComparator;
 
 /**
  * @author Kaveri3012 This role loops through eligible technologies, eligible
@@ -75,28 +79,43 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
     @Autowired
     Neo4jTemplate template;
 
+    public class Key2D {
+        private final PowerGeneratingTechnology techKey;
+        private final PowerGridNode nodeKey;
+
+        public Key2D(PowerGeneratingTechnology key1, PowerGridNode key2) {
+            this.techKey = key1;
+            this.nodeKey = key2;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Transactional
     public void act(RenewableSupportFipScheme scheme) {
 
         Regulator regulator = scheme.getRegulator();
-
+        logger.warn("hello");
         // should be close to the investor's future time point.
         long futureTimePoint = scheme.getFutureSchemeStartTime() + getCurrentTick();
 
-        ElectricitySpotMarket eMarket = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
+        ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
 
         Iterable<PowerGeneratingTechnology> eligibleTechnologies = scheme.getPowerGeneratingTechnologiesEligible();
 
+        Map<Key2D, Double> baseCostMap = new HashMap<Key2D, Double>();
+
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
+
+            logger.warn("technology loop");
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
             if (technology.isIntermittent() && model.isNoPrivateIntermittentRESInvestment())
                 continue;
 
             for (PowerGridNode node : reps.powerGridNodeRepository.findAllPowerGridNodesByZone(regulator.getZone())) {
-
-                // or create a new power plant if above statement returns null,
+                logger.warn("node loop");
+                // or create a new power plant if above statement returns
+                // null,
                 // and assign it to a random energy producer.
                 PowerPlant plant = new PowerPlant();
 
@@ -128,12 +147,13 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                     myFuelPrices.put(fuel, expectedFuelPrices.get(fuel));
                 }
                 Set<SubstanceShareInFuelMix> fuelMix = calculateFuelMix(plant, myFuelPrices,
-                        expectedCO2Price.get(eMarket));
+                        expectedCO2Price.get(market));
                 plant.setFuelMix(fuelMix);
 
                 double expectedMarginalCost = determineExpectedMarginalCost(plant, expectedFuelPrices,
-                        expectedCO2Price.get(eMarket));
-                // logger.warn("expected marginal cost in fip role for plant " +
+                        expectedCO2Price.get(market));
+                // logger.warn("expected marginal cost in fip role for plant
+                // " +
                 // plant + "is " + expectedMarginalCost);
 
                 totalGenerationinMWh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
@@ -179,8 +199,11 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 BiasFactor biasFactor = reps.renewableSupportSchemeRepository
                         .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme);
 
-                if (scheme.isCostContainmentMechanismEnabled()) {
-                    computeDegressionAndResetBiasFactor(scheme, biasFactor);
+                if (scheme.isCostContainmentMechanismEnabled() && scheme.isTechnologySpecificityEnabled() == false) {
+                    computeDegressionAndResetBiasFactor(scheme, biasFactor, null);
+                } else if (scheme.isCostContainmentMechanismEnabled()
+                        && scheme.isTechnologySpecificityEnabled() == true) {
+                    computeDegressionAndResetBiasFactor(scheme, biasFactor, technology);
                 }
 
                 // FOR VERIFICATION
@@ -196,42 +219,152 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
                         / (totalGenerationinMWh * factorDiscountedGeneration);
                 // logger.warn(
-                // "expectedBaseCost in fipRole for plant" + plant + "in tick" +
+                // "expectedBaseCost in fipRole for plant" + plant + "in
+                // tick" +
                 // futureTimePoint + "is " + lcoe);
 
-                BaseCostFip baseCostFip = new BaseCostFip();
+                if (scheme.isTechnologySpecificityEnabled() == true) {
+                    BaseCostFip baseCostFip = new BaseCostFip();
 
-                baseCostFip.setCostPerMWh(lcoe);
-                baseCostFip.setStartTime(futureTimePoint);
-                baseCostFip.setNode(node);
-                baseCostFip.setTechnology(technology);
-                baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
-                baseCostFip.persist();
+                    baseCostFip.setCostPerMWh(lcoe);
+                    baseCostFip.setStartTime(futureTimePoint);
+                    baseCostFip.setNode(node);
+                    baseCostFip.setTechnology(technology);
+                    baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
+                    baseCostFip.persist();
 
-                // logger.warn("LCOE in per MWH for technology " +
-                // plant.getTechnology().getName() + "for node "
-                // + baseCostFip.getNode().getNodeId() + " is , " +
-                // baseCostFip.getCostPerMWh());
+                    // logger.warn("Creating BaseCost object: technology " +
+                    // technology.getName() + "premium " + lcoe);
+                } else {
+
+                    // slogger.warn("Creating base cost map: technology " +
+                    // technology.getName() + "premium " + lcoe);
+                    baseCostMap.put(new Key2D(technology, node), lcoe);
+                    // Use that as a key, depending on the mode -
+                    // technology,
+                    // location specificity, to create your merit order in
+                    // the
+                    // code section below.
+                }
 
             }
         }
 
+        if (scheme.isTechnologySpecificityEnabled() == false) {
+
+            MapValueComparator comp = new MapValueComparator(baseCostMap);
+            TreeMap<Key2D, Double> meritOrderBaseCost = new TreeMap<Key2D, Double>(comp);
+            meritOrderBaseCost.putAll(baseCostMap);
+            logger.warn("Technology Cost Map" + baseCostMap);
+
+            double renewableGenerationAccepted = 0d;
+            double baseCostFipTechNeutral = 0d;
+            // double sumOfPotentialsAccepted = 0d;
+
+            double renewableTargetInMwh = computeRenewableGenerationTarget(scheme, null);
+            double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme, null);
+            logger.warn("Renewable Target Total for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+
+            // change to prediction
+            double totalExpectedConsumption = 0d;
+            double demandFactor = market.getDemandGrowthTrend()
+                    .getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
+
+            for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
+                // logger.warn("segmentLoad: " + segmentLoad);
+                totalExpectedConsumption += segmentLoad.getBaseLoad() * demandFactor
+                        * segmentLoad.getSegment().getLengthInHours();
+            }
+
+            if (renewableTargetInMwh - generationFromRenewables > 0)
+                renewableTargetInMwh = renewableTargetInMwh - generationFromRenewables;
+            else
+                renewableTargetInMwh = 0;
+
+            logger.warn("Actual Target for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+
+            for (Entry<Key2D, Double> technologyCost : meritOrderBaseCost.entrySet()) {
+                Key2D baseCostKey = technologyCost.getKey();
+                PowerGeneratingTechnology technology = baseCostKey.techKey;
+                PowerGridNode node = baseCostKey.nodeKey;
+                double technologyPotential = 0d;
+                ArrayList<PowerGridNode> nodeList = new ArrayList<PowerGridNode>();
+                nodeList.add(node);
+
+                boolean nodeUnique = (Collections.frequency(nodeList, node) == 1) ? true : false;
+                // Determine available capacity in the future in this
+                // segment
+                logger.warn(
+                        "technology name" + technology.getName() + "regulator name" + scheme.getRegulator().getName());
+                if (!technology.isIntermittent()) {
+                    technologyPotential = reps.renewableTargetForTenderRepository
+                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                                    technology.getName())
+                            .getValue(futureTimePoint) * totalExpectedConsumption;
+                } else {
+                    logger.warn("Regulator Name " + regulator.getName() + "Technology " + technology.getName()
+                            + " Node " + node.getName());
+                    technologyPotential = reps.renewableTargetForTenderRepository
+                            .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
+                                    scheme.getRegulator(), technology.getName(), node.getName())
+                            .getValue(futureTimePoint) * totalExpectedConsumption;
+                }
+
+                logger.warn("for Technology" + technology.getName() + "the potential in MWh is " + technologyPotential);
+                // plantCapacity/plant.getActualNominalCapacity());
+                if ((renewableTargetInMwh - (renewableGenerationAccepted + technologyPotential) > 0)) {
+                    if ((!technology.isIntermittent() && nodeUnique) || technology.isIntermittent()) {
+                        renewableGenerationAccepted += technologyPotential;
+                        baseCostFipTechNeutral = technologyCost.getValue();
+                    }
+
+                    // logger.warn("If condition 1");
+                } else if (renewableTargetInMwh - (renewableGenerationAccepted + technologyPotential) <= 0) {
+                    if ((!technology.isIntermittent() && nodeUnique) || technology.isIntermittent()) {
+                        renewableGenerationAccepted += (renewableTargetInMwh - renewableGenerationAccepted);
+                        baseCostFipTechNeutral = technologyCost.getValue();
+                        // logger.warn("If condition 2");
+                        break;
+                    }
+                }
+            }
+
+            logger.warn("renewable generation accepted is" + renewableGenerationAccepted + "fip set is "
+                    + baseCostFipTechNeutral);
+            BaseCostFip baseCostFip = new BaseCostFip();
+
+            baseCostFip.setCostPerMWh(baseCostFipTechNeutral);
+            baseCostFip.setStartTime(futureTimePoint);
+            // baseCostFip.setNode(node);
+            // baseCostFip.setTechnology(technology);
+            baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
+            baseCostFip.persist();
+        }
+
     }
 
-    private void computeDegressionAndResetBiasFactor(RenewableSupportFipScheme scheme, BiasFactor biasFactor) {
+    private void computeDegressionAndResetBiasFactor(RenewableSupportFipScheme scheme, BiasFactor biasFactor,
+            PowerGeneratingTechnology technology) {
 
         // get target value of renewable generation
-        double renewableTargetInMwh = computeRenewableGenerationTarget(scheme);
-        double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme);
+        double renewableTargetInMwh = 0d; // computeRenewableGenerationTarget(scheme);
+        double generationFromRenewables = 0d; // totalExpectedGenerationFromRenewables(scheme);
+
         double degressionFactor = biasFactor.getDegressionFactor();
+        double newBiasFactor = 0d;
 
-        // logger.warn("generationFromRenewables; " + generationFromRenewables);
-        // logger.warn("renewableTargetInMwh; " + renewableTargetInMwh);
+        if (scheme.isTechnologySpecificityEnabled()) {
+            renewableTargetInMwh = computeRenewableGenerationTarget(scheme, technology);
+            generationFromRenewables = totalExpectedGenerationFromRenewables(scheme, technology);
+        }
 
-        if (generationFromRenewables >= renewableTargetInMwh) {
-            double newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
+        if (generationFromRenewables > renewableTargetInMwh) {
+            newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
             biasFactor.setFeedInPremiumBiasFactor(newBiasFactor);
             // logger.warn("DEGRESSING!!!");
+        } else if (generationFromRenewables < renewableTargetInMwh) {
+            newBiasFactor = biasFactor.getFeedInPremiumBiasFactor() * (1 - degressionFactor);
+            biasFactor.setFeedInPremiumBiasFactor(newBiasFactor);
         }
         // if expected generation exceeds target, degress by a certain
         // percentage.
@@ -241,7 +374,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
     }
 
-    private double computeRenewableGenerationTarget(RenewableSupportFipScheme scheme) {
+    private double computeRenewableGenerationTarget(RenewableSupportFipScheme scheme,
+            PowerGeneratingTechnology technology) {
         double demandFactor;
         double targetFactor;
         Zone zone = scheme.getRegulator().getZone();
@@ -251,7 +385,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(zone);
 
-        // get demand factor
+        // Assuming perfect knowledge of demand
         demandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
         /*
          * it aggregates segments from both countries, so the boolean should
@@ -259,9 +393,17 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
          * should be adjusted what probably will take less time.
          */
 
+        RenewableTarget target = new RenewableTarget();
         // get renewable energy target in factor (percent)
-        RenewableTargetForTender target = reps.renewableTargetForTenderRepository
-                .findRenewableTargetForTenderByRegulator(scheme.getRegulator());
+        if (scheme.isTechnologySpecificityEnabled() == false) {
+            target = reps.renewableTargetForTenderRepository
+                    .findTechnologyNeutralRenewableTargetForTenderByRegulator(scheme.getRegulator());
+        } else {
+            target = reps.renewableTargetForTenderRepository.findTechnologySpecificRenewableTargetForTenderByRegulator(
+                    scheme.getRegulator(), technology.getName());
+        }
+
+        logger.warn("Renewable Target is " + target);
 
         targetFactor = target.getYearlyRenewableTargetTimeSeries()
                 .getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
@@ -278,8 +420,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
             // logger.warn("demand factor is: " + demandFactor);
 
         }
-        // logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
-        // renewable target for tender operation start year in MWh is
+
         double renewableTargetInMwh = targetFactor * totalExpectedConsumption;
 
         return renewableTargetInMwh;
@@ -303,7 +444,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
         return fc;
     }
 
-    private double totalExpectedGenerationFromRenewables(RenewableSupportFipScheme scheme) {
+    private double totalExpectedGenerationFromRenewables(RenewableSupportFipScheme scheme,
+            PowerGeneratingTechnology technologySpecified) {
 
         double totalExpectedGeneration = 0d;
         double expectedGenerationPerTechnology = 0d;
@@ -313,10 +455,26 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
         ElectricitySpotMarket market = reps.marketRepository
                 .findElectricitySpotMarketForZone(scheme.getRegulator().getZone());
 
-        for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
-            expectedGenerationPerTechnology = 0d;
+        if (scheme.isTechnologySpecificityEnabled() == false) {
+            for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
+                expectedGenerationPerTechnology = 0d;
+                for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(
+                        market, technology, getCurrentTick() + scheme.getFutureSchemeStartTime())) {
+                    expectedGenerationPerPlant = 0d;
+                    for (Segment segment : reps.segmentRepository.findAll()) {
+                        double availablePlantCapacity = plant.getAvailableCapacity(
+                                getCurrentTick() + scheme.getFutureSchemeStartTime(), segment, numberOfSegments);
+                        double lengthOfSegmentInHours = segment.getLengthInHours();
+                        expectedGenerationPerPlant += availablePlantCapacity * lengthOfSegmentInHours;
+                    }
+                    expectedGenerationPerTechnology += expectedGenerationPerPlant;
+                }
+                totalExpectedGeneration += expectedGenerationPerTechnology;
+
+            }
+        } else {
             for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(market,
-                    technology, getCurrentTick() + scheme.getFutureSchemeStartTime())) {
+                    technologySpecified, getCurrentTick() + scheme.getFutureSchemeStartTime())) {
                 expectedGenerationPerPlant = 0d;
                 for (Segment segment : reps.segmentRepository.findAll()) {
                     double availablePlantCapacity = plant.getAvailableCapacity(
@@ -327,9 +485,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 expectedGenerationPerTechnology += expectedGenerationPerPlant;
             }
             totalExpectedGeneration += expectedGenerationPerTechnology;
-
         }
-
         return totalExpectedGeneration;
     }
 
@@ -424,7 +580,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
         // Fuel Prices
         Map<Substance, Double> expectedFuelPrices = new HashMap<Substance, Double>();
         for (Substance substance : reps.substanceRepository.findAllSubstancesTradedOnCommodityMarkets()) {
-            // Find Clearing Points for the last 5 years (counting current year
+            // Find Clearing Points for the last 5 years (counting current
+            // year
             // as one of the last 5 years).
             Iterable<ClearingPoint> cps = reps.clearingPointRepository
                     .findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(substance,
@@ -453,7 +610,6 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
      * 
      * @see agentspring.role.Role#act(agentspring.agent.Agent)
      */
-    @Override
     public void act(EnergyProducer arg0) {
         // TODO Auto-generated method stub
 

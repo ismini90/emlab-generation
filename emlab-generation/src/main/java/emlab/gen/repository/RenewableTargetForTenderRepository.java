@@ -21,15 +21,42 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
 import emlab.gen.domain.agent.Regulator;
-import emlab.gen.domain.policy.renewablesupport.RenewableTargetForTender;
+import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
+import emlab.gen.domain.policy.renewablesupport.RenewableTarget;
+import emlab.gen.trend.TimeSeriesCSVReader;
 
 /**
  * @author Kaveri3012
  *
  */
-public interface RenewableTargetForTenderRepository extends GraphRepository<RenewableTargetForTender> {
+public interface RenewableTargetForTenderRepository extends GraphRepository<RenewableTarget> {
 
-    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR')", type = QueryType.Gremlin)
-    public RenewableTargetForTender findRenewableTargetForTenderByRegulator(@Param("regulator") Regulator regulator);
+    @Query(value = "g.v(scheme).out('WITH_REGULATOR').out('SET_BY_REGULATOR').out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findRenewableTargetForTenderByScheme(
+            @Param("scheme") RenewableSupportSchemeTender scheme);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').filter{it.targetTechnologySpecific == false}", type = QueryType.Gremlin)
+    public RenewableTarget findTechnologyNeutralRenewableTargetForTenderByRegulator(
+            @Param("regulator") Regulator regulator);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR')}", type = QueryType.Gremlin)
+    public RenewableTarget findRenewableTargetForTenderByRegulator(@Param("regulator") Regulator regulator);
+
+    @Query(value = "g.v(scheme).out('WITH_REGULATOR').out('SET_BY_REGULATOR').as('x').out('FOR_TECHNOLOGY').filter{it.name==technologyName}.back('x').out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findTechnologySpecificRenewableTargetTimeSeriesForTenderByScheme(
+            @Param("scheme") RenewableSupportSchemeTender scheme, @Param("technologyName") String technologyName);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').as('x').out('FOR_TECHNOLOGY').filter{it.name==technologyName}.back('x').filter{it.targetTechnologySpecific == true}.out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(
+            @Param("regulator") Regulator regulator, @Param("technologyName") String technologyName);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').as('x').out('FOR_TECHNOLOGY').filter{it.name==technologyName}.back('x').filter{it.targetTechnologySpecific == true}", type = QueryType.Gremlin)
+    public RenewableTarget findTechnologySpecificRenewableTargetForTenderByRegulator(
+            @Param("regulator") Regulator regulator, @Param("technologyName") String technologyName);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').as('x').out('FOR_TECHNOLOGY').filter{it.name==technologyName}.back('x').out('AT_NODE').filter{it.name == nodeName}.back('x').filter{it.targetTechnologySpecific == true}.out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
+            @Param("regulator") Regulator regulator, @Param("technologyName") String technologyName,
+            @Param("nodeName") String nodeName);
 
 }

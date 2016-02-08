@@ -31,7 +31,7 @@ import emlab.gen.domain.policy.renewablesupport.TenderBid;
 public interface TenderBidRepository extends GraphRepository<TenderBid> {
 
     // This sorts the submitted tender bids by price and investor
-    @Query(value = "g.v(zone).out('ZONE').filter{it.investor == bidder}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
+    @Query(value = "g.v(zone).out('TENDERBID_ZONE').filter{it.investor == bidder}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
     public Iterable<TenderBid> findAllSortedTenderBidsbyTimeAndInvestor(@Param("tick") long time,
             @Param("bidder") String agentName, @Param("zone") Zone zone);
 

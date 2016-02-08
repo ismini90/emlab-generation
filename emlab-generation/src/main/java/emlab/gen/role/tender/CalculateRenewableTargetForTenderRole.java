@@ -11,7 +11,6 @@ import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.market.electricity.Segment;
 import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
-import emlab.gen.domain.policy.renewablesupport.RenewableTargetForTender;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.repository.Reps;
@@ -47,12 +46,22 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         demandFactor = predictDemandForElectricitySpotMarket(market,
                 scheme.getRegulator().getNumberOfYearsLookingBackToForecastDemand(), futureStartingTenderTimePoint);
 
-        // get renewable energy target in factor (percent)
-        RenewableTargetForTender target = reps.renewableTargetForTenderRepository
-                .findRenewableTargetForTenderByRegulator(scheme.getRegulator());
+        logger.warn("regulator name" + scheme.getRegulator().getName());
+        logger.warn("technology name" + scheme.getPowerGeneratingTechnologiesEligible().iterator().next().getName());
 
-        targetFactor = target.getYearlyRenewableTargetTimeSeries().getValue(futureStartingTenderTimePoint);
-        // logger.warn("targetFactor; " + targetFactor);
+        if (scheme.isTechnologySpecificityEnabled()) {
+
+            PowerGeneratingTechnology technology = scheme.getPowerGeneratingTechnologiesEligible().iterator().next();
+            targetFactor = reps.renewableTargetForTenderRepository
+                    .findTechnologySpecificRenewableTargetTimeSeriesForTenderByScheme(scheme, technology.getName())
+                    .getValue(futureStartingTenderTimePoint);
+        } else {
+            targetFactor = reps.renewableTargetForTenderRepository.findRenewableTargetForTenderByScheme(scheme)
+                    .getValue(futureStartingTenderTimePoint);
+        }
+        // get renewable energy target in factor (percent)
+
+        logger.warn("targetFactor; " + targetFactor);
 
         // get totalLoad in MWh
         double totalExpectedConsumption = 0d;
