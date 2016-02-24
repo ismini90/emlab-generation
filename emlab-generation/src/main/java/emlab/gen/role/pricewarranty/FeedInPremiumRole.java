@@ -93,45 +93,62 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                     plantSet = reps.powerPlantRepository
                             .findPowerPlantsStartingOperationThisTickByPowerGridNodeAndTechnology(node,
                                     technology.getName(), getCurrentTick());
-                    // logger.warn("FIP role, plantSet" + plantSet);
-                } else {
-                    plantSet = reps.powerPlantRepository.findOperationalPowerPlantsByPowerGridNodeAndTechnology(node,
-                            technology, getCurrentTick());
-                }
+                                    // logger.warn("FIP role, plantSet");
+                                    // } else {
+                                    // plantSet =
+                                    // reps.powerPlantRepository.findOperationalPowerPlantsByPowerGridNodeAndTechnology(node,
+                                    // technology, getCurrentTick());
+                                    // }
 
-                // query to find power plants by node and technology who have
-                // finished construction this tick
-                for (PowerPlant plant : plantSet) {
+                    // query to find power plants by node and technology who
+                    // have
+                    // finished construction this tick
+                    for (PowerPlant plant : plantSet) {
 
-                    long finishedConstruction = plant.getConstructionStartTime() + plant.calculateActualPermittime()
-                            + plant.calculateActualLeadtime();
+                        long finishedConstruction = plant.getConstructionStartTime() + plant.calculateActualPermittime()
+                                + plant.calculateActualLeadtime();
 
-                    long contractFinishTime = finishedConstruction + renewableSupportScheme.getSupportSchemeDuration();
+                        long contractFinishTime = finishedConstruction
+                                + renewableSupportScheme.getSupportSchemeDuration();
 
-                    // logger.warn("Printing finished construction" +
-                    // finishedConstruction + "and current tick "
-                    // + getCurrentTick());
+                        // logger.warn("Printing finished construction" +
+                        // finishedConstruction
+                        // + "and construction start time" +
+                        // plant.getConstructionStartTime());
 
-                    // logger.warn("Inside contract creation loop");
-                    // create a query to get base cost.
-                    BaseCostFip baseCost = reps.baseCostFipRepository
-                            .findOneBaseCostForTechnologyAndNodeAndTime(node.getName(), technology, getCurrentTick());
-                    // logger.warn("expected base cost query test FIP is " +
-                    // baseCost);
-                    if (baseCost != null) {
-                        contract = new SupportPriceContract();
-                        contract.setStart(getCurrentTick());
-                        contract.setPricePerUnit(baseCost.getCostPerMWh());
-                        contract.setFinish(contractFinishTime);
-                        contract.setPlant(plant);
-                        contract.persist();
+                        // logger.warn("Inside contract creation loop");
+                        BaseCostFip baseCost = null;
+                        // create a query to get base cost.
+                        if (renewableSupportScheme.isTechnologySpecificityEnabled()) {
+                            baseCost = reps.baseCostFipRepository.findOneBaseCostForTechnologyAndNodeAndTime(
+                                    node.getName(), technology, plant.getConstructionStartTime()
+                                            + renewableSupportScheme.getFutureSchemeStartTime());
+                            // logger.warn("expected base cost query test FIP is
+                            // " + baseCost);
+                        } else {
+                            baseCost = reps.baseCostFipRepository
+                                    .findOneTechnologyNeutralBaseCostForTime(plant.getConstructionStartTime()
+                                            + renewableSupportScheme.getFutureSchemeStartTime());
+                            // logger.warn("expected base cost query test FIP is
+                            // " + baseCost);
+                        }
+
+                        if (baseCost != null) {
+
+                            contract = new SupportPriceContract();
+                            contract.setStart(getCurrentTick());
+                            contract.setPricePerUnit(baseCost.getCostPerMWh());
+                            contract.setFinish(contractFinishTime);
+                            contract.setPlant(plant);
+                            contract.persist();
+
+                            // logger.warn("Contract price for plant of
+                            // technology " + plant.getTechnology().getName()
+                            // + "for node " + node.getNodeId() + " is , " +
+                            // contract.getPricePerUnit());
+                        }
+
                     }
-
-                    // logger.warn("Contract price for plant of technology " +
-                    // plant.getTechnology().getName()
-                    // + "for node " + node.getNodeId() + " is , " +
-                    // contract.getPricePerUnit());
-
                 }
 
                 for (PowerPlant plant : reps.powerPlantRepository
@@ -208,17 +225,24 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
                                             * totalGenerationOfPlantInMwh;
                                     double supportPriceExact = contract.getPricePerUnit() * totalGenerationOfPlantInMwh
                                             - sumEMR;
-                                    logger.warn("supportPrice considering avg EM price" + supportPrice
-                                            + "support price exact" + supportPriceExact);
+                                    // logger.warn("supportPrice considering avg
+                                    // EM price" + supportPrice
+                                    // + "support price exact" +
+                                    // supportPriceExact);
                                 } else {
                                     supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh;
                                 }
 
                             } else {
                                 if (renewableSupportScheme.isEmRevenuePaidExpost() == true) {
+
                                     supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh - sumEMR;
+                                    // logger.warn("support price EP true" +
+                                    // supportPrice);
                                 } else {
                                     supportPrice = contract.getPricePerUnit() * totalGenerationOfPlantInMwh;
+                                    // logger.warn("support price EP false" +
+                                    // supportPrice);
                                 }
 
                             }
@@ -247,6 +271,10 @@ public class FeedInPremiumRole extends AbstractRole<RenewableSupportFipScheme> {
 
         reps.nonTransactionalCreateRepository.createCashFlow(regulator, plant.getOwner(), supportPrice,
                 CashFlow.FEED_IN_PREMIUM, getCurrentTick(), plant);
+
+        // logger.warn(
+        // "Fip Premium of " + supportPrice + " from regulator" +
+        // regulator.getName() + "to " + plant.getOwner());
 
     }
 

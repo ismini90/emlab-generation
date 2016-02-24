@@ -94,7 +94,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
     public void act(RenewableSupportFipScheme scheme) {
 
         Regulator regulator = scheme.getRegulator();
-        logger.warn("hello");
+        // logger.warn("hello");
         // should be close to the investor's future time point.
         long futureTimePoint = scheme.getFutureSchemeStartTime() + getCurrentTick();
 
@@ -106,7 +106,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
 
-            logger.warn("technology loop");
+            // logger.warn("technology loop");
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
             if (technology.isIntermittent() && model.isNoPrivateIntermittentRESInvestment())
@@ -237,7 +237,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                     // technology.getName() + "premium " + lcoe);
                 } else {
 
-                    // slogger.warn("Creating base cost map: technology " +
+                    // logger.warn("Creating base cost map: technology " +
                     // technology.getName() + "premium " + lcoe);
                     baseCostMap.put(new Key2D(technology, node), lcoe);
                     // Use that as a key, depending on the mode -
@@ -255,7 +255,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
             MapValueComparator comp = new MapValueComparator(baseCostMap);
             TreeMap<Key2D, Double> meritOrderBaseCost = new TreeMap<Key2D, Double>(comp);
             meritOrderBaseCost.putAll(baseCostMap);
-            logger.warn("Technology Cost Map" + baseCostMap);
+            // logger.warn("Technology Cost Map" + baseCostMap);
 
             double renewableGenerationAccepted = 0d;
             double baseCostFipTechNeutral = 0d;
@@ -263,7 +263,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
             double renewableTargetInMwh = computeRenewableGenerationTarget(scheme, null);
             double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme, null);
-            logger.warn("Renewable Target Total for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+            // logger.warn("Renewable Target Total for tick " + futureTimePoint
+            // + "in MWh is " + renewableTargetInMwh);
 
             // change to prediction
             double totalExpectedConsumption = 0d;
@@ -294,23 +295,26 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 boolean nodeUnique = (Collections.frequency(nodeList, node) == 1) ? true : false;
                 // Determine available capacity in the future in this
                 // segment
-                logger.warn(
-                        "technology name" + technology.getName() + "regulator name" + scheme.getRegulator().getName());
+                // logger.warn(
+                // "technology name" + technology.getName() + "regulator name" +
+                // scheme.getRegulator().getName());
                 if (!technology.isIntermittent()) {
                     technologyPotential = reps.renewableTargetForTenderRepository
                             .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
                                     technology.getName())
                             .getValue(futureTimePoint) * totalExpectedConsumption;
                 } else {
-                    logger.warn("Regulator Name " + regulator.getName() + "Technology " + technology.getName()
-                            + " Node " + node.getName());
+                    // logger.warn("Regulator Name " + regulator.getName() +
+                    // "Technology " + technology.getName()
+                    // + " Node " + node.getName());
                     technologyPotential = reps.renewableTargetForTenderRepository
                             .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
                                     scheme.getRegulator(), technology.getName(), node.getName())
                             .getValue(futureTimePoint) * totalExpectedConsumption;
                 }
 
-                logger.warn("for Technology" + technology.getName() + "the potential in MWh is " + technologyPotential);
+                // logger.warn("for Technology" + technology.getName() + "the
+                // potential in MWh is " + technologyPotential);
                 // plantCapacity/plant.getActualNominalCapacity());
                 if ((renewableTargetInMwh - (renewableGenerationAccepted + technologyPotential) > 0)) {
                     if ((!technology.isIntermittent() && nodeUnique) || technology.isIntermittent()) {
@@ -329,8 +333,9 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 }
             }
 
-            logger.warn("renewable generation accepted is" + renewableGenerationAccepted + "fip set is "
-                    + baseCostFipTechNeutral);
+            // logger.warn("renewable generation accepted is" +
+            // renewableGenerationAccepted + "fip set is "
+            // + baseCostFipTechNeutral);
             BaseCostFip baseCostFip = new BaseCostFip();
 
             baseCostFip.setCostPerMWh(baseCostFipTechNeutral);
@@ -403,7 +408,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                     scheme.getRegulator(), technology.getName());
         }
 
-        logger.warn("Renewable Target is " + target);
+        // logger.warn("Renewable Target is " + target);
 
         targetFactor = target.getYearlyRenewableTargetTimeSeries()
                 .getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());

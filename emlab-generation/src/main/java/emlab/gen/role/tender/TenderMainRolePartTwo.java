@@ -32,8 +32,8 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTender> implements
-        Role<RenewableSupportSchemeTender> {
+public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTender>
+        implements Role<RenewableSupportSchemeTender> {
 
     /*
      * (non-Javadoc)
@@ -77,6 +77,9 @@ public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTe
 
         for (EnergyProducer producer : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
             filterTenderBidsWithSufficientCashflowRole.act(producer);
+            // logger.warn(" Producer Cash Check: After:
+            // filterTenderBidsWithSufficientCashflowRole" +
+            // producer.getCash());
 
         }
 

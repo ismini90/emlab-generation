@@ -102,13 +102,21 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
     @Override
     public void act(RenewableSupportSchemeTender scheme) {
 
+        double targetFactorOverall = reps.renewableTargetForTenderRepository
+                .findTechnologyNeutralRenewableTargetForTenderByRegulator(scheme.getRegulator())
+                .getYearlyRenewableTargetTimeSeries()
+                .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+
         Regulator regulator = scheme.getRegulator();
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
 
         double tenderTarget = scheme.getAnnualRenewableTargetInMwh();
         if (tenderTarget > 0) {
+            int noOfPlantsBid = 0;
 
             for (EnergyProducer agent : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
+                double agentsDownpaymentFractionOfCash = agent.getDownpaymentFractionOfCash();
+                double agentsCurrentcash = agent.getCash();
 
                 logger.warn("Submit Tender Bid Role started for: " + agent);
 
@@ -169,6 +177,10 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                 int noOfPlantsConsider = 0;
 
                 for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
+                    double targetFactorTechSpec = reps.renewableTargetForTenderRepository
+                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByScheme(scheme,
+                                    technology.getName())
+                            .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
 
                     // if (scheme.isTechnologySpecificityEnabled() == true) {
                     // PowerGeneratingTechnology technology =
@@ -211,50 +223,25 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
 
                     for (PowerGridNode node : possibleInstallationNodes) {
 
-                        // logger.warn("node: " + node);
-
                         PowerPlant plant = new PowerPlant();
                         plant.specifyNotPersist(getCurrentTick(), agent, node, technology);
                         plant.setRenewableTenderDummyPowerPlant(true);
+                        double cashAvailableForPlantDownpayments = 0d;
 
-                        noOfPlantsConsider++;
-                        // logger.warn("FOR no of plants considered " +
-                        // noOfPlantsConsider);
-
-                        // logger.warn("SubmitBid 168 - Agent " + agent +
-                        // " looking at technology at tick " + getCurrentTick()
-                        // + " in tech " + technology);
-
-                        // logger.warn(" agent is " + agent +
-                        // " with technology " +
-                        // technology + " and plant " + plant
-                        // + " in node " + node);
-
-                        // if too much capacity of this technology in the
-                        // pipeline
-                        // (not
-                        // limited to the 5 years)
-                        double expectedInstalledCapacityOfTechnology = reps.powerPlantRepository
-                                .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market,
-                                        technology, futureTimePoint);
-
-                        // technology target for the tender role is null
-                        PowerGeneratingTechnologyTarget technologyTarget = reps.powerGenerationTechnologyTargetRepository
-                                .findOneByTechnologyAndMarket(technology, market);
-                        if (technologyTarget != null) {
-                            double technologyTargetCapacity = technologyTarget.getTrend().getValue(futureTimePoint);
-                            expectedInstalledCapacityOfTechnology = (technologyTargetCapacity > expectedInstalledCapacityOfTechnology)
-                                    ? technologyTargetCapacity : expectedInstalledCapacityOfTechnology;
-                        }
+                        // CALCULATING NODE LIMIT
                         double pgtNodeLimit = Double.MAX_VALUE;
 
                         // logger.warn("pgtNodeLimit 1 is: " + pgtNodeLimit);
 
                         PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
                                 .findOneByTechnologyAndNode(technology, plant.getLocation());
+                        double expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
+                                .calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(
+                                        plant.getLocation(), technology, futureTimePoint);
 
                         if (pgtLimit != null) {
-                            pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint);
+                            pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint)
+                                    - (expectedInstalledCapacityOfTechnologyInNode);
                         }
 
                         // Calculate bid quantity. Number of plants to be bid -
@@ -263,53 +250,33 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                         // as
                         // the node permits
 
-                        double ratioNodeCapacity = pgtNodeLimit / plant.getActualNominalCapacity();
+                        double ratioByNodeCapacity = pgtNodeLimit / plant.getActualNominalCapacity();
 
                         // capacityTesting
-                        double numberOfPlants = (long) ratioNodeCapacity; // truncates
+                        double numberOfPlantsByNodeLimit = (long) ratioByNodeCapacity; // truncates
                         // towards
                         // lower
                         // integer
-                        double cashAvailableForPlantDownpayments = agent.getDownpaymentFractionOfCash()
-                                * agent.getCash();
-                        double cashNeededForPlantDownpayments = numberOfPlants * plant.getActualInvestedCapital()
-                                * (1 - agent.getDebtRatioOfInvestments());
 
-                        // if cash strapped, bid quantity according to fraction
-                        // of
-                        // cash,
-                        // which is translated to the number of plants
-                        // available.
+                        // strategy for diversification of bids: cash available
+                        // for each technology is equal to the proportion of
+                        // that
+                        // technology's contribution to the overall renewable
+                        // generation target
 
-                        // If cash needed is larger than current cash of agent
+                        double proportionOfCashAvailableByTechnology = targetFactorTechSpec / targetFactorOverall;
 
-                        // logger.warn("Cash needed for plants; " +
-                        // numberOfPlants *
-                        // plant.getActualInvestedCapital()
-                        // * (1 - agent.getDebtRatioOfInvestments()));
-                        // logger.warn("Cash available for plants; " +
-                        // agent.getDownpaymentFractionOfCash() *
-                        // agent.getCash());
+                        cashAvailableForPlantDownpayments = agentsDownpaymentFractionOfCash * agentsCurrentcash
+                                * proportionOfCashAvailableByTechnology;
 
-                        if (cashNeededForPlantDownpayments > cashAvailableForPlantDownpayments) {
+                        double cashNeededPerPlant = plant.getActualInvestedCapital()
+                                * (1 - agent.getDebtRatioOfInvestments()) / plant.getActualLeadTime();
 
-                            double cashAvailableFraction = (agent.getDownpaymentFractionOfCash() * agent.getCash())
-                                    / (numberOfPlants * plant.getActualInvestedCapital()
-                                            * (1 - agent.getDebtRatioOfInvestments()));
+                        double noOfPlantsByTechnologyTargetBasedCashAvailability = (long) cashAvailableForPlantDownpayments
+                                / cashNeededPerPlant;
 
-                            if (cashAvailableFraction < 0) {
-                                cashAvailableFraction = 0;
-                            }
-
-                            numberOfPlants = cashAvailableFraction * numberOfPlants;
-                            numberOfPlants = (long) numberOfPlants; // truncates
-                            // towards
-                            // lower
-                            // integer
-
-                        }
-
-                        // computing tender bid price
+                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit,
+                                noOfPlantsByTechnologyTargetBasedCashAvailability);
 
                         Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
                         for (Substance fuel : technology.getFuels()) {
@@ -375,8 +342,10 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                             // calculate generation in MWh per year
                             bidPricePerMWh = -projectCost / (discountedTenderReturnFactor * totalGenerationinMWh);
 
-                            int noOfPlantsBid = 0;
-                            for (long i = 1; i <= numberOfPlants; i++) {
+                            logger.warn("for scheme" + scheme.getName() + "bidding for " + noOfPlants + "at price"
+                                    + bidPricePerMWh);
+
+                            for (long i = 1; i <= noOfPlants; i++) {
 
                                 noOfPlantsBid++;
                                 // logger.warn("FOR pp - no of plants Bid; " +
@@ -390,7 +359,7 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                                 TenderBid bid = new TenderBid();
                                 bid.specifyAndPersist(totalGenerationinMWh, plant, agent, zone, node, start, finish,
                                         bidPricePerMWh, technology, getCurrentTick(), Bid.SUBMITTED, scheme,
-                                        cashNeededForPlantDownpayments, agent.getName());
+                                        cashNeededPerPlant, agent.getName());
 
                                 // logger.warn("SubmitBid 454 - Agent " + agent
                                 // + "
@@ -416,7 +385,7 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
 
             } // end for (PowerGeneratingTechnology technology :
               // reps.genericRepository.findAll(PowerGeneratingTechnology.class))
-
+            logger.warn("Number of tender bids for all energy producers " + noOfPlantsBid);
         } // end For schemes
     }
 

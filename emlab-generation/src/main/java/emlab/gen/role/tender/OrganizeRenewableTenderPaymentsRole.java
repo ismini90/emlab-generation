@@ -56,6 +56,9 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
                     .findOneClearingPointForTimeAndRenewableSupportSchemeTender(currentTenderBid.getTime(), scheme);
 
             annualTenderRevenue = currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice();
+            // logger.warn("Accepted Amount " +
+            // currentTenderBid.getAcceptedAmount() + "tenderClearingPoint"
+            // + tenderClearingPoint.getPrice());
             // Is the accepted amount generated every year?
             double annualRevenueFromElectricityMarket = 0;
             if (scheme.isExpostRevenueCalculation() == true) {
@@ -64,10 +67,19 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
                 // if (annualTenderRevenue < 0)
                 // annualTenderRevenue = 0;
 
+            } else {
+                double tenderClearingPrice = 0d;
+                tenderClearingPrice = (Double.isNaN(tenderClearingPoint.getPrice())) ? 0d
+                        : tenderClearingPoint.getPrice();
+                annualTenderRevenue = currentTenderBid.getAcceptedAmount() * tenderClearingPoint.getPrice();
             }
 
             reps.nonTransactionalCreateRepository.createCashFlow(scheme.getRegulator(), currentTenderBid.getBidder(),
                     annualTenderRevenue, CashFlow.TENDER_SUBSIDY, getCurrentTick(), currentTenderBid.getPowerPlant());
+
+            // logger.warn("Producer's cash reserves after payment of tender
+            // subsidy"
+            // + currentTenderBid.getBidder().getCash());
 
         }
         // logger.warn("____PAYMENT ROLE____ annualTenderRevenue" +

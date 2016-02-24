@@ -48,7 +48,8 @@ public class FilterTenderBidsWithSufficientCashForDownpaymentRole extends Abstra
     @Transactional
     public void act(EnergyProducer agent) {
 
-        logger.warn("Filter Tender Bids With Sufficient Cashflow for Downpayment Role started for " + agent);
+        // logger.warn("Filter Tender Bids With Sufficient Cashflow for
+        // Downpayment Role started for " + agent);
 
         Zone zone = agent.getInvestorMarket().getZone();
         String agentName = agent.getName();
@@ -64,25 +65,33 @@ public class FilterTenderBidsWithSufficientCashForDownpaymentRole extends Abstra
 
         for (TenderBid currentTenderBid : sortedTenderBidsbyPrice) {
 
-            // logger.warn("currentTenderBid; " + currentTenderBid);
+            // logger.warn("Filter bid role: currentTenderBid; " +
+            // currentTenderBid + "is of technology"
+            // + currentTenderBid.getTechnology() + "cash needed"
+            // + currentTenderBid.getCashNeededForPlantDownpayments() + "but
+            // cash available"
+            // + cashAvailableForPlantDownpayment);
 
-            if (cashAvailableForPlantDownpayment > 0) {
+            if (cashAvailableForPlantDownpayment - currentTenderBid.getCashNeededForPlantDownpayments() > 0) {
                 cashAvailableForPlantDownpayment = cashAvailableForPlantDownpayment
                         - currentTenderBid.getCashNeededForPlantDownpayments();
-
+                // logger.warn("status of bid; " +
+                // currentTenderBid.getStatus());
                 // logger.warn("cashAvailableForPlantDownpayment; " +
                 // cashAvailableForPlantDownpayment);
-                // logger.warn("currentTenderBid.getCashNeededForPlantDownpayments; "
+                // logger.warn("currentTenderBid.getCashNeededForPlantDownpayments;
+                // "
                 // + currentTenderBid.getCashNeededForPlantDownpayments());
                 // logger.warn("status of bid; " +
                 // currentTenderBid.getStatus());
             }
 
             else {
-                currentTenderBid.setStatus(Bid.NOT_SUBMITTED);
 
-                // logger.warn("status of bid; " +
-                // currentTenderBid.getStatus());
+                currentTenderBid.setStatus(Bid.NOT_SUBMITTED);
+                // logger.warn("status of bid; " + currentTenderBid.getStatus()
+                // + "is of technology"
+                // + currentTenderBid.getTechnology());
 
             }
 

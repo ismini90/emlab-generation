@@ -162,6 +162,13 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 // logger.warn("expected marginal cost in fip role for plant " +
                 // plant + "is " + expectedMarginalCost);
 
+                totalGenerationinMWh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
+                annualMarginalCost = totalGenerationinMWh * expectedMarginalCost;
+                double runningHours = 0d;
+                double expectedGrossProfit = 0d;
+                long numberOfSegments = reps.segmentRepository.count();
+                double totalAnnualExpectedGenerationOfPlant = 0d;
+
                 Map<ElectricitySpotMarket, Double> expectedDemand = new HashMap<ElectricitySpotMarket, Double>();
                 for (ElectricitySpotMarket elm : reps.template.findAll(ElectricitySpotMarket.class)) {
                     GeometricTrendRegression gtr = new GeometricTrendRegression();
@@ -172,15 +179,12 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     expectedDemand.put(elm, gtr.predict(futureTimePoint));
                 }
 
-                totalGenerationinMWh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
-                annualMarginalCost = totalGenerationinMWh * expectedMarginalCost;
-                double runningHours = 0d;
-                double expectedGrossProfit = 0d;
-                long numberOfSegments = reps.segmentRepository.count();
-                double totalAnnualExpectedGenerationOfPlant = 0d;
-
                 MarketInformation marketInformation = new MarketInformation(market, expectedDemand, expectedFuelPrices,
                         expectedCO2Price.get(market).doubleValue(), futureTimePoint);
+
+                double loadFactor = 0d;
+                double expectedAnnualVariableCost = 0d;
+                double expectedAnnualVariableRevenue = 0d;
 
                 for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                     double expectedElectricityPrice = marketInformation.expectedElectricityPricesPerSegment
@@ -190,19 +194,26 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     runningHours = runningHours + hours;
                     if (technology.isIntermittent()) {
 
-                        expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
-                                * plant.getActualNominalCapacity()
-                                * reps.intermittentTechnologyNodeLoadFactorRepository
-                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
-                                        .getLoadFactorForSegment(segmentLoad.getSegment());
+                        loadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
+                                .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
+                                .getLoadFactorForSegment(segmentLoad.getSegment());
 
-                        totalAnnualExpectedGenerationOfPlant += hours * plant.getActualNominalCapacity()
-                                * reps.intermittentTechnologyNodeLoadFactorRepository
-                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
-                                        .getLoadFactorForSegment(segmentLoad.getSegment());
+                        expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
+                                * plant.getActualNominalCapacity() * loadFactor;
+                        expectedAnnualVariableCost += expectedMarginalCost * hours * plant.getActualNominalCapacity()
+                                * loadFactor;
+                        expectedAnnualVariableRevenue += expectedElectricityPrice * hours
+                                * plant.getActualNominalCapacity() * loadFactor;
+
+                        totalAnnualExpectedGenerationOfPlant += hours * plant.getActualNominalCapacity() * loadFactor;
 
                     } else {
                         expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours * plant
+                                .getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
+
+                        expectedAnnualVariableCost += expectedMarginalCost * hours * plant
+                                .getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
+                        expectedAnnualVariableRevenue += expectedElectricityPrice * hours * plant
                                 .getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
 
                         totalAnnualExpectedGenerationOfPlant += hours * plant.getAvailableCapacity(futureTimePoint,
@@ -218,37 +229,51 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 // fullLoadHours);
 
                 double fixedOMCost = calculateFixedOperatingCost(plant, getCurrentTick());
+
                 double operatingProfit = expectedGrossProfit - fixedOMCost;
 
-                long durationOfSupportScheme = scheme.getSupportSchemeDuration();
-                long finishedConstruction = plant.calculateActualPermittime() + plant.calculateActualLeadtime();
+                // VERIFICATION:
+                double operatingCost = expectedAnnualVariableCost + fixedOMCost;
+                double operatingRevenue = expectedAnnualVariableRevenue;
 
-                // logger.warn("Fixed OM cost for technology " +
-                // plant.getTechnology().getName() + " is " + fixedOMCost
-                // + " and operatingCost is " + operatingCost);
+                // logger.warn("Compute FIP: Technology" + technology.getName()
+                // + ": Operating Cost" + operatingCost
+                // + "operating revenue" + operatingRevenue);
+
+                // End VERIFICATION
+
+                long durationOfSupportScheme = scheme.getSupportSchemeDuration();
+
+                double wacc = (1 - regulator.getDebtRatioOfInvestments()) * regulator.getEquityInterestRate()
+                        + regulator.getDebtRatioOfInvestments() * regulator.getLoanInterestRate();
 
                 TreeMap<Integer, Double> discountedProjectCapitalOutflow = calculateSimplePowerPlantInvestmentCashFlow(
-                        (int) technology.getDepreciationTime(), (int) plant.getActualLeadTime(),
-                        plant.getActualInvestedCapital(), 0);
+                        technology.getDepreciationTime(), (int) plant.getActualLeadTime(),
+                        plant.getActualInvestedCapital(), 0); // returns
+                                                              // negative value,
+                                                              // cause
+                                                              // investment cost
+                                                              // is -ve in
+                                                              // function
 
-                // Creation of in cashflow during operation
-                TreeMap<Integer, Double> discountedProjectCashOutflow = calculateSimplePowerPlantInvestmentCashFlow(
-                        (int) technology.getDepreciationTime(), (int) plant.getActualLeadTime(), 0, operatingProfit);
+                // returns +ve cause 'operating profit' is positive
+                TreeMap<Integer, Double> discountedProjectOperatingRevenue = calculateSimplePowerPlantInvestmentCashFlow(
+                        technology.getDepreciationTime(), (int) plant.getActualLeadTime(), 0, operatingRevenue);
+
+                TreeMap<Integer, Double> discountedProjectOperatingCost = calculateSimplePowerPlantInvestmentCashFlow(
+                        technology.getDepreciationTime(), (int) plant.getActualLeadTime(), 0, -operatingCost);
 
                 TreeMap<Integer, Double> factorDiscountedGenerationSeries = calculateSimplePowerPlantInvestmentCashFlow(
                         (int) durationOfSupportScheme, (int) plant.getActualLeadTime(), 0, 1);
 
+                double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);// are
+                double discountedOpRevenue = npv(discountedProjectOperatingRevenue, wacc);
+                double discountedOpCost = npv(discountedProjectOperatingCost, wacc);
+
                 // Calculation of weighted average cost of capital,
                 // based on regulator's assumption of companies debt-ratio
-                double wacc = (1 - regulator.getDebtRatioOfInvestments()) * regulator.getEquityInterestRate()
-                        + regulator.getDebtRatioOfInvestments() * regulator.getLoanInterestRate();
 
-                double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);
-                // logger.warn("discountedCapitalCosts " +
-                // discountedCapitalCosts);
-                double discountedOpProfit = npv(discountedProjectCashOutflow, wacc);
                 double factorDiscountedGeneration = npv(factorDiscountedGenerationSeries, wacc);
-                // logger.warn("discountedOpCost " + discountedOpProfit);
                 BiasFactor biasFactor = reps.renewableSupportSchemeRepository
                         .findBiasFactorGivenTechnologyNodeAndScheme(technology.getName(), node.getName(), scheme);
 
@@ -260,21 +285,24 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 }
 
                 // FOR VERIFICATION
-                double projectValue = discountedCapitalCosts + discountedOpProfit;
-
+                double projectValue = discountedCapitalCosts + discountedOpCost + discountedOpRevenue;
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
+
+                // logger.warn("Compute FIP:discountedCapitalCosts " +
+                // discountedCapitalCosts + "discountedOpCost"
+                // + discountedOpCost + "discountedOpRevenue" +
+                // discountedOpRevenue);
+                // logger.warn("Project Value " + projectValue);
 
                 if (projectValue < 0) {
                     fiPremium = -projectValue * biasFactorValue / (totalGenerationinMWh * factorDiscountedGeneration);
-                    // fiPremium = -projectValue / (totalGenerationinMWh *
-                    // factorDiscountedGeneration);
-
                 } else {
                     fiPremium = 0d;
                 }
 
-                logger.warn("expectedBaseCost in fipRole for plant" + plant + "in tick" + futureTimePoint + "is "
-                        + fiPremium);
+                // logger.warn("expectedBaseCost in fipRole for plant" + plant +
+                // "in tick" + futureTimePoint + "is "
+                // + fiPremium);
                 if (scheme.isTechnologySpecificityEnabled() == true) {
                     BaseCostFip baseCostFip = new BaseCostFip();
 
@@ -286,11 +314,10 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     baseCostFip.persist();
                 } else {
 
-                    logger.warn("Creating base cost map: technology " + technology.getName() + "premium " + fiPremium);
-                    baseCostMap.put(new Key2D(technology, node), fiPremium);
-                    // Use that as a key, depending on the mode - technology,
-                    // location specificity, to create your merit order in the
-                    // code section below.
+                    // logger.warn("Creating base cost map: technology " +
+                    // technology.getName() + "premium " + fiPremium);
+                    // baseCostMap.put(new Key2D(technology, node), fiPremium);
+
                 }
 
             }
@@ -315,9 +342,15 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
 
             // change to prediction
             double totalExpectedConsumption = 0d;
-            double demandFactor = market.getDemandGrowthTrend()
-                    .getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
 
+            GeometricTrendRegression gtr = new GeometricTrendRegression();
+            for (long time = getCurrentTick(); time > getCurrentTick()
+                    - scheme.getRegulator().getNumberOfYearsLookingBackToForecastDemand()
+                    && time >= 0; time = time - 1) {
+                gtr.addData(time, market.getDemandGrowthTrend().getValue(time));
+            }
+
+            double demandFactor = gtr.predict(futureTimePoint);
             for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                 // logger.warn("segmentLoad: " + segmentLoad);
                 totalExpectedConsumption += segmentLoad.getBaseLoad() * demandFactor
@@ -329,7 +362,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
             else
                 renewableTargetInMwh = 0;
 
-            logger.warn("Actual Target for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+            // logger.warn("Actual Target for tick " + futureTimePoint + "in MWh
+            // is " + renewableTargetInMwh);
 
             for (Entry<Key2D, Double> technologyCost : meritOrderBaseCost.entrySet()) {
                 Key2D baseCostKey = technologyCost.getKey();
@@ -377,8 +411,9 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 }
             }
 
-            logger.warn("renewable generation accepted is" + renewableGenerationAccepted + "fip set is "
-                    + baseCostFipTechNeutral);
+            // logger.warn("renewable generation accepted is" +
+            // renewableGenerationAccepted + "fip set is "
+            // + baseCostFipTechNeutral);
             BaseCostFip baseCostFip = new BaseCostFip();
 
             baseCostFip.setCostPerMWh(baseCostFipTechNeutral);
@@ -434,7 +469,14 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(zone);
 
         // Assuming perfect knowledge of demand
-        demandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
+
+        GeometricTrendRegression gtr = new GeometricTrendRegression();
+        for (long time = getCurrentTick(); time > getCurrentTick()
+                - scheme.getRegulator().getNumberOfYearsLookingBackToForecastDemand() && time >= 0; time = time - 1) {
+            gtr.addData(time, market.getDemandGrowthTrend().getValue(time));
+        }
+        demandFactor = gtr.predict(getCurrentTick() + scheme.getFutureSchemeStartTime());
+
         /*
          * it aggregates segments from both countries, so the boolean should
          * actually be true here and the code adjusted to FALSE case. Or a query
@@ -451,7 +493,7 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     scheme.getRegulator(), technology.getName());
         }
 
-        logger.warn("Renewable Target is " + target);
+        // logger.warn("Renewable Target is " + target);
 
         targetFactor = target.getYearlyRenewableTargetTimeSeries()
                 .getValue(getCurrentTick() + scheme.getFutureSchemeStartTime());
@@ -556,6 +598,21 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
             npv += netCashFlow.get(iterator).doubleValue() / Math.pow(1 + wacc, iterator.intValue());
         }
         return npv;
+    }
+
+    private Map<ElectricitySpotMarket, Double> demandForecast(ElectricitySpotMarket market, long futureTimePoint,
+            EnergyProducer producer) {
+        Map<ElectricitySpotMarket, Double> expectedDemand = new HashMap<ElectricitySpotMarket, Double>();
+        for (ElectricitySpotMarket elm : reps.template.findAll(ElectricitySpotMarket.class)) {
+            GeometricTrendRegression gtr = new GeometricTrendRegression();
+            for (long time = getCurrentTick(); time > getCurrentTick()
+                    - producer.getNumberOfYearsBacklookingForForecasting() && time >= 0; time = time - 1) {
+                gtr.addData(time, elm.getDemandGrowthTrend().getValue(time));
+            }
+            expectedDemand.put(elm, gtr.predict(futureTimePoint));
+        }
+
+        return expectedDemand;
     }
 
     /**

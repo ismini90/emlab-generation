@@ -358,7 +358,9 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
             if (model.isCo2TradingImplemented()) {
                 payCO2AuctionRole.act(producer);
                 // producer.act(payCO2AuctionRole);
+
             }
+
         }
         timerMarket.stop();
         logger.warn("        took: {} seconds.", timerMarket.seconds());
@@ -381,6 +383,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
             // 2) submit bids
             submitBidsToCommodityMarketRole.act(producer);
+
             // producer.act(submitBidsToCommodityMarketRole);
         }
 
@@ -393,7 +396,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         timerMarket.stop();
         logger.warn("        took: {} seconds.", timerMarket.seconds());
 
-        if (model.isRenewableTenderSchemeImplemented()) {
+        if (model.isRenewableTenderSchemeImplemented() && getCurrentTick() > 0) {
 
             logger.warn(" 6.a1 Running Renewable Tender Scheme Part One");
 
@@ -436,7 +439,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
 
         }
 
-        if (model.isFeedInPremiumImplemented()) {
+        if (model.isFeedInPremiumImplemented() && getCurrentTick() > 0) {
             logger.warn(" 6a. Run Feed In Premium Scheme");
             for (RenewableSupportFipScheme scheme : reps.renewableSupportSchemeRepository.findAll()) {
 
