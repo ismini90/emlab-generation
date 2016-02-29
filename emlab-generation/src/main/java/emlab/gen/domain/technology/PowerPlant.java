@@ -557,6 +557,9 @@ public class PowerPlant {
     @Transactional
     public void specifyAndPersist(long time, EnergyProducer energyProducer, PowerGridNode location,
             PowerGeneratingTechnology technology) {
+
+        System.out.print("POWER PLANT BEING SPECIFIED AND PERSISTED!!");
+
         this.persist();
         specifyNotPersist(time, energyProducer, location, technology);
 
@@ -564,6 +567,9 @@ public class PowerPlant {
 
     public void specifyNotPersist(long time, EnergyProducer energyProducer, PowerGridNode location,
             PowerGeneratingTechnology technology) {
+
+        System.out.print("SPECIFIED NOTTT PERSISTED!!");
+
         String label = energyProducer.getName() + " - " + technology.getName();
         this.setName(label);
         this.setTechnology(technology);

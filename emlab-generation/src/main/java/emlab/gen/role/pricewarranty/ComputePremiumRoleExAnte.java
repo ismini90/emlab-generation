@@ -314,9 +314,10 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     baseCostFip.persist();
                 } else {
 
+                    baseCostMap.put(new Key2D(technology, node), fiPremium);
+
                     // logger.warn("Creating base cost map: technology " +
                     // technology.getName() + "premium " + fiPremium);
-                    // baseCostMap.put(new Key2D(technology, node), fiPremium);
 
                 }
 

@@ -167,6 +167,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
             Iterable<PowerGridNode> possibleInstallationNodes;
             double nodeLimitNonIntermittentTechnology = 0d;
+            // logger.warn("technology considered is" + technology.getName());
 
             /*
              * For dispatchable technologies just choose a random node. For
@@ -243,24 +244,27 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 if ((expectedInstalledCapacityOfTechnology + plant.getActualNominalCapacity())
                         / (marketInformation.maxExpectedLoad + plant.getActualNominalCapacity()) > technology
                                 .getMaximumInstalledCapacityFractionInCountry()) {
-                    // logger.warn(agent +
-                    // " will not invest in {} technology because there's too
-                    // much of this type in the market",
+                    // logger.warn(
+                    // agent + " will not invest in {} technology because
+                    // there's too much of this type in the market",
                     // technology);
                 } else if ((expectedInstalledCapacityOfTechnologyInNode
                         + plant.getActualNominalCapacity()) > pgtNodeLimit) {
 
-                    // logger.warn("NOT INVESTING COZ OF NODE LIMIT: " + ">" +
-                    // pgtNodeLimit);
+                    // logger.warn("NOT INVESTING in " + technology.getName() +
+                    // "COZ OF NODE LIMIT: " + pgtNodeLimit);
                 } else if (expectedOwnedCapacityInMarketOfThisTechnology > expectedOwnedTotalCapacityInMarket
                         * technology.getMaximumInstalledCapacityFractionPerAgent()) {
-                    // logger.warn(agent +
-                    // " will not invest in {} technology because there's too
-                    // much capacity planned by him",
+
+                    // logger.warn(
+                    // agent + " will not invest in {} technology because
+                    // there's too much capacity planned by him",
                     // technology);
+
                     // } else if (capacityInPipelineInMarket > 0.2 *
                     // marketInformation.maxExpectedLoad) {
-                    // logger.warn("Not investing because more than 20% of
+                    // logger.warn("Not investing because more than 20%
+                    // of
                     // demand in pipeline.");
 
                     // } else if ((capacityOfTechnologyInPipeline > 2.0 *
@@ -274,9 +278,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 } else if (plant.getActualInvestedCapital()
                         * (1 - agent.getDebtRatioOfInvestments()) > agent.getDownpaymentFractionOfCash()
                                 * agent.getCash()) {
-                    // logger.warn(agent +
-                    // " will not invest in {} technology as he does not have
-                    // enough money for downpayment",
+                    // logger.warn(
+                    // agent + " will not invest in {} technology as he does not
+                    // have enough money for downpayment",
                     // technology);
                 } else {
 
@@ -329,7 +333,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             if (i.getPowerGeneratingTechnologiesEligible().contains(technology)
                                     && market.getZone().getName() == zoneScheme.getName()) {
                                 scheme = i;
-                                logger.warn("scheme is " + i.getName());
+                                // logger.warn("scheme is " + i.getName());
                                 break;
                             } else {
                                 scheme = null;
@@ -382,6 +386,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                         double expectedElectricityPrice = marketInformation.expectedElectricityPricesPerSegment
                                 .get(segmentLoad.getSegment());
+
+                        // logger.warn("expected electricity price" +
+                        // expectedElectricityPrice);
                         double hours = segmentLoad.getSegment().getLengthInHours();
                         if (scheme != null && scheme.getPowerGeneratingTechnologiesEligible().contains(technology)) {
                             if (technology.isIntermittent()) {
@@ -505,6 +512,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         // discountedCapitalCosts
                         // + "discountedOpCost" + discountedOpCost +
                         // "discountedOpRevenue" + discountedOpRevenue);
+
                         double projectValueOld = discountedOpRevenue + discountedCapitalCosts + discountedOpCost;
                         // logger.warn("Project Value Original" +
                         // projectValueOld);
@@ -600,9 +608,11 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             // plant.getActualNominalCapacity());
 
                         }
+
                     }
 
                 }
+                plant = null;
 
             }
         }
@@ -861,6 +871,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
             meritOrder = new TreeMap<PowerPlant, Double>(comp);
             meritOrder.putAll(marginalCostMap);
 
+            // logger.warn("Merit Order:" + meritOrder);
+
             long numberOfSegments = reps.segmentRepository.count();
 
             double demandFactor = expectedDemand.get(market).doubleValue();
@@ -898,8 +910,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                 // logger.warn("Segment " +
                 // segmentLoad.getSegment().getSegmentID() + " supply equals " +
-                // segmentSupply + " and segment demand equals " +
-                // expectedSegmentLoad);
+                // segmentSupply
+                // + " and segment demand equals " + expectedSegmentLoad);
 
                 // Find strategic reserve operator for the market.
                 double reservePrice = 0;

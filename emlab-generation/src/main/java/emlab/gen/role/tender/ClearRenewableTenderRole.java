@@ -77,6 +77,7 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
         // Goes through the list of the bids that are sorted on ascending order
         // by price
         double noOfBids = 0d;
+        int noOfBidsAccepted = 0;
         double pgtNodeLimit = Double.MAX_VALUE;
         for (TenderBid currentTenderBid : sortedTenderBidsbyPriceAndScheme) {
             noOfBids++;
@@ -93,7 +94,7 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
             // if the tender is not cleared yet, it collects complete bids
             if (isTheTenderCleared == false) {
                 if (tenderQuota - (sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount()) >= -clearingEpsilon) {
-
+                    noOfBidsAccepted++;
                     acceptedSubsidyPrice = currentTenderBid.getPrice();
                     currentTenderBid.setStatus(Bid.ACCEPTED);
                     currentTenderBid.setAcceptedAmount(currentTenderBid.getAmount());
@@ -138,12 +139,11 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
                 currentTenderBid.setAcceptedAmount(0);
 
             }
-
             currentTenderBid.persist();
 
         } // FOR Loop ends here
 
-        logger.warn("Total No of Bids " + noOfBids + "accepted subsidy price " + acceptedSubsidyPrice
+        logger.warn("Total No of Bids Accepted " + noOfBidsAccepted + " Accepted subsidy price " + acceptedSubsidyPrice
                 + "accepted subsidy quantity" + sumOfTenderBidQuantityAccepted);
         // This creates a clearing point that contains general information about
         // the cleared tender

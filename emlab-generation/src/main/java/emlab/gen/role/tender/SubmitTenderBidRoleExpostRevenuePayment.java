@@ -118,7 +118,7 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                 double agentsDownpaymentFractionOfCash = agent.getDownpaymentFractionOfCash();
                 double agentsCurrentcash = agent.getCash();
 
-                logger.warn("Submit Tender Bid Role started for: " + agent);
+                // logger.warn("Submit Tender Bid Role started for: " + agent);
 
                 long futureTimePoint = getCurrentTick() + agent.getInvestmentFutureTimeHorizon();
 
@@ -342,8 +342,9 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                             // calculate generation in MWh per year
                             bidPricePerMWh = -projectCost / (discountedTenderReturnFactor * totalGenerationinMWh);
 
-                            logger.warn("for scheme" + scheme.getName() + "bidding for " + noOfPlants + "at price"
-                                    + bidPricePerMWh);
+                            // logger.warn("for scheme" + scheme.getName() +
+                            // "bidding for " + noOfPlants + "at price"
+                            // + bidPricePerMWh);
 
                             for (long i = 1; i <= noOfPlants; i++) {
 
@@ -357,27 +358,15 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                                         + plant.calculateActualPermittime() + tenderSchemeDuration;
 
                                 TenderBid bid = new TenderBid();
-                                bid.specifyAndPersist(totalGenerationinMWh, plant, agent, zone, node, start, finish,
+                                bid.specifyNotPersist(totalGenerationinMWh, plant, agent, zone, node, start, finish,
                                         bidPricePerMWh, technology, getCurrentTick(), Bid.SUBMITTED, scheme,
                                         cashNeededPerPlant, agent.getName());
-
-                                // logger.warn("SubmitBid 454 - Agent " + agent
-                                // + "
-                                // ,generation " + totalGenerationinMWh
-                                // + " ,plant " + plant + " ,zone " + zone + "
-                                // ,node " +
-                                // node + " ,start " + start
-                                // + " ,finish " + finish + " ,bid price " +
-                                // bidPricePerMWh + " ,tech " + technology
-                                // + " ,current tick " + getCurrentTick() + "
-                                // ,status "
-                                // + Bid.SUBMITTED + " ,scheme "
-                                // + scheme);
+                                persistTenderBid(bid);
 
                             } // end for loop for tender bids
 
                         } // end else calculate generation in MWh per year
-                        plant.setDismantleTime(getCurrentTick());
+                        plant = null;
                     } // end else calculate discounted tender return factor
                       // term
 
@@ -389,6 +378,11 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
         } // end For schemes
     }
 
+    @Transactional
+    private void persistTenderBid(TenderBid bid) {
+        bid.persist();
+        // logger.warn("bid has been persisted");
+    }
     // }
 
     // Creates n downpayments of equal size in each of the n building years of a

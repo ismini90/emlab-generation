@@ -15,10 +15,13 @@
  ******************************************************************************/
 package emlab.gen.domain.agent;
 
+import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import agentspring.agent.Agent;
 import agentspring.simulation.SimulationParameter;
+import emlab.gen.domain.gis.Zone;
 
 @NodeEntity
 public class EnergyConsumer extends DecarbonizationAgent implements Agent {
@@ -32,8 +35,19 @@ public class EnergyConsumer extends DecarbonizationAgent implements Agent {
     @SimulationParameter(label = "Contract willingness to pay factor", from = 1, to = 2)
     private double contractWillingnessToPayFactor;
 
+    @RelatedTo(type = "CONSUMER_IN_ZONE", elementClass = Zone.class, direction = Direction.OUTGOING)
+    private Zone zone;
+
     public double getLtcMaximumCoverageFraction() {
         return ltcMaximumCoverageFraction;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
     }
 
     public void setLtcMaximumCoverageFraction(double ltcMaximumCoverageFraction) {

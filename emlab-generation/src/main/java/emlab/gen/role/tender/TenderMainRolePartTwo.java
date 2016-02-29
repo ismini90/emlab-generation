@@ -76,7 +76,7 @@ public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTe
         ElectricitySpotMarket market = reps.marketRepository.findElectricitySpotMarketForZone(regulator.getZone());
 
         for (EnergyProducer producer : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
-            filterTenderBidsWithSufficientCashflowRole.act(producer);
+            // filterTenderBidsWithSufficientCashflowRole.act(producer);
             // logger.warn(" Producer Cash Check: After:
             // filterTenderBidsWithSufficientCashflowRole" +
             // producer.getCash());

@@ -239,8 +239,10 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         double noOfPlantsByTechnologyTargetBasedCashAvailability = (long) cashAvailableForPlantDownpayments
                                 / cashNeededPerPlant;
 
-                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit,
-                                noOfPlantsByTechnologyTargetBasedCashAvailability);
+                        double noOfPlantsByTarget = scheme.getAnnualRenewableTargetInMwh()
+                                / (plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity());
+
+                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit, noOfPlantsByTarget);
 
                         // logger.warn("NUMBER OF PLANTS TO BE BID FOR" +
                         // numberOfPlants);
@@ -366,8 +368,7 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                             // calculate discounted tender return factor term
                             TreeMap<Integer, Double> discountedTenderReturnFactorSummingTerm = calculateSimplePowerPlantInvestmentCashFlow(
-                                    (int) tenderSchemeDuration,
-                                    (int) (plant.calculateActualLeadtime() + plant.calculateActualPermittime()), 0, 1);
+                                    (int) tenderSchemeDuration, (int) (plant.calculateActualLeadtime()), 0, 1);
                             double discountedTenderReturnFactor = npv(discountedTenderReturnFactorSummingTerm, wacc);
 
                             // logger.warn("discountedTenderReturnFactor; " +
@@ -426,7 +427,7 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                         } // end else calculate discounted tender return factor
                           // term
-                        plant.setDismantleTime(getCurrentTick());
+                        plant = null;
 
                     } // end for loop possible installation nodes
 

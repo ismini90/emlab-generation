@@ -22,6 +22,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import agentspring.simulation.SimulationParameter;
+import emlab.gen.domain.agent.EnergyConsumer;
 import emlab.gen.domain.market.DecarbonizationMarket;
 import emlab.gen.trend.TimeSeriesImpl;
 
@@ -33,6 +34,9 @@ public class ElectricitySpotMarket extends DecarbonizationMarket {
 
     @RelatedTo(type = "DEMANDGROWTH_TREND", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
     private TimeSeriesImpl demandGrowthTrend;
+
+    @RelatedTo(type = "ESM_CONSUMER", elementClass = EnergyConsumer.class, direction = Direction.OUTGOING)
+    private EnergyConsumer consumer;
 
     private double valueOfLostLoad;
 
@@ -80,6 +84,14 @@ public class ElectricitySpotMarket extends DecarbonizationMarket {
 
     public void setDemandGrowthTrend(TimeSeriesImpl demandGrowthTrend) {
         this.demandGrowthTrend = demandGrowthTrend;
+    }
+
+    public EnergyConsumer getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(EnergyConsumer consumer) {
+        this.consumer = consumer;
     }
 
 }

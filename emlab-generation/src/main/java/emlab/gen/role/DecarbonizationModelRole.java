@@ -327,17 +327,19 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
 
         timerMarket.reset();
         timerMarket.start();
-        for (EnergyProducer producer : reps.genericRepository.findAll(EnergyProducer.class)) {
-            receiveLongTermContractPowerRevenuesRole.act(producer);
-            // producer.act(receiveLongTermContractPowerRevenuesRole);
-        }
+        // for (EnergyProducer producer :
+        // reps.genericRepository.findAll(EnergyProducer.class)) {
+        // receiveLongTermContractPowerRevenuesRole.act(producer);
+        // producer.act(receiveLongTermContractPowerRevenuesRole);
+        // }
         for (ElectricitySpotMarket electricitySpotMarket : reps.marketRepository.findAllElectricitySpotMarkets()) {
             processAcceptedPowerPlantDispatchRole.act(electricitySpotMarket);
             // electricitySpotMarket.act(processAcceptedPowerPlantDispatchRole);
         }
-        for (StrategicReserveOperator strategicReserveOperator : reps.strategicReserveOperatorRepository.findAll()) {
-            acceptedPowerPlantDispatchRoleinSR.act(strategicReserveOperator);
-        }
+        // for (StrategicReserveOperator strategicReserveOperator :
+        // reps.strategicReserveOperatorRepository.findAll()) {
+        // acceptedPowerPlantDispatchRoleinSR.act(strategicReserveOperator);
+        // }
         // logger.warn(" 4. Processing Strategic Reserve Payment ");
         timerMarket.stop();
         logger.warn("        paying took: {} seconds.", timerMarket.seconds());
