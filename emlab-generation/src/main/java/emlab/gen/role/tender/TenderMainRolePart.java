@@ -29,7 +29,7 @@ import emlab.gen.repository.Reps;
  *
  */
 @RoleComponent
-public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTender>
+public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTender>
         implements Role<RenewableSupportSchemeTender> {
 
     /*
@@ -53,15 +53,14 @@ public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTe
     // FilterTenderBidsWithSufficientCashForDownpaymentRole
     // filterTenderBidsWithSufficientCashflowRole;
     //
-    // @Autowired
-    // ClearRenewableTenderRole clearRenewableTenderRole;
-    //
-    // @Autowired
-    // CreatePowerPlantsOfAcceptedTenderBidsRole
-    // createPowerPlantsOfAcceptedTenderBidsRole;
-    //
-    // @Autowired
-    // OrganizeRenewableTenderPaymentsRole organizeRenewableTenderPaymentsRole;
+    @Autowired
+    ClearRenewableTenderRole clearRenewableTenderRole;
+
+    @Autowired
+    CreatePowerPlantsOfAcceptedTenderBidsRole createPowerPlantsOfAcceptedTenderBidsRole;
+
+    @Autowired
+    OrganizeRenewableTenderPaymentsRole organizeRenewableTenderPaymentsRole;
 
     @Override
     @Transactional
@@ -89,11 +88,11 @@ public class TenderMainRolePartOne extends AbstractRole<RenewableSupportSchemeTe
         //
         // }
 
-        // clearRenewableTenderRole.act(scheme);
-        //
-        // createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
-        //
-        // organizeRenewableTenderPaymentsRole.act(scheme);
+        clearRenewableTenderRole.act(scheme);
+
+        createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
+
+        organizeRenewableTenderPaymentsRole.act(scheme);
 
     }
 
