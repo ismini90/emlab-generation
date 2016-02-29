@@ -146,6 +146,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private FilterTenderBidsWithSufficientCashForDownpaymentRole filterTenderBidsWithSufficientCashflowRole;
 
+    public static int powerPlantCount = 0;
     @Autowired
     Reps reps;
 

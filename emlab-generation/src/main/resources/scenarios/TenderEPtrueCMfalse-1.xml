@@ -1106,7 +1106,7 @@
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
 		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
-	<!--  
+	
 	<bean id="energyProducerC" class="emlab.gen.domain.agent.EnergyProducer"
 		p:name="Energy Producer C" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
@@ -1117,7 +1117,7 @@
 		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="NetherlandsElectricitySpotMarket" /> -->
+		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
 
 	<bean id="energyProducerD" class="emlab.gen.domain.agent.EnergyProducer"
 			p:name="Energy Producer D" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
@@ -1218,7 +1218,7 @@
 			<list>
 				<ref bean="energyProducerA" />
 				<ref bean="energyProducerB" />
-				<!--  <ref bean="energyProducerC" />  -->
+				<ref bean="energyProducerC" /> 
 				<ref bean="energyProducerD" />
 			</list>
 		</property>

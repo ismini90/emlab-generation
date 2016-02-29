@@ -68,13 +68,13 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
 
         calculateRenewableTargetForTenderRole.act(scheme);
 
-        if (scheme.isExpostRevenueCalculation() == true) {
+        // if (scheme.isExpostRevenueCalculation() == true) {
 
-            submitTenderBidRoleExpostRevenuePayment.act(scheme);
+        // submitTenderBidRoleExpostRevenuePayment.act(scheme);
 
-        } else {
-            submitTenderBidRole.act(scheme);
-        }
+        // } else {
+        submitTenderBidRole.act(scheme);
+        // }
 
         // this role needs to be adjusted for the techspec feature
         // Regulator regulator = scheme.getRegulator();

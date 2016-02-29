@@ -275,8 +275,10 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                         double noOfPlantsByTechnologyTargetBasedCashAvailability = (long) cashAvailableForPlantDownpayments
                                 / cashNeededPerPlant;
 
-                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit,
-                                noOfPlantsByTechnologyTargetBasedCashAvailability);
+                        double noOfPlantsByTarget = scheme.getAnnualRenewableTargetInMwh()
+                                / (plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity());
+
+                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit, noOfPlantsByTarget);
 
                         Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
                         for (Substance fuel : technology.getFuels()) {
@@ -366,7 +368,8 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                             } // end for loop for tender bids
 
                         } // end else calculate generation in MWh per year
-                        plant = null;
+                        plant.setDismantleTime(getCurrentTick());
+
                     } // end else calculate discounted tender return factor
                       // term
 
