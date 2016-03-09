@@ -84,11 +84,11 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
     @Autowired
     Neo4jTemplate template;
 
-    public class Key2D {
+    private class Key2D {
         private final PowerGeneratingTechnology techKey;
         private final PowerGridNode nodeKey;
 
-        public Key2D(PowerGeneratingTechnology key1, PowerGridNode key2) {
+        private Key2D(PowerGeneratingTechnology key1, PowerGridNode key2) {
             this.techKey = key1;
             this.nodeKey = key2;
         }

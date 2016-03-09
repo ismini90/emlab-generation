@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.OptimizationException;
@@ -112,10 +111,9 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
         double tenderTarget = scheme.getAnnualRenewableTargetInMwh();
         if (tenderTarget > 0) {
-            int noOfPlantsBid = 0;
 
             for (EnergyProducer agent : reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market)) {
-
+                int noOfPlantsBid = 0;
                 double agentsDownpaymentFractionOfCash = agent.getDownpaymentFractionOfCash();
                 double agentsCurrentcash = agent.getCash();
                 // logger.warn("Agent's CASH: " + agentsCurrentcash);
@@ -174,14 +172,16 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                      * For dispatchable technologies just choose a random node.
                      * For intermittent evaluate all possibilities.
                      */
-                    if (technology.isIntermittent())
-                        possibleInstallationNodes = reps.powerGridNodeRepository
-                                .findAllPowerGridNodesByZone(market.getZone());
-                    else {
-                        possibleInstallationNodes = new LinkedList<PowerGridNode>();
-                        ((LinkedList<PowerGridNode>) possibleInstallationNodes).add(reps.powerGridNodeRepository
-                                .findAllPowerGridNodesByZone(market.getZone()).iterator().next());
-                    }
+                    // if (technology.isIntermittent())
+                    possibleInstallationNodes = reps.powerGridNodeRepository
+                            .findAllPowerGridNodesByZone(market.getZone());
+                    // else {
+                    // possibleInstallationNodes = new
+                    // LinkedList<PowerGridNode>();
+                    // ((LinkedList<PowerGridNode>)
+                    // possibleInstallationNodes).add(reps.powerGridNodeRepository
+                    // .findAllPowerGridNodesByZone(market.getZone()).iterator().next());
+                    // }
 
                     for (PowerGridNode node : possibleInstallationNodes) {
 
@@ -193,7 +193,7 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         double cashAvailableForPlantDownpayments = 0d;
 
                         // CALCULATING NODE LIMIT
-                        double pgtNodeLimit = Double.MAX_VALUE;
+                        double pgtNodeLimitInMwh = Double.MAX_VALUE;
 
                         // logger.warn("pgtNodeLimit 1 is: " + pgtNodeLimit);
 
@@ -204,8 +204,9 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                                         plant.getLocation(), technology, futureTimePoint);
 
                         if (pgtLimit != null) {
-                            pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint)
-                                    - (expectedInstalledCapacityOfTechnologyInNode);
+                            pgtNodeLimitInMwh = pgtLimit.getUpperCapacityLimit(futureTimePoint)
+                                    * plant.getAnnualFullLoadHours()
+                                    - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
                         }
 
                         // Calculate bid quantity. Number of plants to be bid -
@@ -214,9 +215,16 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // as
                         // the node permits
 
-                        double ratioByNodeCapacity = pgtNodeLimit / plant.getActualNominalCapacity();
+                        // logger.warn("submit bid: annual full load hours" +
+                        // (plant.getAnnualFullLoadHours()));
 
-                        // capacityTesting
+                        double ratioByNodeCapacity = pgtNodeLimitInMwh
+                                / (plant.getActualNominalCapacity() * plant.getAnnualFullLoadHours());
+
+                        // logger.warn("submit bid role: pgt node limit in Mwh"
+                        // + pgtNodeLimitInMwh);
+                        // logger.warn("number of plants by node capacity" +
+                        // ratioByNodeCapacity);// capacityTesting
                         double numberOfPlantsByNodeLimit = (long) ratioByNodeCapacity; // truncates
                         // towards
                         // lower
@@ -242,7 +250,15 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         double noOfPlantsByTarget = scheme.getAnnualRenewableTargetInMwh()
                                 / (plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity());
 
-                        long noOfPlants = (long) Math.min(numberOfPlantsByNodeLimit, noOfPlantsByTarget);
+                        // logger.warn(
+                        // "submit bid role: actual target for scheme " +
+                        // scheme.getAnnualRenewableTargetInMwh());
+                        // logger.warn("number of plants by target" +
+                        // noOfPlantsByTarget + "generation expected per plant"
+                        // + (plant.getAnnualFullLoadHours() *
+                        // plant.getActualNominalCapacity()));
+
+                        long noOfPlants = (long) Math.ceil(Math.min(numberOfPlantsByNodeLimit, noOfPlantsByTarget));
 
                         // logger.warn("NUMBER OF PLANTS TO BE BID FOR" +
                         // numberOfPlants);
@@ -397,8 +413,9 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                                 bidPricePerMWh = -projectValueFinal
                                         / (discountedTenderReturnFactor * totalAnnualExpectedGenerationOfPlant);
 
-                                logger.warn("for scheme" + scheme.getName() + "bidding for " + noOfPlants + "at price"
-                                        + bidPricePerMWh);
+                                // logger.warn("for scheme" + scheme.getName() +
+                                // "bidding for " + noOfPlants + "at price"
+                                // + bidPricePerMWh);
                                 for (long i = 1; i <= noOfPlants; i++) {
 
                                     noOfPlantsBid++;

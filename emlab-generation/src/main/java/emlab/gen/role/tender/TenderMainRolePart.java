@@ -62,6 +62,9 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
     @Autowired
     OrganizeRenewableTenderPaymentsRole organizeRenewableTenderPaymentsRole;
 
+    @Autowired
+    VerificationTargetCalculationRole verificationTargetCalculationRole;
+
     @Override
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
@@ -69,9 +72,7 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
         calculateRenewableTargetForTenderRole.act(scheme);
 
         // if (scheme.isExpostRevenueCalculation() == true) {
-
         // submitTenderBidRoleExpostRevenuePayment.act(scheme);
-
         // } else {
         submitTenderBidRole.act(scheme);
         // }
@@ -93,6 +94,8 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
         createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
 
         organizeRenewableTenderPaymentsRole.act(scheme);
+
+        verificationTargetCalculationRole.act(scheme);
 
     }
 

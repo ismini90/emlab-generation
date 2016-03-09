@@ -77,7 +77,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         }
 
         scheme.setAnnualExpectedConsumption(totalExpectedConsumption);
-        // logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
+        logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
 
         // renewable target for tender operation start year in MWh is
 
@@ -109,17 +109,16 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(market,
                     technology, futureStartingTenderTimePoint)) {
                 expectedGenerationPerPlantAvailable = 0d;
+                logger.warn("plant no" + noOfPlants++);
                 for (Segment segment : reps.segmentRepository.findAll()) {
                     double availablePlantCapacity = plant.getAvailableCapacity(futureStartingTenderTimePoint, segment,
                             numberOfSegments);
 
                     double lengthOfSegmentInHours = segment.getLengthInHours();
                     expectedGenerationPerPlantAvailable += availablePlantCapacity * lengthOfSegmentInHours;
-                    // logger.warn("availablePlantCapacity" + numberOfSegments +
-                    // "lengthOfSegmentInHours"
-                    // + segment.getLengthInHours() +
-                    // "expectedGenerationPerPlantAvailable"
-                    // + expectedGenerationPerPlantAvailable);
+                    logger.warn("availablePlantCapacity" + numberOfSegments + "lengthOfSegmentInHours"
+                            + segment.getLengthInHours() + "expectedGenerationPerPlantAvailable"
+                            + expectedGenerationPerPlantAvailable);
                 }
                 expectedGenerationPerTechnologyAvailable += expectedGenerationPerPlantAvailable;
                 // logger.warn("expectedGenerationPerTechnologyAvailable" +
@@ -128,8 +127,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             totalExpectedGenerationAvailable += expectedGenerationPerTechnologyAvailable;
         }
 
-        // logger.warn("totalExpectedGenerationAvailable; " +
-        // totalExpectedGenerationAvailable);
+        logger.warn("Calc target role: totalExpectedGenerationAvailable; " + totalExpectedGenerationAvailable);
 
         // logger.warn("renewabeTargetInMWh; " + renewableTargetInMwh +
         // "totalExpectedGeneration; "

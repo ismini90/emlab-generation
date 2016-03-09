@@ -368,8 +368,8 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
                             } // end for loop for tender bids
 
                         } // end else calculate generation in MWh per year
-                        plant.setDismantleTime(getCurrentTick());
 
+                        deleteTempPowerPlants(plant);
                     } // end else calculate discounted tender return factor
                       // term
 
@@ -379,6 +379,12 @@ public class SubmitTenderBidRoleExpostRevenuePayment extends AbstractRole<Renewa
               // reps.genericRepository.findAll(PowerGeneratingTechnology.class))
             logger.warn("Number of tender bids for all energy producers " + noOfPlantsBid);
         } // end For schemes
+    }
+
+    @Transactional
+    private void deleteTempPowerPlants(PowerPlant plant) {
+        plant.setDismantleTime(getCurrentTick());
+        plant.persist();
     }
 
     @Transactional

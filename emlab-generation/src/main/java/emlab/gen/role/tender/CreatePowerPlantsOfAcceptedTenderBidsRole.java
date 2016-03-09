@@ -52,7 +52,8 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Rene
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
 
-        logger.warn("Create Power Plants Of Accepted Tender Bids Role started for: " + scheme);
+        // logger.warn("Create Power Plants Of Accepted Tender Bids Role started
+        // for: " + scheme);
         // for: " + regulator);
 
         // Zone zone = regulator.getZone();
@@ -66,8 +67,9 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Rene
 
         for (TenderBid currentTenderBid : acceptedTenderBidsByTime) {
 
-            logger.warn(
-                    "current accepted bid: " + currentTenderBid + "for power plant" + currentTenderBid.getPowerPlant());
+            // logger.warn(
+            // "current accepted bid: " + currentTenderBid + "for power plant" +
+            // currentTenderBid.getPowerPlant());
 
             // PowerPlant plant = currentTenderBid.getPowerPlant();
             PowerPlant plant = new PowerPlant();

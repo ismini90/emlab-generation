@@ -35,7 +35,6 @@ import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.repository.IntermittentTechnologyNodeLoadFactorRepository;
 import emlab.gen.repository.PowerPlantDispatchPlanRepository;
 import emlab.gen.repository.Reps;
-import emlab.gen.role.DecarbonizationModelRole;
 
 /**
  * Representation of a power plant
@@ -559,7 +558,7 @@ public class PowerPlant {
     public void specifyAndPersist(long time, EnergyProducer energyProducer, PowerGridNode location,
             PowerGeneratingTechnology technology) {
 
-        System.out.print("POWER PLANT BEING SPECIFIED AND PERSISTED!!");
+        // System.out.print("POWER PLANT BEING SPECIFIED AND PERSISTED!!");
 
         this.persist();
         specifyNotPersist(time, energyProducer, location, technology);
@@ -569,7 +568,8 @@ public class PowerPlant {
     public void specifyNotPersist(long time, EnergyProducer energyProducer, PowerGridNode location,
             PowerGeneratingTechnology technology) {
         // this.Count++;
-        System.out.print("SPECIFIED NOT PERSISTED! Count = " + DecarbonizationModelRole.powerPlantCount++);
+        // System.out.print("SPECIFIED NOT PERSISTED! Count = " +
+        // DecarbonizationModelRole.powerPlantCount++);
 
         String label = energyProducer.getName() + " - " + technology.getName();
         this.setName(label);

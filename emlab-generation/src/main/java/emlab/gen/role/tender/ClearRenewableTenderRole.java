@@ -143,7 +143,7 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
 
         } // FOR Loop ends here
 
-        logger.warn("Total No of Bids Accepted " + noOfBidsAccepted + " Accepted subsidy price " + acceptedSubsidyPrice
+        logger.warn("Total No of Bids Accepted " + noOfBidsAccepted + "Accepted subsidy price " + acceptedSubsidyPrice
                 + "accepted subsidy quantity" + sumOfTenderBidQuantityAccepted);
         // This creates a clearing point that contains general information about
         // the cleared tender
@@ -157,8 +157,9 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
             tenderClearingPoint.setVolume(sumOfTenderBidQuantityAccepted);
             tenderClearingPoint.setTime(getCurrentTick());
             tenderClearingPoint.persist();
-            logger.warn("Tender CLEARED at price {} and volume " + tenderClearingPoint.getVolume(),
-                    tenderClearingPoint.getPrice());
+            // logger.warn("Tender CLEARED at price {} and volume " +
+            // tenderClearingPoint.getVolume(),
+            // tenderClearingPoint.getPrice());
 
         } else {
             TenderClearingPoint tenderClearingPoint = new TenderClearingPoint();
@@ -167,8 +168,9 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
             tenderClearingPoint.setRenewableSupportSchemeTender(scheme);
             tenderClearingPoint.setTime(getCurrentTick());
             tenderClearingPoint.persist();
-            logger.warn("Tender UNCLEARED at price {} and volume " + tenderClearingPoint.getVolume(),
-                    tenderClearingPoint.getPrice());
+            // logger.warn("Tender UNCLEARED at price {} and volume " +
+            // tenderClearingPoint.getVolume(),
+            // tenderClearingPoint.getPrice());
 
         }
 

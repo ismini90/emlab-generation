@@ -244,22 +244,19 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 if ((expectedInstalledCapacityOfTechnology + plant.getActualNominalCapacity())
                         / (marketInformation.maxExpectedLoad + plant.getActualNominalCapacity()) > technology
                                 .getMaximumInstalledCapacityFractionInCountry()) {
-                    // logger.warn(
-                    // agent + " will not invest in {} technology because
-                    // there's too much of this type in the market",
-                    // technology);
+                    logger.warn(
+                            agent + " will not invest in {} technology because there's too much of this type in the market",
+                            technology);
                 } else if ((expectedInstalledCapacityOfTechnologyInNode
                         + plant.getActualNominalCapacity()) > pgtNodeLimit) {
 
-                    // logger.warn("NOT INVESTING in " + technology.getName() +
-                    // "COZ OF NODE LIMIT: " + pgtNodeLimit);
+                    logger.warn("NOT INVESTING in " + technology.getName() + "COZ OF NODE LIMIT: " + pgtNodeLimit);
                 } else if (expectedOwnedCapacityInMarketOfThisTechnology > expectedOwnedTotalCapacityInMarket
                         * technology.getMaximumInstalledCapacityFractionPerAgent()) {
 
-                    // logger.warn(
-                    // agent + " will not invest in {} technology because
-                    // there's too much capacity planned by him",
-                    // technology);
+                    logger.warn(
+                            agent + " will not invest in {} technology because there's too much capacity planned by him",
+                            technology);
 
                     // } else if (capacityInPipelineInMarket > 0.2 *
                     // marketInformation.maxExpectedLoad) {
@@ -278,10 +275,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 } else if (plant.getActualInvestedCapital()
                         * (1 - agent.getDebtRatioOfInvestments()) > agent.getDownpaymentFractionOfCash()
                                 * agent.getCash()) {
-                    // logger.warn(
-                    // agent + " will not invest in {} technology as he does not
-                    // have enough money for downpayment",
-                    // technology);
+                    logger.warn(
+                            agent + " will not invest in {} technology as he does not have enough money for downpayment",
+                            technology);
                 } else {
 
                     Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
