@@ -55,7 +55,7 @@
 		<bean id="renewableSupportSchemeNLphotovoltaicsPGT"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="TenderPv"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="true"
 		p:expostRevenueCalculation="true">
@@ -71,7 +71,7 @@
 		<bean id="renewableSupportSchemeNLwindPGT"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="TenderWind"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="true"
 		p:expostRevenueCalculation="true">
@@ -94,7 +94,7 @@
 	</bean>
 
 	<bean id="nl_nreap" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
+		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_dummy" />
 
 		<!-- Technology Specific Renewable Energy Targets NL -->
@@ -482,7 +482,7 @@
 		p:efficiencyTimeSeries-ref="windEfficiencyTimeSeries"
 		p:co2CaptureEffciency="0" p:depreciationTime="15"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="1"
+		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="1"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.40"
@@ -509,7 +509,7 @@
 		p:efficiencyTimeSeries-ref="pvEfficiencyTimeSeries"
 		p:co2CaptureEffciency="0" p:depreciationTime="15"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="0"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.20"

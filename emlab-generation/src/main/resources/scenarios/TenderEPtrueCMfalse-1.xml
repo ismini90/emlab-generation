@@ -1154,56 +1154,27 @@
 		<key>
 			<ref bean="coalPulverizedSuperCritical" />
 		</key>
-		<value>0.240</value>
+		<value>0.25</value>
 	</entry>
 	<entry>
 		<key>
 			<ref bean="CCGT" />
 		</key>
-		<value>0.425</value>
+		<value>0.25</value>
 	</entry>
 	<entry>
 		<key>
 			<ref bean="OCGT" />
 		</key>
-		<value>0.172</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="biomassPGT" />
-		</key>
-		<value>0.016</value>
+		<value>0.25</value>
 	</entry>
 	<entry>
 		<key>
 			<ref bean="nuclearPGT" />
 		</key>
-		<value>0.019</value>
+		<value>0.25</value>
 	</entry>
-	<entry>
-		<key>
-			<ref bean="windPGT" />
-		</key>
-		<value>0.084</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="windOffshorePGT" />
-		</key>
-		<value>0.011</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="photovoltaicPGT" />
-		</key>
-		<value>0.033</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="biogasPGT" />
-		</key>
-		<value>0.00</value>
-	</entry>
+
 </map>
 </property>
 		<property name="nodes">

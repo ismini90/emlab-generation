@@ -47,6 +47,7 @@ import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.PowerGeneratingTechnologyTarget;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
 import emlab.gen.domain.policy.renewablesupport.BiasFactor;
+import emlab.gen.domain.policy.renewablesupport.ForecastingInformationReport;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 import emlab.gen.domain.policy.renewablesupport.RenewableTarget;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
@@ -113,6 +114,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
         Iterable<PowerGeneratingTechnology> eligibleTechnologies = scheme.getPowerGeneratingTechnologiesEligible();
 
         Map<Key2D, Double> baseCostMap = new HashMap<Key2D, Double>();
+
+        ForecastingInformationReport fReport;
 
         for (PowerGeneratingTechnology technology : eligibleTechnologies) {
 
@@ -300,6 +303,19 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     fiPremium = 0d;
                 }
 
+                fReport = new ForecastingInformationReport();
+                fReport.setTick(getCurrentTick());
+                fReport.setForecastingForTick(getCurrentTick() + scheme.getFutureSchemeStartTime());
+                fReport.setAgent(regulator.getName());
+                fReport.setProjectValuePerMwWithoutSubsidy(projectValue / plant.getActualNominalCapacity());
+                fReport.setExpectedOpRevenueElectricityMarketWithoutSubsidy(operatingRevenue);
+                fReport.setTechnologyName(technology.getName());
+                fReport.setNodeName(node.getName());
+                fReport.setExpectedAnnualGeneration(totalAnnualExpectedGenerationOfPlant);
+                fReport.setProjectValuePerMwWithSubsidy(0);
+                fReport.setExpectedOpRevenueElectricityMarketWithSubsidy(0);
+                fReport.PersistReport();
+
                 // logger.warn("expectedBaseCost in fipRole for plant" + plant +
                 // "in tick" + futureTimePoint + "is "
                 // + fiPremium);
@@ -312,6 +328,11 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     baseCostFip.setTechnology(technology);
                     baseCostFip.setEndTime(futureTimePoint + scheme.getSupportSchemeDuration());
                     baseCostFip.persist();
+
+                    fReport.setExpectedOpRevenueElectricityMarketWithSubsidy(
+                            fiPremium * totalAnnualExpectedGenerationOfPlant);
+                    fReport.persist();
+
                 } else {
 
                     baseCostMap.put(new Key2D(technology, node), fiPremium);

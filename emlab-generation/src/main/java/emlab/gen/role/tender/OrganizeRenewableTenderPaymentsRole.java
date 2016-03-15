@@ -118,7 +118,7 @@ public class OrganizeRenewableTenderPaymentsRole extends AbstractRole<RenewableS
                     .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant, segmentLoad.getSegment(),
                             getCurrentTick(), false);
 
-            if (ppdp.getStatus() < 0 || ppdp == null) {
+            if (ppdp == null || ppdp.getStatus() < 0) {
                 electricityPrice = 0d;
             } else if (ppdp.getStatus() >= 2) {
                 // do a sensitivity here to different

@@ -50,12 +50,13 @@
 		p:name="regulatorNetherlands" p:numberOfYearsLookingBackToForecastDemand="4">
  		<property name="zone" ref="nl" />
  	</bean>
+ 	
 	<!-- Renewable Tender Scheme -->
 
 		<bean id="renewableSupportSchemeNLphotovoltaicsPGT"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="TenderPv"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="true"
 		p:expostRevenueCalculation="false">
@@ -70,7 +71,7 @@
 	<bean id="renewableSupportSchemeNLwindOffshorePGT"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="TenderWindOffshore"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="true"
 		p:expostRevenueCalculation="false">
@@ -85,7 +86,7 @@
 		<bean id="renewableSupportSchemeNLwindPGT"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="TenderWind"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="true"
 		p:expostRevenueCalculation="false">
@@ -97,35 +98,6 @@
 		</property>
 	</bean>
 
-		<bean id="renewableSupportSchemeNLbiomassPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
-		p:name="TenderBiomass"
-		p:futureTenderOperationStartTime="5"
-		p:supportSchemeDuration="10"
-		p:technologySpecificityEnabled="true"
-		p:expostRevenueCalculation="false">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnologiesEligible">
-			<set>
-				<ref bean="biomassPGT" />
-			</set>
-		</property>
-	</bean>
-
-		<bean id="renewableSupportSchemeNLbiogasPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
-		p:name="TenderBiogas"
-		p:futureTenderOperationStartTime="5"
-		p:supportSchemeDuration="10"
-		p:technologySpecificityEnabled="true"
-		p:expostRevenueCalculation="false">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnologiesEligible">
-			<set>
-				<ref bean="biogasPGT" />
-			</set>
-		</property>
-	</bean>
 
 
 	<!-- Renewable Energy Target NL -->
@@ -180,31 +152,6 @@
 		p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_target_windon" />
 
-
-		<bean id="renewableTenderTargetNLbiomassPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableTarget"
-		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_biomassPGT"
-		p:targetTechnologySpecific = "true">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnology" ref="biomassPGT" />
-	</bean>
-
-	<bean id="nl_nreap_biomassPGT" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="nl_target_biomass" />
-
-
-		<bean id="renewableTenderTargetNLbiogasPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableTarget"
-		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_biogasPGT"
-		p:targetTechnologySpecific = "true">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnology" ref="biogasPGT" />
-	</bean>
-
-	<bean id="nl_nreap_biogasPGT" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="nl_target_biogas" />
 
 
 
@@ -498,21 +445,21 @@
 	<!-- biomass node limits NL -->
 	<bean id="biomassLimitNL1"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1800">
+		p:permanentUpperCapacityLimit="3000">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode1" />
 	</bean>
 
 	<bean id="biomassLimitNL2"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1800">
+		p:permanentUpperCapacityLimit="3000">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode2" />
 	</bean>
 
 	<bean id="biomassLimitNL3"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1800">
+		p:permanentUpperCapacityLimit="3000">
 		<property name="powerGeneratingTechnology" ref="biomassPGT" />
 		<property name="powerGridNode" ref="nlNode3" />
 	</bean>
@@ -1214,7 +1161,7 @@
 		<key>
 			<ref bean="biomassPGT" />
 		</key>
-		<value>0.016</value>
+		<value>0.054</value>
 	</entry>
 	<entry>
 		<key>
@@ -1226,13 +1173,13 @@
 		<key>
 			<ref bean="windPGT" />
 		</key>
-		<value>0.084</value>
+		<value>0.35</value>
 	</entry>
 	<entry>
 		<key>
 			<ref bean="windOffshorePGT" />
 		</key>
-		<value>0.011</value>
+		<value>0.1</value>
 	</entry>
 	<entry>
 		<key>

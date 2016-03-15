@@ -54,7 +54,7 @@
 	<!-- Renewable Tender Scheme -->
 	<bean id="renewableSupportScheme"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
-		p:name="RenewableTender" p:futureTenderOperationStartTime="5"
+		p:name="RenewableTender" p:futureTenderOperationStartTime="0"
 		p:supportSchemeDuration="10"
 		p:expostRevenueCalculation="false">
 

@@ -54,7 +54,7 @@
 
 		<bean id="renewableSupportSchemeNL"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
-		p:name="TenderPv"
+		p:name="Tender"
 		p:futureTenderOperationStartTime="5"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="false"
@@ -80,7 +80,7 @@
 	</bean>
 
 	<bean id="nl_nreap" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
+		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_dummy" />
 
 		<!-- Technology Specific Renewable Energy Targets NL -->

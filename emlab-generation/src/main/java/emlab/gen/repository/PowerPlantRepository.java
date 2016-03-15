@@ -381,7 +381,7 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
             + "}; return fullLoadHours;", type = QueryType.Gremlin)
     double calculateFullLoadHoursOfPowerPlant(@Param("plant") PowerPlant plant, @Param("tick") long tick);
 
-    @Query(value = "g.v(market).out('ZONE').in('REGION').in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it==g.v(technology)}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}", type = QueryType.Gremlin)
+    @Query(value = "g.v(market).out('ZONE').in('REGION').in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it==g.v(technology)}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime)<= tick) && (it.expectedEndOfLife > tick)}", type = QueryType.Gremlin)
     Iterable<PowerPlant> findOperationalPowerPlantsByMarketAndTechnology(@Param("market") ElectricitySpotMarket market,
             @Param("technology") PowerGeneratingTechnology powerGeneratingTechnology, @Param("tick") long tick);
 
@@ -396,7 +396,7 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
             @Param("market") ElectricitySpotMarket market, @Param("tech") PowerGeneratingTechnology technology,
             @Param("tick") long tick);
 
-    @Query(value = "result = g.v(market).out('ZONE').in('REGION').in('LOCATION').filter{it.__type__=='emlab.gen.domain.technology.PowerPlant'}.as('x').out('TECHNOLOGY').filter{it.name==g.v(tech).name}.back('x').filter{!((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)};"
+    @Query(value = "result = g.v(market).out('ZONE').in('REGION').in('LOCATION').filter{it.__type__=='emlab.gen.domain.technology.PowerPlant'}.as('x').out('TECHNOLOGY').filter{it.name==g.v(tech).name}.back('x').filter{!((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.expectedEndOfLife > tick)};"
             + "if(result == null){return 0;} else{return result;}", type = QueryType.Gremlin)
     public Iterable<PowerPlant> findExpectedOperationalPowerPlantsInMarketByTechnologyInPipeline(
             @Param("market") ElectricitySpotMarket market, @Param("tech") PowerGeneratingTechnology technology,

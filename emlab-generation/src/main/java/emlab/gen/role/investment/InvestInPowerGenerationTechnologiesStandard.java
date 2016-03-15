@@ -50,6 +50,7 @@ import emlab.gen.domain.market.electricity.Segment;
 import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.PowerGeneratingTechnologyTarget;
 import emlab.gen.domain.policy.renewablesupport.BaseCostFip;
+import emlab.gen.domain.policy.renewablesupport.ForecastingInformationReport;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit;
@@ -160,6 +161,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         double highestValue = Double.MIN_VALUE;
         PowerGeneratingTechnology bestTechnology = null;
         PowerGridNode bestNode = null;
+        ForecastingInformationReport fReport = null;
 
         for (PowerGeneratingTechnology technology : reps.genericRepository.findAll(PowerGeneratingTechnology.class)) {
 
@@ -207,6 +209,61 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 plant.specifyNotPersist(getCurrentTick(), agent, node, technology);
                 // if too much capacity of this technology in the pipeline (not
                 // limited to the 5 years)
+
+                double pgtNodeLimit = Double.MAX_VALUE;
+
+                PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
+                        .findOneByTechnologyAndNode(technology, plant.getLocation());
+                if (pgtLimit != null) {
+                    pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint);
+                }
+
+                RenewableSupportFipScheme scheme = null;
+                Set<RenewableSupportFipScheme> schemeSet = reps.renewableSupportSchemeRepository
+                        .findSchemesGivenZone(market.getZone());
+                        // logger.warn("scheme Set is " + schemeSet);
+
+                // If statement to check if an Fip Scheme exists
+                if ((schemeSet.size() >= 1) && (!schemeSet.isEmpty())) {
+                    // for loop to go through each scheme, if there are more
+                    // than one, and pick the one which includes the current
+                    // technology ...if technology specific.
+                    for (RenewableSupportFipScheme i : schemeSet) {
+                        // logger.warn("scheme is " + i.getName());
+                        // ADJUST IF LOOP FOR LOCATION SPECIFICITY WHEN
+                        // ENABLED - simply add a logical AND toi the iff
+                        // statemnt below to filter for location
+                        Zone zoneScheme = i.getRegulator().getZone();
+                        if (i.getPowerGeneratingTechnologiesEligible().contains(technology)
+                                && market.getZone().getName() == zoneScheme.getName()) {
+                            scheme = i;
+                            // logger.warn("scheme is " + i.getName());
+                            break;
+                        } else {
+                            scheme = null;
+                        }
+                    }
+
+                }
+
+                double totalExpectedConsumption = 0d;
+
+                for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
+                    totalExpectedConsumption += segmentLoad.getBaseLoad() * expectedDemand.get(market)
+                            * segmentLoad.getSegment().getLengthInHours();
+
+                }
+                if (scheme != null) {
+                    double technologyPotential;
+                    technologyPotential = reps.renewableTargetForTenderRepository
+                            .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
+                                    scheme.getRegulator(), technology.getName(), node.getName())
+                            .getValue(futureTimePoint) * totalExpectedConsumption;
+
+                    pgtNodeLimit = technologyPotential / plant.getAnnualFullLoadHours();
+
+                }
+
                 double expectedInstalledCapacityOfTechnology = reps.powerPlantRepository
                         .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology,
                                 futureTimePoint);
@@ -216,13 +273,6 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     double technologyTargetCapacity = technologyTarget.getTrend().getValue(futureTimePoint);
                     expectedInstalledCapacityOfTechnology = (technologyTargetCapacity > expectedInstalledCapacityOfTechnology)
                             ? technologyTargetCapacity : expectedInstalledCapacityOfTechnology;
-                }
-                double pgtNodeLimit = Double.MAX_VALUE;
-
-                PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
-                        .findOneByTechnologyAndNode(technology, plant.getLocation());
-                if (pgtLimit != null) {
-                    pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint);
                 }
 
                 double expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
@@ -241,14 +291,18 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 double capacityInPipelineInMarket = reps.powerPlantRepository
                         .calculateCapacityOfPowerPlantsByMarketInPipeline(market, getCurrentTick());
 
-                if ((expectedInstalledCapacityOfTechnology + plant.getActualNominalCapacity())
-                        / (marketInformation.maxExpectedLoad + plant.getActualNominalCapacity()) > technology
-                                .getMaximumInstalledCapacityFractionInCountry()) {
-                    logger.warn(
-                            agent + " will not invest in {} technology because there's too much of this type in the market",
-                            technology);
-                } else if ((expectedInstalledCapacityOfTechnologyInNode
-                        + plant.getActualNominalCapacity()) > pgtNodeLimit) {
+                // if ((expectedInstalledCapacityOfTechnology +
+                // plant.getActualNominalCapacity())
+                // / (marketInformation.maxExpectedLoad +
+                // plant.getActualNominalCapacity()) > technology
+                // .getMaximumInstalledCapacityFractionInCountry()) {
+                // logger.warn(
+                // agent + " will not invest in {} technology because there's
+                // too much of this type in the market",
+                // technology);
+                // } else
+
+                if ((expectedInstalledCapacityOfTechnologyInNode + plant.getActualNominalCapacity()) > pgtNodeLimit) {
 
                     logger.warn("NOT INVESTING in " + technology.getName() + "COZ OF NODE LIMIT: " + pgtNodeLimit);
                 } else if (expectedOwnedCapacityInMarketOfThisTechnology > expectedOwnedTotalCapacityInMarket
@@ -272,12 +326,14 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     // " will not invest in {} technology because there's too
                     // much capacity in the pipeline",
                     // technology);
-                } else if (plant.getActualInvestedCapital()
-                        * (1 - agent.getDebtRatioOfInvestments()) > agent.getDownpaymentFractionOfCash()
-                                * agent.getCash()) {
-                    logger.warn(
-                            agent + " will not invest in {} technology as he does not have enough money for downpayment",
-                            technology);
+                    // } else if (plant.getActualInvestedCapital()
+                    // * (1 - agent.getDebtRatioOfInvestments()) >
+                    // agent.getDownpaymentFractionOfCash()
+                    // * agent.getCash()) {
+                    // logger.warn(
+                    // agent + " will not invest in {} technology as he does not
+                    // have enough money for downpayment",
+                    // technology);
                 } else {
 
                     Map<Substance, Double> myFuelPrices = new HashMap<Substance, Double>();
@@ -304,39 +360,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                     double loadFactor = 0d;
                     long numberOfSegments = reps.segmentRepository.count();
 
-                    RenewableSupportFipScheme scheme = null;
-
                     double expectedBaseCost = 0d;
-
-                    // To make sure subsidy from the support is not taken into
-                    // account
-                    // the scheme must not be defined
-                    Set<RenewableSupportFipScheme> schemeSet = reps.renewableSupportSchemeRepository
-                            .findSchemesGivenZone(market.getZone());
-                            // logger.warn("scheme Set is " + schemeSet);
-
-                    // If statement to check if an Fip Scheme exists
-                    if ((schemeSet.size() >= 1) && (!schemeSet.isEmpty())) {
-                        // for loop to go through each scheme, if there are more
-                        // than one, and pick the one which includes the current
-                        // technology ...if technology specific.
-                        for (RenewableSupportFipScheme i : schemeSet) {
-                            // logger.warn("scheme is " + i.getName());
-                            // ADJUST IF LOOP FOR LOCATION SPECIFICITY WHEN
-                            // ENABLED - simply add a logical AND toi the iff
-                            // statemnt below to filter for location
-                            Zone zoneScheme = i.getRegulator().getZone();
-                            if (i.getPowerGeneratingTechnologiesEligible().contains(technology)
-                                    && market.getZone().getName() == zoneScheme.getName()) {
-                                scheme = i;
-                                // logger.warn("scheme is " + i.getName());
-                                break;
-                            } else {
-                                scheme = null;
-                            }
-                        }
-
-                    }
 
                     // find Fip Schemes
                     if (scheme != null && (scheme.getPowerGeneratingTechnologiesEligible().contains(technology))) {
@@ -513,6 +537,12 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         // logger.warn("Project Value Original" +
                         // projectValueOld);
 
+                        // creating new forecasting object.
+                        fReport = new ForecastingInformationReport();
+                        fReport.setExpectedOpRevenueElectricityMarketWithoutSubsidy(operatingRevenue);
+
+                        fReport.setProjectValuePerMwWithoutSubsidy(projectValueOld / plant.getActualNominalCapacity());
+
                         if (scheme != null && expectedBaseCost > 0
                                 && (scheme.getPowerGeneratingTechnologiesEligible().contains(technology))) {
 
@@ -602,6 +632,18 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             // projectvalue per MW of "
                             // + projectValue /
                             // plant.getActualNominalCapacity());
+
+                            // To save forecasting information
+
+                            fReport.setAgent(agent.getName());
+                            fReport.setTick(getCurrentTick());
+                            fReport.setForecastingForTick(futureTimePoint);
+                            fReport.setExpectedOpRevenueElectricityMarketWithSubsidy(operatingRevenue);
+                            fReport.setProjectValuePerMwWithSubsidy(projectValue / plant.getActualNominalCapacity());
+                            fReport.setNodeName(node.getName());
+                            fReport.setTechnologyName(technology.getName());
+                            fReport.setExpectedAnnualGeneration(expectedGeneration);
+                            fReport.PersistReport();
 
                         }
 

@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.OptimizationException;
@@ -226,15 +226,6 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // logger.warn("number of plants by node capacity" +
                         // ratioByNodeCapacity);// capacityTesting
                         double numberOfPlantsByNodeLimit = (long) ratioByNodeCapacity; // truncates
-                        // towards
-                        // lower
-                        // integer
-
-                        // strategy for diversification of bids: cash available
-                        // for each technology is equal to the proportion of
-                        // that
-                        // technology's contribution to the overall renewable
-                        // generation target
 
                         double proportionOfCashAvailableByTechnology = targetFactorTechSpec / targetFactorOverall;
 
@@ -258,7 +249,12 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // + (plant.getAnnualFullLoadHours() *
                         // plant.getActualNominalCapacity()));
 
-                        long noOfPlants = (long) Math.ceil(Math.min(numberOfPlantsByNodeLimit, noOfPlantsByTarget));
+                        // long noOfPlants = (long)
+                        // Math.ceil(Math.min(numberOfPlantsByNodeLimit,
+                        // noOfPlantsByTarget));
+
+                        // Target should equal node potential.
+                        long noOfPlants = (long) Math.ceil(noOfPlantsByTarget);
 
                         // logger.warn("NUMBER OF PLANTS TO BE BID FOR" +
                         // numberOfPlants);

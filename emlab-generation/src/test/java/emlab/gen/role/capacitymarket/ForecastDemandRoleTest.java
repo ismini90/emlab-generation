@@ -31,8 +31,6 @@ import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.market.electricity.Segment;
 import emlab.gen.domain.market.electricity.SegmentLoad;
-import emlab.gen.repository.MarketRepository;
-import emlab.gen.repository.Reps;
 import emlab.gen.trend.TriangularTrend;
 
 /**
@@ -45,12 +43,6 @@ import emlab.gen.trend.TriangularTrend;
 @Transactional
 public class ForecastDemandRoleTest {
     Logger logger = Logger.getLogger(ForecastDemandRole.class);
-
-    @Autowired
-    Reps reps;
-
-    @Autowired
-    MarketRepository marketRepository;
 
     @Autowired
     ForecastDemandRole fDemandRole;

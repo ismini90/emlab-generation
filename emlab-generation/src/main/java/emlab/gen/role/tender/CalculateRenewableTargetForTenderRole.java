@@ -8,7 +8,7 @@ import agentspring.role.Role;
 import agentspring.role.RoleComponent;
 import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
-import emlab.gen.domain.market.electricity.Segment;
+import emlab.gen.domain.market.electricity.PowerPlantDispatchPlan;
 import emlab.gen.domain.market.electricity.SegmentLoad;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
@@ -89,45 +89,23 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         // calculate expected generation, and subtract that from annual
         // target.
         // will be ActualTarget
-        double totalExpectedGeneration = 0d;
+
         double totalExpectedGenerationAvailable = 0d;
         double expectedGenerationPerTechnologyAvailable = 0d;
-        double expectedGenerationPerPlantAvailable = 0d;
-
-        long numberOfSegments = reps.segmentRepository.count();
-        // logger.warn("number of segments; " + numberOfSegments);
-
-        int noOfPlants = 0;
 
         for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
             expectedGenerationPerTechnologyAvailable = 0d;
 
-            // logger.warn("For PGT - technology; " + technology);
+            logger.warn("For PGT - technology; " + technology);
             // logger.warn("For PGT - technology; " + technology);
             scheme.setCurrentTechnologyUnderConsideration(technology);
 
-            for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(market,
-                    technology, futureStartingTenderTimePoint)) {
-                expectedGenerationPerPlantAvailable = 0d;
-                logger.warn("plant no" + noOfPlants++);
-                for (Segment segment : reps.segmentRepository.findAll()) {
-                    double availablePlantCapacity = plant.getAvailableCapacity(futureStartingTenderTimePoint, segment,
-                            numberOfSegments);
-
-                    double lengthOfSegmentInHours = segment.getLengthInHours();
-                    expectedGenerationPerPlantAvailable += availablePlantCapacity * lengthOfSegmentInHours;
-                    logger.warn("availablePlantCapacity" + numberOfSegments + "lengthOfSegmentInHours"
-                            + segment.getLengthInHours() + "expectedGenerationPerPlantAvailable"
-                            + expectedGenerationPerPlantAvailable);
-                }
-                expectedGenerationPerTechnologyAvailable += expectedGenerationPerPlantAvailable;
-                // logger.warn("expectedGenerationPerTechnologyAvailable" +
-                // expectedGenerationPerTechnologyAvailable);
-            }
+            expectedGenerationPerTechnologyAvailable = computeGenerationFromRen(technology, market,
+                    futureStartingTenderTimePoint);
             totalExpectedGenerationAvailable += expectedGenerationPerTechnologyAvailable;
         }
 
-        logger.warn("Calc target role: totalExpectedGenerationAvailable; " + totalExpectedGenerationAvailable);
+        logger.warn("Calc target role: totalExpectedRenGeneration; " + totalExpectedGenerationAvailable);
 
         // logger.warn("renewabeTargetInMWh; " + renewableTargetInMwh +
         // "totalExpectedGeneration; "
@@ -147,6 +125,41 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         logger.warn("actualRenewableTargetInMwh; " + renewableTargetInMwh + " for year" + futureStartingTenderTimePoint
                 + "for scheme " + scheme.getName());
         scheme.setAnnualRenewableTargetInMwh(renewableTargetInMwh);
+
+    }
+
+    private double computeGenerationFromRen(PowerGeneratingTechnology technology, ElectricitySpotMarket market,
+            long futureTimePoint) {
+        double expectedGenerationPerTechnologyAvailable = 0d;
+
+        for (PowerPlant plant : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarketByTechnology(market,
+                technology, futureTimePoint)) {
+            double totalGenerationOfPlantInMwh = 0d;
+            for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
+                // logger.warn("Inside segment loop for
+                // calculating
+                // total production");
+
+                double hours = segmentLoad.getSegment().getLengthInHours();
+
+                PowerPlantDispatchPlan ppdp = reps.powerPlantDispatchPlanRepository
+                        .findOnePowerPlantDispatchPlanForPowerPlantForSegmentForTime(plant, segmentLoad.getSegment(),
+                                getCurrentTick(), false);
+
+                if (ppdp == null || ppdp.getStatus() < 0) {
+
+                } else if (ppdp.getStatus() >= 2) {
+                    // do a sensitivity here to different
+                    // averages of electricity prices.
+                    totalGenerationOfPlantInMwh += hours * ppdp.getAcceptedAmount();
+                }
+
+            }
+            expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
+
+        }
+
+        return expectedGenerationPerTechnologyAvailable;
 
     }
 
