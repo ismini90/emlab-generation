@@ -169,7 +169,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
             Iterable<PowerGridNode> possibleInstallationNodes;
             double nodeLimitNonIntermittentTechnology = 0d;
-            // logger.warn("technology considered is" + technology.getName());
+            logger.warn("technology considered is" + technology.getName());
 
             /*
              * For dispatchable technologies just choose a random node. For
@@ -369,33 +369,28 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 && scheme.isTechnologySpecificityEnabled()) {
                             baseCostFip = reps.baseCostFipRepository.findOneBaseCostForTechnologyAndNodeAndTime(
                                     node.getName(), technology, futureTimePoint);
+                            expectedBaseCost = baseCostFip.getCostPerMWh();
                             // logger.warn("For technology" +
                             // technology.getName() + "for node" +
                             // node.getName()
                             // + "Expected Base cost " +
                             // baseCostFip.getCostPerMWh());
-                        } else if (scheme.getFutureSchemeStartTime() + getCurrentTick() == futureTimePoint
+                        } else if ((scheme.getFutureSchemeStartTime() + getCurrentTick()) == futureTimePoint
                                 && !scheme.isTechnologySpecificityEnabled()) {
                             baseCostFip = reps.baseCostFipRepository
                                     .findOneTechnologyNeutralBaseCostForTime(futureTimePoint);
-                            // logger.warn("For technology" +
-                            // technology.getName() + "for node" +
-                            // node.getName()
-                            // + "Expected Base cost " +
-                            // baseCostFip.getCostPerMWh());
+                            expectedBaseCost = baseCostFip.getCostPerMWh();
+
                         } else {
+
                             expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
                                     technology, scheme.isTechnologySpecificityEnabled());
-                            // logger.warn("For technology" +
+                            // logger.warn("2: For technology" +
                             // technology.getName() + "for node" +
                             // node.getName()
-                            //
-                            // + "Expected Base cost " +
-                            // baseCostFip.getCostPerMWh());
+                            // + "Expected Base cost " + expectedBaseCost);
                         }
 
-                        if (baseCostFip != null)
-                            expectedBaseCost = baseCostFip.getCostPerMWh();
                     }
                     // logger.warn("364: expected base cost" +
                     // expectedBaseCost);
@@ -726,22 +721,25 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         // as one of the last 5 years).
         Iterable<BaseCostFip> BaseCostFipSet = null;
 
-        if (!isTechSpecificityEnabled) {
+        if (isTechSpecificityEnabled) {
             BaseCostFipSet = reps.baseCostFipRepository
                     .findAllBaseCostFipsForTechnologyLocationAndTimeRange(node.getName(), technology,
                             getCurrentTick() + futureTimeStartScheme
                                     - (agent.getNumberOfYearsBacklookingForForecasting() - 1),
                             getCurrentTick() + futureTimeStartScheme);
+            // logger.warn("baseCostFipSet: " + BaseCostFipSet);
         } else {
             BaseCostFipSet = reps.baseCostFipRepository.findAllTechnologyNeutralBaseCostForTimeRange(
                     getCurrentTick() + futureTimeStartScheme - (agent.getNumberOfYearsBacklookingForForecasting() - 1),
                     getCurrentTick() + futureTimeStartScheme);
+            // logger.warn("baseCostFipSet: " + BaseCostFipSet);
         }
 
         SimpleRegression gtr = new SimpleRegression();
         if (BaseCostFipSet != null) {
             for (BaseCostFip baseCostFip : BaseCostFipSet) {
-                logger.warn("Base cost FIP {} , in predictSubsidyRole" + baseCostFip.getCostPerMWh());
+                // logger.warn("Base cost FIP {} , in predictSubsidyRole" +
+                // baseCostFip.getCostPerMWh());
 
                 gtr.addData(baseCostFip.getStartTime(), baseCostFip.getCostPerMWh());
             }

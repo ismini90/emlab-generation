@@ -333,9 +333,8 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 }
             }
 
-            // logger.warn("renewable generation accepted is" +
-            // renewableGenerationAccepted + "fip set is "
-            // + baseCostFipTechNeutral);
+            logger.warn("renewable generation accepted is" + renewableGenerationAccepted + "fip set is "
+                    + baseCostFipTechNeutral);
             BaseCostFip baseCostFip = new BaseCostFip();
 
             baseCostFip.setCostPerMWh(baseCostFipTechNeutral);
