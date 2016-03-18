@@ -63,6 +63,26 @@ addSumOfVariablesByPrefixToDF<-function(df, prefix, newColumnName=NULL){
   return(df)
 }
 
+basicArithmeticFunctionsForTwoVars <- function(df, nameOfOriginalVariable1, nameOfOriginalVariable2, operand){
+  if (operand=="+") nameOfNewVariable <- df[[nameOfOriginalVariable1]] + df[[nameOfOriginalVariable2]]
+  else if (operand=="-") nameOfNewVariable <- df[[nameOfOriginalVariable1]] - df[[nameOfOriginalVariable2]]
+  else if (operand=="/") nameOfNewVariable <- df[[nameOfOriginalVariable1]]/df[[nameOfOriginalVariable2]]
+  else if (operand=="*") nameOfNewVariable <- df[[nameOfOriginalVariable1]]*df[[nameOfOriginalVariable2]]
+  else print("error: specify either plus or minus or slash or astric as a char for the operand")
+  return(nameOfNewVariable)
+}
+
+addNewVariableBasedOnTwoExistingVarsToDF <- function(df,nameOfNewVar, nameOfOriginalVariable1, nameOfOriginalVariable2, operand){
+  newVarLocal <- basicArithmeticFunctionsForTwoVars(df, nameOfOriginalVariable1, nameOfOriginalVariable2, operand)
+    #nameOfNewVar
+    oldNames<-names(df)
+    df<-cbind(df, newVarLocal)
+    names(df)<-c(oldNames,as.character(nameOfNewVar))
+    return(df)
+}
+
+
+
 diffExpenditures<-function(df, nameOfOriginalVariable, nameOfNewVariable){
   df[[nameOfNewVariable]]<-diff(c(0,df[[nameOfOriginalVariable]]))
   return(df)
@@ -115,7 +135,7 @@ addProducerCashBalanceForAll <- function(df){
 
 # Generic Plotting Functions over Time ------------------------------------
 
-plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE, variable="variable", value="value", xlabel="Time [a]", manuelPalette=NULL, summaryFunction=median, nrow=NULL){
+plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE, variable="variable", value="value", xlabel="Time [a]", manuelPalette=NULL, summaryFunction=median, nrow=2){
   ## This function can plot stacked diagrams of variables over time, and is set to accept the standard
   ## output of the melt (reshape) function. the absolute parameter can be used to switch between absolute
   ## and relative plotting (e.g. 20GW installed capacity vs 20% of a total of 100GW)
@@ -147,6 +167,27 @@ plotTimeSeriesWithConfidenceIntervalByFacettedGroup <- function(df, variable, yl
     stat_summary(fun.data=fun.data, conf.int=conf.int, geom="smooth", colour="black") +
     stat_summary(fun.data=fun.data, conf.int=conf.int2, geom="smooth", colour="black")+
     stat_summary(fun.y="mean", conf.int=.95, geom="smooth", lty="dashed", colour="black") +
+    
+    
+    
+    #facet_grid(. ~ modelRun)+
+    facet_wrap(~ modelRun, nrow=nrow)+
+    theme(legend.position="none")+
+    xlab("Time [a]")+
+    ylab(ylabel)+
+    scale_linetype_manual(breaks=c("a","b"))
+}
+
+plotTimeSeriesWithConfidenceIntervalByFacettedGroupWithSuperImposition <- function(df, variable1, variable2, ylabel, fun.data="median_hilow", conf.int=0.5, conf.int2=0.90, nrow=NULL){
+  g<-ggplot(df, aes_string(x="tick", y=variable1))+ 
+    geom_line(data=df, aes_string(x="tick", y=variable2), group ="modelRun") +
+    #colour=modelRun, fill=modelRun,
+    #stat_summary(aes_string(fill="modelRun"), fun.data=fun.data, conf.int=conf.int, geom="smooth") +
+    stat_summary(fun.data=fun.data, conf.int=conf.int, geom="smooth", colour="black") +
+    stat_summary(fun.data=fun.data, conf.int=conf.int2, geom="smooth", colour="black")+
+    #stat_summary(fun.y="mean", conf.int=.95, geom="smooth", lty="dashed", colour="black") +
+    
+
     
     #facet_grid(. ~ modelRun)+
     facet_wrap(~ modelRun, nrow=nrow)+

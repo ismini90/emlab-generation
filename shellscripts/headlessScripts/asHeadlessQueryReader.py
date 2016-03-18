@@ -28,6 +28,7 @@ def read_query_of_runid(path, runName, runId, queryName, resultDict):
     resultList = []
     line = json_data.readline()
     jsonLine = json.loads(line[:-2], encoding="ascii")
+    #print(jsonLine)
     #In case its a pure list of numbers or strings
     if len(jsonLine) == 1 and \
     isinstance(jsonLine[0], (int, float, long, complex, basestring)):
@@ -55,7 +56,7 @@ def read_query_of_runid(path, runName, runId, queryName, resultDict):
         raise NameError("Query returns in " + runId + " ," + queryName
         + " are not standard [Name, Value] for each tick!")
         #return read_nonstandard_conform_key_value_pairs(tempJsonLine,\
-        # wrapperCounter,runId,queryName,json_data,resultDict)
+        #wrapperCounter,runId,queryName,json_data,resultDict)
 
 
 def read_nonstandard_conform_key_value_pairs(tempJsonLine, wrapperCounter,
