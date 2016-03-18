@@ -35,6 +35,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         long futureStartingTenderTimePoint = getCurrentTick() + scheme.getFutureTenderOperationStartTime();
         double demandFactor;
         double targetFactor;
+        double targetFactorAchievementForecast;
         Zone zone = scheme.getRegulator().getZone();
 
         // logger.warn("Calculate Renewable Target Role started of zone: " +
@@ -56,16 +57,17 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             targetFactor = reps.renewableTargetForTenderRepository
                     .findTechnologySpecificRenewableTargetTimeSeriesForTenderByScheme(scheme, technology.getName())
                     .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+            // targetFactorAchievementForecast =
+            // getForecastedRenewableGeneration(scheme, technology);
         } else {
             targetFactor = reps.renewableTargetForTenderRepository
                     .findTechnologyNeutralRenewableTargetForTenderByRegulator(scheme.getRegulator())
                     .getYearlyRenewableTargetTimeSeries()
                     .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+            // targetFactorAchievementForecast =
+            // getForecastedRenewableGeneration(scheme, null);
 
         }
-        // get renewable energy target in factor (percent)
-
-        // logger.warn("targetFactor; " + targetFactor);
 
         // get totalLoad in MWh
         double totalExpectedConsumption = 0d;
@@ -100,21 +102,20 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             // logger.warn("For PGT - technology; " + technology);
             scheme.setCurrentTechnologyUnderConsideration(technology);
 
-            expectedGenerationPerTechnologyAvailable = computeGenerationFromRen(technology, market,
+            expectedGenerationPerTechnologyAvailable = computeGenerationFromRenUsingPPDP(technology, market,
                     futureStartingTenderTimePoint);
             totalExpectedGenerationAvailable += expectedGenerationPerTechnologyAvailable;
         }
 
         logger.warn("Calc target role: totalExpectedRenGeneration; " + totalExpectedGenerationAvailable);
 
-        // logger.warn("renewabeTargetInMWh; " + renewableTargetInMwh +
-        // "totalExpectedGeneration; "
-        // + totalExpectedGeneration + " for year" +
-        // futureStartingTenderTimePoint);
-        // logger.warn("Last - totalExpectedGeneration; " +
-        // totalExpectedGeneration);
         scheme.setYearlyTenderDemandTarget(renewableTargetInMwh);
         scheme.setExpectedRenewableGeneration(totalExpectedGenerationAvailable);
+
+        // when using expected Generation from corresponding FiPScenario
+        // SHOULD it be actual values of generation instead of factors? - no
+        // differnce cause demand data should be exactly the same.
+        // scheme.setExpectedRenewableGeneration(totalExpectedConsumption*targetFactorAchievementForecast);
 
         renewableTargetInMwh = renewableTargetInMwh - totalExpectedGenerationAvailable;
 
@@ -128,7 +129,26 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
 
     }
 
-    private double computeGenerationFromRen(PowerGeneratingTechnology technology, ElectricitySpotMarket market,
+    private double getForecastedRenewableGeneration(RenewableSupportSchemeTender scheme,
+            PowerGeneratingTechnology technology) {
+        double targetForecast = 0d;
+        if (scheme.isTechnologySpecificityEnabled()) {
+            targetForecast = reps.renewableTargetForTenderRepository
+                    .findTechnologySpecificRenewableTargetForecastTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                            technology.getName())
+                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+        } else {
+            targetForecast = reps.renewableTargetForTenderRepository
+                    .findTechnologySpecificRenewableTargetForecastTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                            technology.getName())
+                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+
+        }
+
+        return targetForecast;
+    }
+
+    private double computeGenerationFromRenUsingPPDP(PowerGeneratingTechnology technology, ElectricitySpotMarket market,
             long futureTimePoint) {
         double expectedGenerationPerTechnologyAvailable = 0d;
 
@@ -153,6 +173,31 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
                     // averages of electricity prices.
                     totalGenerationOfPlantInMwh += hours * ppdp.getAcceptedAmount();
                 }
+
+            }
+            expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
+
+        }
+
+        return expectedGenerationPerTechnologyAvailable;
+
+    }
+
+    private double computeRenGenerationUsingExpectedGeneration(PowerGeneratingTechnology technology,
+            ElectricitySpotMarket market, long futureTimePoint) {
+        double expectedGenerationPerTechnologyAvailable = 0d;
+
+        for (PowerPlant plant : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarketByTechnology(market,
+                technology, futureTimePoint)) {
+            double totalGenerationOfPlantInMwh = 0d;
+            for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
+                // logger.warn("Inside segment loop for
+                // calculating
+                // total production");
+
+                double hours = segmentLoad.getSegment().getLengthInHours();
+
+                totalGenerationOfPlantInMwh += hours * plant.getAvailableCapacity(futureTimePoint);
 
             }
             expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;

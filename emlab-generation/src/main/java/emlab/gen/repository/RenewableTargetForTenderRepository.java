@@ -59,4 +59,12 @@ public interface RenewableTargetForTenderRepository extends GraphRepository<Rene
             @Param("regulator") Regulator regulator, @Param("technologyName") String technologyName,
             @Param("nodeName") String nodeName);
 
+    // g.idx('__types__')[[className:'emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast']]
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').filter{it.__type__=='emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast'}.as('x').out('FOR_TECHNOLOGY').filter{it.name==technologyName}.back('x').filter{it.targetTechnologySpecific == true}.out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findTechnologySpecificRenewableTargetForecastTimeSeriesForTenderByRegulator(
+            @Param("regulator") Regulator regulator, @Param("technologyName") String technologyName);
+
+    @Query(value = "g.v(regulator).out('SET_BY_REGULATOR').filter{it.__type__=='emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast' && it.targetTechnologySpecific == true}.out('TARGET_TREND')", type = QueryType.Gremlin)
+    public TimeSeriesCSVReader findRenewableTargetForecastForTenderByScheme(@Param("regulator") Regulator regulator);
+
 }

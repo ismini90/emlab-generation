@@ -109,6 +109,32 @@
 	<bean id="nl_nreap_windPGT" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_dummyTargetWind" />
+		
+			<bean id="renewableTenderTargetForecastNLphotovoltaicPGT"
+		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast"
+		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_photovoltaicPGTForecast"
+		p:targetTechnologySpecific = "true">
+		<property name="regulator" ref="regulatorNL" />
+		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
+	</bean>
+
+	<bean id="nl_nreap_photovoltaicPGTForecast" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="nl_target_photovoltaics" />
+
+
+		<bean id="renewableTenderTargetForecastNLwindPGT"
+		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast"
+		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_windPGTForecast"
+		p:targetTechnologySpecific = "true">
+		<property name="regulator" ref="regulatorNL" />
+		<property name="powerGeneratingTechnology" ref="windPGT" />
+	</bean>
+
+	<bean id="nl_nreap_windPGTForecast" class="emlab.gen.trend.TimeSeriesCSVReader"
+		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
+		p:delimiter="," p:variableName="nl_target_windon" />
+		
 
 
 

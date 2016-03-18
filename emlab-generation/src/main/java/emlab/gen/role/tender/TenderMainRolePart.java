@@ -49,7 +49,8 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
     @Autowired
     SubmitTenderBidRoleExpostRevenuePayment submitTenderBidRoleExpostRevenuePayment;
 
-    // @Autowired
+    @Autowired
+    FilterTenderBidsByTechnologyPotentialRole filterTenderBidsByTechnologyPotentialRole;
     // FilterTenderBidsWithSufficientCashForDownpaymentRole
     // filterTenderBidsWithSufficientCashflowRole;
     //
@@ -85,13 +86,15 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
         // for (EnergyProducer producer :
         // reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market))
         // {
-        // filterTenderBidsWithSufficientCashflowRole.act(producer);
-        //
-        // }
+        if (scheme.getAnnualRenewableTargetInMwh() > 0) {
+            filterTenderBidsByTechnologyPotentialRole.act(scheme);
+            //
+            // }
 
-        clearRenewableTenderRole.act(scheme);
+            clearRenewableTenderRole.act(scheme);
 
-        createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
+            createPowerPlantsOfAcceptedTenderBidsRole.act(scheme);
+        }
 
         organizeRenewableTenderPaymentsRole.act(scheme);
 

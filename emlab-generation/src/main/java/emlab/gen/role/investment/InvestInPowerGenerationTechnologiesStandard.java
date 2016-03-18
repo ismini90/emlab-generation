@@ -169,7 +169,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
             Iterable<PowerGridNode> possibleInstallationNodes;
             double nodeLimitNonIntermittentTechnology = 0d;
-            logger.warn("technology considered is" + technology.getName());
+            // logger.warn("technology considered is" + technology.getName());
 
             /*
              * For dispatchable technologies just choose a random node. For

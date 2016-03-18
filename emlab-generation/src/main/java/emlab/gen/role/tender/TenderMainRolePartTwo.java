@@ -51,7 +51,7 @@ public class TenderMainRolePartTwo extends AbstractRole<RenewableSupportSchemeTe
     // SubmitTenderBidRole submitTenderBidRole;
 
     @Autowired
-    FilterTenderBidsWithSufficientCashForDownpaymentRole filterTenderBidsWithSufficientCashflowRole;
+    FilterTenderBidsByTechnologyPotentialRole filterTenderBidsWithSufficientCashflowRole;
 
     // @Autowired
     // ClearRenewableTenderRole clearRenewableTenderRole;

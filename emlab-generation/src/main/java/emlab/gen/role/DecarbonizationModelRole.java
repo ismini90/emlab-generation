@@ -64,7 +64,7 @@ import emlab.gen.role.operating.PayOperatingAndMaintainanceCostsRole;
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExAnte;
 import emlab.gen.role.pricewarranty.ComputePremiumRoleExPost;
 import emlab.gen.role.pricewarranty.FeedInPremiumRole;
-import emlab.gen.role.tender.FilterTenderBidsWithSufficientCashForDownpaymentRole;
+import emlab.gen.role.tender.FilterTenderBidsByTechnologyPotentialRole;
 import emlab.gen.role.tender.TenderMainRolePart;
 import emlab.gen.role.tender.TenderMainRolePartThree;
 import emlab.gen.role.tender.TenderMainRolePartTwo;
@@ -144,7 +144,7 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private ComputePremiumRoleExPost computePremiumRoleExPost;
     @Autowired
-    private FilterTenderBidsWithSufficientCashForDownpaymentRole filterTenderBidsWithSufficientCashflowRole;
+    private FilterTenderBidsByTechnologyPotentialRole filterTenderBidsWithSufficientCashflowRole;
 
     public static int powerPlantCount = 0;
     @Autowired

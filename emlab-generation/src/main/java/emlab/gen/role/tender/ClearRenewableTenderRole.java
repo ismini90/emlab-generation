@@ -26,7 +26,6 @@ import emlab.gen.domain.market.Bid;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
 import emlab.gen.domain.policy.renewablesupport.TenderClearingPoint;
-import emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit;
 import emlab.gen.repository.Reps;
 
 /**
@@ -81,15 +80,6 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
         double pgtNodeLimit = Double.MAX_VALUE;
         for (TenderBid currentTenderBid : sortedTenderBidsbyPriceAndScheme) {
             noOfBids++;
-            // logger.warn("current Tender bid is of technology " +
-            // currentTenderBid.getTechnology() + "Amount "
-            // + currentTenderBid.getAmount());
-            PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
-                    .findOneByTechnologyAndNode(currentTenderBid.getTechnology(), currentTenderBid.getPowerGridNode());
-            if (pgtLimit != null) {
-                pgtNodeLimit = pgtLimit
-                        .getUpperCapacityLimit(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
-            }
 
             // if the tender is not cleared yet, it collects complete bids
             if (isTheTenderCleared == false) {

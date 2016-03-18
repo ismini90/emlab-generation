@@ -45,6 +45,10 @@ public interface TenderBidRepository extends GraphRepository<TenderBid> {
     public Iterable<TenderBid> findAllSubmittedSortedTenderBidsbyTime(@Param("tick") long time,
             @Param("scheme") RenewableSupportSchemeTender scheme);
 
+    @Query(value = "g.v(scheme).in('TENDERBID_SUPPORTSCHEME').as('x').out('FOR_TECHNOLOGY').filter(it.name == technologyName).back('x').filter{it.status == 1}.filter{it.time == tick}.sort{it.price}._()", type = QueryType.Gremlin)
+    public Iterable<TenderBid> findAllSubmittedSortedTenderBidsbyTechnology(@Param("tick") long time,
+            @Param("scheme") RenewableSupportSchemeTender scheme, @Param("technologyName") String technologyName);
+
     // This returns the (partly) accepted bids for the current tick, needed to
     // create the corresponding power plant
     @Query(value = "g.v(scheme).in('TENDERBID_SUPPORTSCHEME')"
