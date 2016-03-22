@@ -27,6 +27,8 @@ import agentspring.role.Role;
 import agentspring.role.RoleComponent;
 import cern.colt.Timer;
 import emlab.gen.domain.agent.DecarbonizationModel;
+import emlab.gen.domain.market.DecarbonizationMarket;
+import emlab.gen.domain.market.electricity.PpdpAnnual;
 import emlab.gen.repository.Reps;
 
 /**
@@ -262,6 +264,17 @@ implements Role<DecarbonizationModel> {
         try {
             IloCplex cplex = new IloCplex();
 
+            Iterable<DecarbonizationMarket> marketList = new ArrayList<DecarbonizationMarket>();
+            marketList = reps.marketRepository.findAll();
+
+            for (DecarbonizationMarket market : marketList) {
+                Iterable<PpdpAnnual> ppdpAnnualList = reps.ppdpAnnualRepository
+                        .findAllSubmittedPpdpAnnualForGivenMarketAndTime(market, getCurrentTick());
+
+                for
+
+            }
+
             for (Plant p : pp) {
 
                 ArrayList<IloNumVar> generationCapacityOfPlant = new ArrayList<IloNumVar>(timeSteps);
@@ -423,10 +436,12 @@ implements Role<DecarbonizationModel> {
 
             // OBJECTIVE FUNCTION EXPRESSION
 
+            Iterable<PpdpAnnual> allSubmittedPpdpAnnuals = reps.ppdpAnnualRepository.findAllSubmittedPpdpAnnualForGivenTime(getCurrentTick());
+
             IloLinearNumExpr objective = cplex.linearNumExpr();
             for (int i = 0; i < timeSteps; ++i) {
-                for (Plant p : pp) {
-                    objective.addTerm(p.getMc(), p.getGenerationCapacityOfPlant().get(i));
+                for (PpdpAnnual p : allSubmittedPpdpAnnuals) {
+                    objective.addTerm(p.getPrice(), p.getAvailableHourlyAmount().getHourlyArray(i));
                 }
             }
 

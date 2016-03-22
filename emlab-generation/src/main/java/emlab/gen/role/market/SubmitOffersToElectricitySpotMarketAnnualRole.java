@@ -144,9 +144,9 @@ Role<EnergyProducer> {
                 // segment, getCurrentTick());
 
                 ppdpAnnual = new PpdpAnnual().persist();
-                ppdpAnnual.setAvailableHourlyAmount(hourlyCapacity);
 
-                ppdpAnnual.specifyNotPersist(plant, producer, market, tick, price, capacity, Bid.SUBMITTED);
+
+                ppdpAnnual.specifyNotPersist(plant, producer, market, tick, price, hourlyCapacity, Bid.SUBMITTED);
 
                 ppdpList.add(ppdpAnnual);
 

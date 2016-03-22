@@ -45,6 +45,7 @@ public class PpdpAnnual extends Bid {
         return availableHourlyAmount;
     }
 
+    // in hourly amount in MW
     public void setAvailableHourlyAmount(HourlyCSVTimeSeries availableHourlyAmount) {
         this.availableHourlyAmount = availableHourlyAmount;
     }
@@ -67,24 +68,24 @@ public class PpdpAnnual extends Bid {
 
     public void specifyNotPersist(PowerPlant plant, EnergyProducer producer, ElectricitySpotMarket market,
             long time,
-            double price, double spotMarketCapacity, int status, HourlyCSVTimeSeries series) {
+            double price, HourlyCSVTimeSeries spotMarketHourlyCapacity, int status) {
         this.setPowerPlant(plant);
         this.setTime(time);
         this.setBidder(producer);
         this.setBiddingMarket(market);
         this.setPrice(price);
-        this.setAmount(spotMarketCapacity);
+        this.setAvailableHourlyAmount(spotMarketHourlyCapacity);
         this.setStatus(status);
-        this.setAvailableHourlyAmount(series);
+
     }
 
     // All transactional methods below are signified by starting with update
     @Transactional
     public void specifyAndPersist(PowerPlant plant, EnergyProducer producer, ElectricitySpotMarket market,
- long time,
-            double price, double spotMarketCapacity, int status, HourlyCSVTimeSeries series) {
+            long time,
+            double price, HourlyCSVTimeSeries series, int status) {
         this.persist();
-        this.specifyNotPersist(plant, producer, market, time, price, spotMarketCapacity, status, series);
+        this.specifyNotPersist(plant, producer, market, time, price, series, status);
 
     }
 
