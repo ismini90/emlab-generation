@@ -87,9 +87,7 @@ public class TenderMainRolePart extends AbstractRole<RenewableSupportSchemeTende
         // reps.energyProducerRepository.findEnergyProducersByMarketAtRandom(market))
         // {
         if (scheme.getAnnualRenewableTargetInMwh() > 0) {
-            // filterTenderBidsByTechnologyPotentialRole.act(scheme);
-            //
-            // }
+            filterTenderBidsByTechnologyPotentialRole.act(scheme);
 
             clearRenewableTenderRole.act(scheme);
 
