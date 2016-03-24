@@ -89,9 +89,9 @@ scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderT
 
 #Sensitivity to FIP BIAS FACTOR 
 
-nameList<-character()
+#nameList<-character()
 xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/"
-feedInPremiumBiasFactorArray <- c(1,1.05,1.1,1.15,1.2)
+feedInPremiumBiasFactorArray <- c(1.05,1.1,1.15,1.2)
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
 
 exPostExAnteVariable <- c("false")
@@ -107,7 +107,7 @@ noOfRepetitions = 120
     xmlFileContent<-gsub("#degressionFactor", 0.06, xmlFileContent)
     xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
     xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
-    xmlFileContent<-gsub("#futureSchemeStartTime", 5, xmlFileContent) 
+    xmlFileContent<-gsub("#futureSchemeStartTime", 0, xmlFileContent) 
     xmlFileContent<-gsub("#co2TradingAndBankingImplemented", "false", xmlFileContent)
     
     for(fipBiasFactor in feedInPremiumBiasFactorArray){
@@ -173,7 +173,7 @@ for(scenario in scenarioTemplateNames){
     xmlFileContent<-gsub("#feedInPremiumBiasFactor", 1, xmlFileContent)
     xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
     xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
-    xmlFileContent<-gsub("#futureSchemeStartTime", 5, xmlFileContent) 
+    xmlFileContent<-gsub("#futureSchemeStartTime", 0, xmlFileContent) 
     xmlFileContent<-gsub("#co2TradingAndBankingImplemented", "false", xmlFileContent)
     
     for(supportSchemeDuration in supportSchemeDurationArray){
@@ -192,10 +192,11 @@ nameList
 #Sensitivity to Degression
 
 scenarioTemplateNames <- c("FipTechSpecTemplate.xml")
-nameList<-character()
-futureTimePointArray <- c(1,5)
-exPostExAnteVariable <- c("true", "false")
+#nameList<-character()
+futureTimePointArray <- c(0)
+exPostExAnteVariable <- c("true")
 degressionFactorArray<-c(0.015, 0.05, 0.15, 0.25)
+filestump<-gsub("Template.xml","","FipTechSpecTemplate.xml")
 
   for(exPostBoolean in exPostExAnteVariable){
     filePathAndName <- paste(xmlFilePath,"FipTechSpecTemplate.xml",sep="")
@@ -216,19 +217,16 @@ degressionFactorArray<-c(0.015, 0.05, 0.15, 0.25)
         print(degressionFactorValue)
         for(runIDiterator in 1:noOfRepetitions){
           xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-          if (degressionFactorValue == 0.015) {
-            #print("yes")
-          writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/sensitivityAnalysis/", filestump,"FTP",futureTimePoint,"DF","1pt5", "-", runIDiterator, ".xml", sep=""))
-          }
-          else {
-            writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/sensitivityAnalysis/", filestump,"FTP",futureTimePoint,"DF",degressionFactorValue*100, "-", runIDiterator, ".xml", sep=""))
-          }
+
+            writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/sensitivityAnalysis/", filestump,"DF",degressionFactorValue*1000, "-", runIDiterator, ".xml", sep=""))
+          
         }
-        nameList<- cbind(nameList, paste(filestump,"BF",fipBiasFactor*100,sep=""))
+        nameList<- cbind(nameList, paste(filestump,"DF",degressionFactorValue*1000, sep=""))
         
       }
     }
   }
+nameList
 
 #Sensitivity to Average Electricity Price Remuneration
 
