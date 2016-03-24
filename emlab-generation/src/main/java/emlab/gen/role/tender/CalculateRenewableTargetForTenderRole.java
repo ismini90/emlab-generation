@@ -102,7 +102,11 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             // logger.warn("For PGT - technology; " + technology);
             scheme.setCurrentTechnologyUnderConsideration(technology);
 
-            expectedGenerationPerTechnologyAvailable = computeGenerationFromRenUsingPPDP(technology, market,
+            // expectedGenerationPerTechnologyAvailable =
+            // computeGenerationFromRenUsingPPDP(technology, market,
+            // futureStartingTenderTimePoint);
+
+            expectedGenerationPerTechnologyAvailable = computeRenGenerationUsingExpectedGeneration(technology, market,
                     futureStartingTenderTimePoint);
             totalExpectedGenerationAvailable += expectedGenerationPerTechnologyAvailable;
         }
@@ -178,6 +182,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
 
         }
+        // logger.warn("");
 
         return expectedGenerationPerTechnologyAvailable;
 
@@ -186,9 +191,11 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
     private double computeRenGenerationUsingExpectedGeneration(PowerGeneratingTechnology technology,
             ElectricitySpotMarket market, long futureTimePoint) {
         double expectedGenerationPerTechnologyAvailable = 0d;
+        int count = 0;
 
         for (PowerPlant plant : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarketByTechnology(market,
                 technology, futureTimePoint)) {
+            count++;
             double totalGenerationOfPlantInMwh = 0d;
             for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
                 // logger.warn("Inside segment loop for
@@ -203,6 +210,9 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
 
         }
+        logger.warn("No of power plants of technology " + technology.getName() + "is " + count);
+        logger.warn("Expected generation from technology " + technology.getName() + "is "
+                + expectedGenerationPerTechnologyAvailable);
 
         return expectedGenerationPerTechnologyAvailable;
 

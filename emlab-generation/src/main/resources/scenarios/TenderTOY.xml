@@ -55,7 +55,7 @@
 		<bean id="renewableSupportSchemeNL"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="Tender"
-		p:futureTenderOperationStartTime="5"
+		p:futureTenderOperationStartTime="4"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="false"
 		p:expostRevenueCalculation="true">
@@ -110,32 +110,7 @@
 		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
 		p:delimiter="," p:variableName="nl_dummyTargetWind" />
 		
-			<bean id="renewableTenderTargetForecastNLphotovoltaicPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast"
-		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_photovoltaicPGTForecast"
-		p:targetTechnologySpecific = "true">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-	</bean>
-
-	<bean id="nl_nreap_photovoltaicPGTForecast" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="nl_target_photovoltaics" />
-
-
-		<bean id="renewableTenderTargetForecastNLwindPGT"
-		class="emlab.gen.domain.policy.renewablesupport.RenewableTargetForecast"
-		p:yearlyRenewableTargetTimeSeries-ref="nl_nreap_windPGTForecast"
-		p:targetTechnologySpecific = "true">
-		<property name="regulator" ref="regulatorNL" />
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-	</bean>
-
-	<bean id="nl_nreap_windPGTForecast" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/nodeAndTechSpecificPotentialsDummy.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="nl_target_windon" />
-		
-
+			
 
 
 
@@ -380,7 +355,7 @@
 
 	<!-- Power plant Factory -->
 	<bean id="NLPortfolio" class="emlab.gen.domain.factory.ElectricityProducerFactory">
-	<property name="capacityMargin" value="1.0" />
+	<property name="capacityMargin" value="1.5" />
 		<property name="portfolioShares">
 			<map>
 
@@ -496,7 +471,7 @@
 		p:efficiencyTimeSeries-ref="windEfficiencyTimeSeries"
 		p:co2CaptureEffciency="0" p:depreciationTime="15"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="1"
+		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="1"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.40"
@@ -523,7 +498,7 @@
 		p:efficiencyTimeSeries-ref="pvEfficiencyTimeSeries"
 		p:co2CaptureEffciency="0" p:depreciationTime="15"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="0"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.20"

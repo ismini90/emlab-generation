@@ -106,7 +106,7 @@ public class CreatePowerPlantsOfAcceptedTenderBidsRole extends AbstractRole<Rene
     @Transactional
     private void createSpreadOutDownPayments(EnergyProducer agent, PowerPlantManufacturer manufacturer,
             double totalDownPayment, PowerPlant plant) {
-        // logger.warn("building power plant" + plant.getName());
+        logger.warn("building power plant" + plant.getName());
         int buildingTime = (int) plant.getActualLeadTime();
         reps.nonTransactionalCreateRepository.createCashFlow(agent, manufacturer, totalDownPayment / buildingTime,
                 CashFlow.DOWNPAYMENT, getCurrentTick(), plant);

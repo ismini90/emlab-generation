@@ -112,9 +112,11 @@ public class VerificationTargetCalculationRole extends AbstractRole<RenewableSup
         double expectedGenerationPerTechnologyAvailable = 0d;
         double expectedGenerationPerPlantAvailable = 0d;
         long numberOfSegments = reps.segmentRepository.count();
+        int count = 0;
 
         for (PowerPlant plant : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarketByTechnology(market,
                 technology, getCurrentTick())) {
+            count++;
             expectedGenerationPerPlantAvailable = 0d;
             for (Segment segment : reps.segmentRepository.findAll()) {
                 double availablePlantCapacity = plant.getAvailableCapacity(getCurrentTick(), segment, numberOfSegments);
@@ -131,6 +133,8 @@ public class VerificationTargetCalculationRole extends AbstractRole<RenewableSup
             // logger.warn("expectedGenerationPerTechnologyAvailable" +
             // expectedGenerationPerTechnologyAvailable);
         }
+        logger.warn(
+                "verification : number of current powerplants for technology " + technology.getName() + " is " + count);
 
         return expectedGenerationPerTechnologyAvailable;
     }

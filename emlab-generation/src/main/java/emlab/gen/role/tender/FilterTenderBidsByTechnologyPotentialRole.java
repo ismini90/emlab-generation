@@ -69,6 +69,8 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
                     .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime())
                     * scheme.getAnnualExpectedConsumption();
 
+            logger.warn("technology potential" + technologyPotential);
+
             double sumAcceptedBid = 0d;
             for (TenderBid currentBid : sortedTenderBidsbyPriceAndTechnology) {
 
