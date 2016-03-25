@@ -196,17 +196,22 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         for (PowerPlant plant : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarketByTechnology(market,
                 technology, futureTimePoint)) {
             count++;
-            double totalGenerationOfPlantInMwh = 0d;
-            for (SegmentLoad segmentLoad : market.getLoadDurationCurve()) {
-                // logger.warn("Inside segment loop for
-                // calculating
-                // total production");
+            double totalGenerationOfPlantInMwh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
+            long numberOfSegments = reps.segmentRepository.count();
+            // for (Segment segment : reps.segmentRepository.findAll()) {
+            // double availablePlantCapacity =
+            // plant.getAvailableCapacity(futureTimePoint, segment,
+            // numberOfSegments);
 
-                double hours = segmentLoad.getSegment().getLengthInHours();
-
-                totalGenerationOfPlantInMwh += hours * plant.getAvailableCapacity(futureTimePoint);
-
-            }
+            // double lengthOfSegmentInHours = segment.getLengthInHours();
+            // totalGenerationOfPlantInMwh += availablePlantCapacity *
+            // lengthOfSegmentInHours;
+            // logger.warn("availablePlantCapacity" + numberOfSegments +
+            // "lengthOfSegmentInHours"
+            // + segment.getLengthInHours() +
+            // "expectedGenerationPerPlantAvailable"
+            // + expectedGenerationPerPlantAvailable);
+            // }
             expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
 
         }

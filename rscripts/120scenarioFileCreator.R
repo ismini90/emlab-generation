@@ -11,7 +11,7 @@ exPostExAnteVariable <- c("true","false")
 # Step 2 building the scenarios: make separate data vectors
 noOfRepetitions = 120
 supportSchemeDuration = 10
-futureSchemeStartTime = 0
+futureSchemeStartTime = 2
 feedInPremiumBiasFactor =1.001
 degressionEnabled = "false"
 degressionFactor =0.06
@@ -45,7 +45,7 @@ for(exPostBoolean in exPostExAnteVariable)
       xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
       xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
       xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/prelimAnalysis/", filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
+      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/TestRuns2603/", filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
     }
     nameList<- cbind(nameList, paste(filestump,"EP",exPostBoolean, "CM", co2Var, sep=""))
   }

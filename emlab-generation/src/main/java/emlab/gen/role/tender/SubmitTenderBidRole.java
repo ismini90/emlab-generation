@@ -62,7 +62,6 @@ import emlab.gen.domain.policy.PowerGeneratingTechnologyTarget;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
-import emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit;
 import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.domain.technology.Substance;
@@ -148,18 +147,6 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                 for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
 
-                    double targetFactorTechSpec = reps.renewableTargetForTenderRepository
-                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByScheme(scheme,
-                                    technology.getName())
-                            .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
-
-                    // if (scheme.isTechnologySpecificityEnabled() == true) {
-                    // PowerGeneratingTechnology technology =
-                    // scheme.getCurrentTechnologyUnderConsideration();
-                    // }
-
-                    // logger.warn("eligible are: " + technology);
-
                     DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator()
                             .next();
 
@@ -189,25 +176,11 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                         PowerPlant plant = new PowerPlant();
                         plant.specifyNotPersist(getCurrentTick(), agent, node, technology);
-                        plant.setRenewableTenderDummyPowerPlant(true);
-                        double cashAvailableForPlantDownpayments = 0d;
+                        // plant.setRenewableTenderDummyPowerPlant(true);
 
                         // CALCULATING NODE LIMIT
-                        double pgtNodeLimitInMwh = Double.MAX_VALUE;
 
                         // logger.warn("pgtNodeLimit 1 is: " + pgtNodeLimit);
-
-                        PowerGeneratingTechnologyNodeLimit pgtLimit = reps.powerGeneratingTechnologyNodeLimitRepository
-                                .findOneByTechnologyAndNode(technology, plant.getLocation());
-                        double expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
-                                .calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(
-                                        plant.getLocation(), technology, futureTimePoint);
-
-                        if (pgtLimit != null) {
-                            pgtNodeLimitInMwh = pgtLimit.getUpperCapacityLimit(futureTimePoint)
-                                    * plant.getAnnualFullLoadHours()
-                                    - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
-                        }
 
                         // Calculate bid quantity. Number of plants to be bid -
                         // as
@@ -218,25 +191,13 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // logger.warn("submit bid: annual full load hours" +
                         // (plant.getAnnualFullLoadHours()));
 
-                        double ratioByNodeCapacity = pgtNodeLimitInMwh
-                                / (plant.getActualNominalCapacity() * plant.getAnnualFullLoadHours());
-
                         // logger.warn("submit bid role: pgt node limit in Mwh"
                         // + pgtNodeLimitInMwh);
                         // logger.warn("number of plants by node capacity" +
                         // ratioByNodeCapacity);// capacityTesting
-                        double numberOfPlantsByNodeLimit = (long) ratioByNodeCapacity; // truncates
-
-                        double proportionOfCashAvailableByTechnology = targetFactorTechSpec / targetFactorOverall;
-
-                        cashAvailableForPlantDownpayments = agentsDownpaymentFractionOfCash * agentsCurrentcash
-                                * proportionOfCashAvailableByTechnology;
 
                         double cashNeededPerPlant = plant.getActualInvestedCapital()
                                 * (1 - agent.getDebtRatioOfInvestments()) / plant.getActualLeadTime();
-
-                        double noOfPlantsByTechnologyTargetBasedCashAvailability = (long) cashAvailableForPlantDownpayments
-                                / cashNeededPerPlant;
 
                         double noOfPlantsByTarget = scheme.getAnnualRenewableTargetInMwh()
                                 / (plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity());

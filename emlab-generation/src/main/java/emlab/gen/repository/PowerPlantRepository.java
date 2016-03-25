@@ -53,12 +53,12 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
     @Query("start owner=node({owner}) match (owner)<-[:POWERPLANT_OWNER]-(plant) return count(plant)")
     public long countPowerPlantsByOwner(@Param("owner") EnergyProducer owner);
 
-    @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.name==technologyName}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) == tick) && (it.dismantleTime > tick)}", type = QueryType.Gremlin)
+    @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.name==technologyName}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) == tick) && (it.expectedEndOfLife > tick)}", type = QueryType.Gremlin)
     Iterable<PowerPlant> findPowerPlantsStartingOperationThisTickByPowerGridNodeAndTechnology(
             @Param("gridnode") PowerGridNode node, @Param("technologyName") String technologyName,
             @Param("tick") long tick);
 
-    @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it==g.v(technology)}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}", type = QueryType.Gremlin)
+    @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.name==g.v(technology).name}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.expectedEndOfLife > tick)}", type = QueryType.Gremlin)
     Iterable<PowerPlant> findOperationalPowerPlantsByPowerGridNodeAndTechnology(@Param("gridnode") PowerGridNode node,
             @Param("technology") PowerGeneratingTechnology powerGeneratingTechnology, @Param("tick") long tick);
 

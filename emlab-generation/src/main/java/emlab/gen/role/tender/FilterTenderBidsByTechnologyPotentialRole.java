@@ -24,9 +24,12 @@ import agentspring.role.AbstractRole;
 import agentspring.role.Role;
 import agentspring.role.RoleComponent;
 import emlab.gen.domain.market.Bid;
+import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
 import emlab.gen.domain.policy.renewablesupport.TenderBid;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
+import emlab.gen.domain.technology.PowerGridNode;
+import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.repository.Reps;
 
 /**
@@ -35,6 +38,13 @@ import emlab.gen.repository.Reps;
 @RoleComponent
 public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<RenewableSupportSchemeTender>
         implements Role<RenewableSupportSchemeTender> {
+    Iterable<TenderBid> sortedTenderBidsbyPriceTechnologyAndNode;
+    Iterable<TenderBid> sortedTenderBidsbyPriceTechnology;
+    double technologyPotential;
+    double technologyAndNodePotential;
+    double expectedInstalledCapacityOfTechnologyInNode;
+    double expectedGenerationFromTechnology;
+    double limit;
 
     @Transient
     @Autowired
@@ -47,9 +57,8 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
     @Override
     @Transactional
     public void act(RenewableSupportSchemeTender scheme) {
-
-        Iterable<TenderBid> sortedTenderBidsbyPriceAndTechnology = null;
-        double technologyPotential;
+        ElectricitySpotMarket market = reps.marketRepository
+                .findElectricitySpotMarketForZone(scheme.getRegulator().getZone());
 
         // 1. Loop through all the technologies in the tech neutral scheme.
         // 2. For each technology, find a list of sorted bids
@@ -59,46 +68,84 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
         // potential is met, this is done in the clear bid algorithm anyway!
 
         for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
-            sortedTenderBidsbyPriceAndTechnology = reps.tenderBidRepository
-                    .findAllSubmittedSortedTenderBidsbyTechnology(getCurrentTick(), scheme, technology.getName());
 
             // POTENTIAL IN MWH ASSUMED TO BE THE SAME AS TARGET
+            sortedTenderBidsbyPriceTechnology = reps.tenderBidRepository
+                    .findAllSubmittedSortedTenderBidsbyTechnology(getCurrentTick(), scheme, technology.getName());
+
             technologyPotential = reps.renewableTargetForTenderRepository
                     .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
                             technology.getName())
                     .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime())
                     * scheme.getAnnualExpectedConsumption();
 
-            logger.warn("technology potential" + technologyPotential);
+            expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
+                    .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology,
+                            getCurrentTick());
+            PowerPlant plant = reps.powerPlantRepository
+                    .findExpectedOperationalPowerPlantsInMarketByTechnology(market, technology, getCurrentTick())
+                    .iterator().next();
+            limit = technologyPotential
+                    - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
+
+            logger.warn("Limit for technology " + technology.getName() + "is " + limit);
 
             double sumAcceptedBid = 0d;
-            for (TenderBid currentBid : sortedTenderBidsbyPriceAndTechnology) {
+            for (TenderBid currentBid : sortedTenderBidsbyPriceTechnology) {
 
-                if ((sumAcceptedBid + currentBid.getAmount()) < technologyPotential) {
+                if ((sumAcceptedBid + currentBid.getAmount()) < limit) {
                     sumAcceptedBid += currentBid.getAmount();
 
                 } else {
                     currentBid.setStatus(Bid.FAILED);
                 }
-
-                // if (cashAvailableForPlantDownpayment -
-                // currentTenderBid.getCashNeededForPlantDownpayments() > 0) {
-                // cashAvailableForPlantDownpayment =
-                // cashAvailableForPlantDownpayment
-                // - currentTenderBid.getCashNeededForPlantDownpayments();
-                // else {
-
-                // currentTenderBid.setStatus(Bid.NOT_SUBMITTED);
-                // logger.warn("status of bid; " + currentTenderBid.getStatus()
-                // + "is of technology"
-                // + currentTenderBid.getTechnology());
-
             }
-
         }
+
+        // if (cashAvailableForPlantDownpayment -
+        // currentTenderBid.getCashNeededForPlantDownpayments() > 0) {
+        // cashAvailableForPlantDownpayment =
+        // cashAvailableForPlantDownpayment
+        // - currentTenderBid.getCashNeededForPlantDownpayments();
+        // else {
+
+        // currentTenderBid.setStatus(Bid.NOT_SUBMITTED);
+        // logger.warn("status of bid; " + currentTenderBid.getStatus()
+        // + "is of technology"
+        // + currentTenderBid.getTechnology());
 
     }
 
-    // currentTenderBid.persist();
-    // }
+    private Iterable<TenderBid> getSortedTenderBids(RenewableSupportSchemeTender scheme,
+            PowerGeneratingTechnology technology) {
+
+        ElectricitySpotMarket market = reps.marketRepository
+                .findElectricitySpotMarketForZone(scheme.getRegulator().getZone());
+
+        for (PowerGridNode node : reps.powerGridNodeRepository
+                .findAllPowerGridNodesByZone(scheme.getRegulator().getZone())) {
+
+            // POTENTIAL IN MWH ASSUMED TO BE THE SAME AS TARGET
+
+            // get
+            technologyAndNodePotential = reps.renewableTargetForTenderRepository
+                    .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                            technology.getName(), node.getName())
+                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime())
+                    * scheme.getAnnualExpectedConsumption();
+            expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
+                    .calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(node, technology,
+                            getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+            PowerPlant plant = reps.powerPlantRepository.findOperationalPowerPlantsByMarketAndTechnology(market,
+                    technology, getCurrentTick() + scheme.getFutureTenderOperationStartTime()).iterator().next();
+            limit = technologyAndNodePotential
+                    - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
+
+            sortedTenderBidsbyPriceTechnologyAndNode = reps.tenderBidRepository
+                    .findAllSubmittedSortedTenderBidsbyTechnologyAndNode(getCurrentTick(), scheme, technology.getName(),
+                            node.getName());
+        }
+        return sortedTenderBidsbyPriceTechnologyAndNode;
+        // currentTenderBid.persist();
+    }
 }

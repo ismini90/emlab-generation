@@ -55,7 +55,7 @@
 		<bean id="renewableSupportSchemeNL"
 		class="emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender"
 		p:name="Tender"
-		p:futureTenderOperationStartTime="4"
+		p:futureTenderOperationStartTime="2"
 		p:supportSchemeDuration="10"
 		p:technologySpecificityEnabled="false"
 		p:expostRevenueCalculation="true">
@@ -471,7 +471,7 @@
 		p:efficiencyTimeSeries-ref="windEfficiencyTimeSeries"
 		p:co2CaptureEffciency="0" p:depreciationTime="15"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="1"
+		p:expectedLifetime="5" p:expectedLeadtime="1" p:expectedPermittime="0"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.40"
