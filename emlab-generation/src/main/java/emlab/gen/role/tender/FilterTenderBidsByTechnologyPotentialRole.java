@@ -79,14 +79,22 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
                     .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime())
                     * scheme.getAnnualExpectedConsumption();
 
+            logger.warn("verification: technology potential =" + technologyPotential);
+            logger.warn("technology potentialfactor = " + reps.renewableTargetForTenderRepository
+                    .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                            technology.getName())
+                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime()));
+
             expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
                     .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology,
-                            getCurrentTick());
+                            getCurrentTick() +  scheme.getFutureTenderOperationStartTime());
             PowerPlant plant = reps.powerPlantRepository
                     .findExpectedOperationalPowerPlantsInMarketByTechnology(market, technology, getCurrentTick())
                     .iterator().next();
             limit = technologyPotential
                     - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
+            logger.warn("verification: expected generation ="
+                    + expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
 
             logger.warn("Limit for technology " + technology.getName() + "is " + limit);
 

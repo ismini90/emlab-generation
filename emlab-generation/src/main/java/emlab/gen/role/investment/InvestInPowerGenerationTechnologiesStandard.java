@@ -253,14 +253,23 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             * segmentLoad.getSegment().getLengthInHours();
 
                 }
+                // logger.warn("totalExpectedConsumption " +
+                // totalExpectedConsumption);
+
                 if (scheme != null) {
                     double technologyPotential;
                     technologyPotential = reps.renewableTargetForTenderRepository
-                            .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
-                                    scheme.getRegulator(), technology.getName(), node.getName())
+                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                                    technology.getName())
                             .getValue(futureTimePoint) * totalExpectedConsumption;
 
                     pgtNodeLimit = technologyPotential / plant.getAnnualFullLoadHours();
+                    // logger.warn("plant annual full load hours " +
+                    // plant.getAnnualFullLoadHours());
+                    // logger.warn("technology potential in MW " +
+                    // pgtNodeLimit);
+                    // logger.warn("technology potential " +
+                    // technologyPotential);
 
                 }
 
