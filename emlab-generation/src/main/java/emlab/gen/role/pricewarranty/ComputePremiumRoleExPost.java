@@ -94,7 +94,6 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
     public void act(RenewableSupportFipScheme scheme) {
 
         Regulator regulator = scheme.getRegulator();
-        // logger.warn("hello");
         // should be close to the investor's future time point.
         long futureTimePoint = scheme.getFutureSchemeStartTime() + getCurrentTick();
 
@@ -113,7 +112,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 continue;
 
             for (PowerGridNode node : reps.powerGridNodeRepository.findAllPowerGridNodesByZone(regulator.getZone())) {
-                logger.warn("node loop");
+
                 // or create a new power plant if above statement returns
                 // null,
                 // and assign it to a random energy producer.
@@ -237,8 +236,7 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                     // technology.getName() + "premium " + lcoe);
                 } else {
 
-                    // logger.warn("Creating base cost map: technology " +
-                    // technology.getName() + "premium " + lcoe);
+                    logger.warn("Creating base cost map: technology " + technology.getName() + "premium " + lcoe);
                     baseCostMap.put(new Key2D(technology, node), lcoe);
                     // Use that as a key, depending on the mode -
                     // technology,

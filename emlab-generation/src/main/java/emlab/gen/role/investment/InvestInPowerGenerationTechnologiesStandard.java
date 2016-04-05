@@ -264,8 +264,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             .getValue(futureTimePoint) * totalExpectedConsumption;
 
                     pgtNodeLimit = technologyPotential / plant.getAnnualFullLoadHours();
-                    // logger.warn("plant annual full load hours " +
-                    // plant.getAnnualFullLoadHours());
+                    // logger.warn("For technology " + technology.getName() + "
+                    // plant annual full load hours "
+                    // + plant.getAnnualFullLoadHours());
                     // logger.warn("technology potential in MW " +
                     // pgtNodeLimit);
                     // logger.warn("technology potential " +
@@ -394,10 +395,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                             expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
                                     technology, scheme.isTechnologySpecificityEnabled());
-                            // logger.warn("2: For technology" +
-                            // technology.getName() + "for node" +
-                            // node.getName()
-                            // + "Expected Base cost " + expectedBaseCost);
+                            logger.warn("2: For technology" + technology.getName() + "for node" + node.getName()
+                                    + "Expected Base cost " + expectedBaseCost);
                         }
 
                     }
@@ -754,8 +753,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
             }
             expectedBaseCostFip = gtr.predict(agent.getInvestmentFutureTimeHorizon());
         }
-        // logger.warn("Forecast {}: in Step " + futureTimePoint,
-        // gtr.predict(futureTimePoint));
+        // logger.warn("Forecast {}: in Step " + futureTimeStartScheme,
+        // gtr.predict(futureTimeStartScheme));
         return expectedBaseCostFip;
 
     }

@@ -17,7 +17,7 @@
 	<!-- Decarbonization Model -->
 	<bean id="decarbonizationModel" class="emlab.gen.domain.agent.DecarbonizationModel"
 		p:name="Decarbonization Model" p:simulationLength="${simulationLength}"
-		p:co2TradingImplemented="false" p:realRenewableDataImplemented="false"
+		p:co2TradingImplemented="false" p:realRenewableDataImplemented="true"
 		p:co2BankingIsImplemented="false"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
 		p:centralForecastBacklookingYears="5"
@@ -178,50 +178,7 @@ p:degressionFactor="0.06">
 				p:delimiter="," p:variableName="nl_target_windon" />
 
 
-				<!-- Technology Specific POTENTIAL LIMITS for Intermittent Technologies -->
-		<bean id="renewablePotentialLimitNLphotovoltaic"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_photovoltaicPGT_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-			</bean>
 
-			<bean id="nl_photovoltaicPGT_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/potentialLimits.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitPV" />
-
-
-			<bean id="renewablePotentialLimitNLwindOffshore"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_windOffshore_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-			</bean>
-
-			<bean id="nl_windOffshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitWindOff" />
-
-
-
-
-
-				<bean id="renewablePotentialLimitNLwindOnshore"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_windOnshore_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="windPGT" />
-			</bean>
-
-			<bean id="nl_windOnshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitWindOn" />
 
 
 		<!-- Technology Specific Targets for Non-Intermittent Ren Technologies -->
@@ -255,7 +212,7 @@ p:degressionFactor="0.06">
 
 	<bean id="demandGrowthTrendNL" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticDemandNLandDE/demandGrowthNL.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="demandNL-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="demandNL-2" />
 
 	<bean class="emlab.gen.trend.TriangularTrend" id="demandGrowthTrendDE"
 		p:start="${demandGrowthDEStart}" p:min="${demandGrowthDEMin}" p:max="${demandGrowthDEMax}"
@@ -1021,19 +978,19 @@ p:degressionFactor="0.06">
 	<!-- Fuel Prices -->
 	<bean id="coalPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/coalPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="coalPrice-1" />
+		p:delimiter="," p:variableName="coalPrice-2" />
 	<bean id="gasPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/gasPrice.csv" p:startingYear="0"
-		p:delimiter="," p:variableName="gasPrice-1" />
+		p:delimiter="," p:variableName="gasPrice-2" />
 	<bean id="biomassPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/biomassPrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="biomassPrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="biomassPrice-2" />
 	<bean id="uraniumPrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/uraniumPrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="uraniumPrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="uraniumPrice-2" />
 	<bean id="lignitePrice" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/stochasticFuelPrices/lignitePrice.csv"
-		p:startingYear="0" p:delimiter="," p:variableName="lignitePrice-1" />
+		p:startingYear="0" p:delimiter="," p:variableName="lignitePrice-2" />
 
 	<!-- Agents -->
 	<bean id="coalSupplier" class="emlab.gen.domain.agent.CommoditySupplier">
@@ -1550,7 +1507,7 @@ p:degressionFactor="0.06">
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.40"
-		p:peakSegmentDependentAvailability="0.05" p:intermittent="false"
+		p:peakSegmentDependentAvailability="0.05" p:intermittent="true"
 		p:applicableForLongTermContract="true">
 	</bean>
 
@@ -1576,7 +1533,7 @@ p:degressionFactor="0.06">
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.60"
-		p:peakSegmentDependentAvailability="0.07" p:intermittent="false"
+		p:peakSegmentDependentAvailability="0.07" p:intermittent="true"
 		p:applicableForLongTermContract="true">
 	</bean>
 
@@ -1623,7 +1580,7 @@ p:degressionFactor="0.06">
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.20"
 		p:peakSegmentDependentAvailability="0.04"
-		p:applicableForLongTermContract="true" p:intermittent="false">
+		p:applicableForLongTermContract="true" p:intermittent="true">
 	</bean>
 
 

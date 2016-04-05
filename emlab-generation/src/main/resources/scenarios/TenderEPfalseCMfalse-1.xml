@@ -148,7 +148,7 @@
 		p:delimiter="," p:variableName="nl_target_biogas" />
 
 
-		
+
 
 		<!-- Demand Growth Trends -->
 
@@ -259,7 +259,6 @@
 
 
 
-
 	<!-- Wind offshore nodes Netherlands (1-3 nodes)-->
 	<bean id="windOffSpeedNodeNL1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
 		p:filename="/data/multiNodeProduction_NL_windOff.csv"
@@ -268,6 +267,7 @@
 		<property name="intermittentTechnology" ref="windOffshorePGT"></property>
 		<property name="intermittentProductionNode" ref="nlNode1"></property>
 	</bean>
+
 
 
 	<!-- Photovoltaic nodes Germany (1-3 nodes)-->
@@ -381,8 +381,6 @@
 	</bean>
 
 
-
-
 	<!-- biogas node limits NL -->
 	<bean id="biogasNodeLimitNL1"
 		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
@@ -390,6 +388,7 @@
 		<property name="powerGeneratingTechnology" ref="biogasPGT" />
 		<property name="powerGridNode" ref="nlNode1" />
 	</bean>
+
 
 
 
@@ -1101,6 +1100,7 @@
 		<property name="nodes">
 			<set>
 				<ref bean="nlNode1" />
+
 			</set>
 		</property>
 		<property name="market" ref="NetherlandsElectricitySpotMarket" />

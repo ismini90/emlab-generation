@@ -337,8 +337,7 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
 
                     baseCostMap.put(new Key2D(technology, node), fiPremium);
 
-                    // logger.warn("Creating base cost map: technology " +
-                    // technology.getName() + "premium " + fiPremium);
+                    logger.warn("Creating base cost map: technology " + technology.getName() + "premium " + fiPremium);
 
                 }
 
