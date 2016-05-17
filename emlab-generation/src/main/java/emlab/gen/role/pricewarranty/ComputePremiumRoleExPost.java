@@ -185,8 +185,11 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                         (int) durationOfSupportScheme, (int) plant.getActualLeadTime(), 0, 1);
 
                 // Calculation of weighted average cost of capital,
-                // based on regulator's assumption of companies debt-ratio
-                double wacc = (1 - regulator.getDebtRatioOfInvestments()) * regulator.getEquityInterestRate()
+                // based on regulator's assumption of companies debt-ratio, also
+                // taking into account lower price risk associated with ex-post
+                // scenarios
+
+                double wacc = (1 - regulator.getDebtRatioOfInvestments()) * (regulator.getEquityInterestRate())
                         + regulator.getDebtRatioOfInvestments() * regulator.getLoanInterestRate();
 
                 double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);
@@ -207,12 +210,9 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
                 // FOR VERIFICATION
                 double projectCost = discountedCapitalCosts + discountedOpCost;
-                // logger.warn("discountedOpCost in FipRole is" +
-                // discountedOpCost + "total Generation is"
-                // + totalGenerationinMWh + "flh is" +
-                // plant.getAnnualFullLoadHours());
-                // logger.warn("discountedCapCost in FipRole is " +
-                // discountedCapitalCosts);
+                logger.warn("discountedOpCost in FipRole is" + discountedOpCost + "total Generation is"
+                        + totalGenerationinMWh + "flh is" + plant.getAnnualFullLoadHours());
+                logger.warn("discountedCapCost in FipRole is " + discountedCapitalCosts);
 
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue
@@ -275,10 +275,11 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                         * segmentLoad.getSegment().getLengthInHours();
             }
 
-            if (renewableTargetInMwh - generationFromRenewables > 0)
-                renewableTargetInMwh = renewableTargetInMwh - generationFromRenewables;
-            else
-                renewableTargetInMwh = 0;
+            // if (renewableTargetInMwh - generationFromRenewables > 0)
+            // renewableTargetInMwh = renewableTargetInMwh -
+            // generationFromRenewables;
+            // else
+            // renewableTargetInMwh = 0;
 
             logger.warn("Actual Target for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
 
@@ -296,20 +297,10 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
                 // logger.warn(
                 // "technology name" + technology.getName() + "regulator name" +
                 // scheme.getRegulator().getName());
-                if (!technology.isIntermittent()) {
-                    technologyPotential = reps.renewableTargetForTenderRepository
-                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
-                                    technology.getName())
-                            .getValue(futureTimePoint) * totalExpectedConsumption;
-                } else {
-                    // logger.warn("Regulator Name " + regulator.getName() +
-                    // "Technology " + technology.getName()
-                    // + " Node " + node.getName());
-                    technologyPotential = reps.renewableTargetForTenderRepository
-                            .findTechnologyAndNodeSpecificRenewableTargetTimeSeriesForTenderByRegulator(
-                                    scheme.getRegulator(), technology.getName(), node.getName())
-                            .getValue(futureTimePoint) * totalExpectedConsumption;
-                }
+                technologyPotential = reps.renewableTargetForTenderRepository
+                        .findTechnologySpecificRenewablePotentialLimitTimeSeriesByRegulator(scheme.getRegulator(),
+                                technology.getName())
+                        .getValue(futureTimePoint);
 
                 // logger.warn("for Technology" + technology.getName() + "the
                 // potential in MWh is " + technologyPotential);

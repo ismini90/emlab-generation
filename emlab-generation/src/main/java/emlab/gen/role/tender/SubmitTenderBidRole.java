@@ -240,6 +240,9 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                         double annualMarginalCost = 0d;
                         double totalGenerationinMWh = 0d;
+                        double loadFactor = 0d;
+                        double expectedAnnualRevenue = 0d;
+                        double expectedAnnualVariableCost = 0d;
                         long tenderSchemeDuration = scheme.getSupportSchemeDuration();
 
                         totalGenerationinMWh = plant.getAnnualFullLoadHours() * plant.getActualNominalCapacity();
@@ -266,25 +269,27 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                             runningHours = runningHours + hours;
                             if (technology.isIntermittent()) {
-
+                                loadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
+                                        .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology)
+                                        .getLoadFactorForSegment(segmentLoad.getSegment());
                                 expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
-                                        * plant.getActualNominalCapacity()
-                                        * reps.intermittentTechnologyNodeLoadFactorRepository
-                                                .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node,
-                                                        technology)
-                                                .getLoadFactorForSegment(segmentLoad.getSegment());
+                                        * plant.getActualNominalCapacity() * loadFactor;
+                                expectedAnnualRevenue += expectedElectricityPrice * hours
+                                        * plant.getActualNominalCapacity() * loadFactor;
+                                expectedAnnualVariableCost += expectedMarginalCost * hours
+                                        * plant.getActualNominalCapacity() * loadFactor;
 
                                 totalAnnualExpectedGenerationOfPlant += hours * plant.getActualNominalCapacity()
-                                        * reps.intermittentTechnologyNodeLoadFactorRepository
-                                                .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node,
-                                                        technology)
-                                                .getLoadFactorForSegment(segmentLoad.getSegment());
+                                        * loadFactor;
 
                             } else {
                                 expectedGrossProfit += (expectedElectricityPrice - expectedMarginalCost) * hours
                                         * plant.getAvailableCapacity(futureTimePoint, segmentLoad.getSegment(),
                                                 numberOfSegments);
-
+                                expectedAnnualRevenue += expectedElectricityPrice * hours * plant.getAvailableCapacity(
+                                        futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
+                                expectedAnnualVariableCost += expectedMarginalCost * hours * plant.getAvailableCapacity(
+                                        futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
                                 totalAnnualExpectedGenerationOfPlant += hours * plant.getAvailableCapacity(
                                         futureTimePoint, segmentLoad.getSegment(), numberOfSegments);
 
@@ -302,10 +307,15 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // logger.warn("fixedOMCost; " + fixedOMCost);
 
                         double operatingProfit = expectedGrossProfit - fixedOMCost;
+                        double operatingRevenue = expectedAnnualRevenue;
 
                         // logger.warn("operatingProfit; " + operatingProfit);
 
                         double wacc = (1 - agent.getDebtRatioOfInvestments()) * agent.getEquityInterestRate()
+                                + agent.getDebtRatioOfInvestments() * agent.getLoanInterestRate();
+
+                        double waccAdjusted = (1 - agent.getDebtRatioOfInvestments())
+                                * (agent.getEquityInterestRate() + agent.getEquityRatePriceRiskComponent())
                                 + agent.getDebtRatioOfInvestments() * agent.getLoanInterestRate();
 
                         // logger.warn("wacc; " + wacc);
@@ -324,6 +334,11 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                                 (int) (plant.calculateActualLeadtime() + plant.calculateActualPermittime()), 0,
                                 operatingProfit);
 
+                        TreeMap<Integer, Double> discountedProjectCashflowRevenue = calculateSimplePowerPlantInvestmentCashFlow(
+                                technology.getDepreciationTime(),
+                                (int) (plant.calculateActualLeadtime() + plant.calculateActualPermittime()), 0,
+                                operatingRevenue);
+
                         TreeMap<Integer, Double> discountedProjectCashOutflow = calculateSimplePowerPlantInvestmentCashFlow(
                                 technology.getDepreciationTime(), (int) (plant.calculateActualLeadtime()), 1,
                                 -operatingCost);
@@ -332,14 +347,17 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
                         // discountedProjectCashInflow);
 
                         double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);
-                        double discountedOpProfit = npv(discountedProjectCashInflow, wacc);
+                        double discountedOpRevenue = npv(discountedProjectCashflowRevenue, waccAdjusted);
                         double discountedOpCost = npv(discountedProjectCashOutflow, wacc);
-                        double projectValue = discountedOpProfit + discountedCapitalCosts;
+                        double discountedOpProfit = npv(discountedProjectCashInflow, wacc);
+                        double projectValue = discountedOpCost + discountedCapitalCosts + discountedOpRevenue;
+
+                        // Ex Post Calculations.
+
                         double projectCost = discountedOpCost + discountedCapitalCosts;
 
                         double projectValueFinal = (scheme.isExpostRevenueCalculation() == true) ? projectCost
                                 : projectValue;
-
                         // logger.warn("discountedCapitalCosts; " +
                         // discountedCapitalCosts);
                         // logger.warn("discountedOpProfit; " +
@@ -422,8 +440,9 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                 } // end for (PowerGeneratingTechnology technology :
                   // reps.genericRepository.findAll(PowerGeneratingTechnology.class))
-                logger.warn("Number of tender bids made" + noOfPlantsBid + "by producer" + agent.getName()
-                        + "for scheme " + scheme.getName());
+                  // logger.warn("Number of tender bids made" + noOfPlantsBid +
+                  // "by producer" + agent.getName()
+                  // + "for scheme " + scheme.getName());
             } // end For schemes
         }
     }

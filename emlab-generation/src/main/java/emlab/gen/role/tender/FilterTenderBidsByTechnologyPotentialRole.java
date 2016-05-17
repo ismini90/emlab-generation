@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import agentspring.role.AbstractRole;
 import agentspring.role.Role;
 import agentspring.role.RoleComponent;
+import emlab.gen.domain.agent.EnergyProducer;
 import emlab.gen.domain.market.Bid;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
@@ -74,23 +75,22 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
                     .findAllSubmittedSortedTenderBidsbyTechnology(getCurrentTick(), scheme, technology.getName());
 
             technologyPotential = reps.renewableTargetForTenderRepository
-                    .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                    .findTechnologySpecificRenewablePotentialLimitTimeSeriesByRegulator(scheme.getRegulator(),
                             technology.getName())
-                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime())
-                    * scheme.getAnnualExpectedConsumption();
+                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
 
             logger.warn("verification: technology potential =" + technologyPotential);
-            logger.warn("technology potentialfactor = " + reps.renewableTargetForTenderRepository
-                    .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
-                            technology.getName())
-                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime()));
 
             expectedInstalledCapacityOfTechnologyInNode = reps.powerPlantRepository
                     .calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology,
-                            getCurrentTick() +  scheme.getFutureTenderOperationStartTime());
-            PowerPlant plant = reps.powerPlantRepository
-                    .findExpectedOperationalPowerPlantsInMarketByTechnology(market, technology, getCurrentTick())
-                    .iterator().next();
+                            getCurrentTick() + scheme.getFutureTenderOperationStartTime());
+            // create dummy power plant here
+
+            PowerPlant plant = new PowerPlant();
+            EnergyProducer producer = reps.energyProducerRepository.findAll().iterator().next();
+            PowerGridNode node = reps.powerGridNodeRepository.findFirstPowerGridNodeByElectricitySpotMarket(market);
+            plant.specifyNotPersist(getCurrentTick(), producer, node, technology);
+
             limit = technologyPotential
                     - (expectedInstalledCapacityOfTechnologyInNode * plant.getAnnualFullLoadHours());
             logger.warn("verification: expected generation ="

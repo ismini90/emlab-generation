@@ -15,6 +15,8 @@
  ******************************************************************************/
 package emlab.gen.domain.agent;
 
+import java.util.Set;
+
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -23,6 +25,7 @@ import agentspring.agent.Agent;
 import agentspring.simulation.SimulationParameter;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.domain.policy.renewablesupport.RenewableSupportSchemeTender;
+import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.role.investment.GenericInvestmentRole;
 
 @NodeEntity
@@ -45,6 +48,16 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
         this.scheme = scheme;
     }
 
+    private Set<PowerGeneratingTechnology> technologySet;
+
+    public Set<PowerGeneratingTechnology> getTechnologySet() {
+        return technologySet;
+    }
+
+    public void setTechnologySet(Set<PowerGeneratingTechnology> technologySet) {
+        this.technologySet = technologySet;
+    }
+
     @SimulationParameter(label = "Price Mark-Up for spotmarket (as multiplier)", from = 1, to = 2)
     private double priceMarkUp;
 
@@ -58,7 +71,14 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
     @SimulationParameter(label = "Investment horizon", from = 0, to = 15)
     private int investmentFutureTimeHorizon;
     @SimulationParameter(label = "Equity Interest Rate", from = 0, to = 1)
+
+    // assumed to be with price risk involved.
     private double equityInterestRate;
+
+    // for ex-post renewable policy scenarios where there is zero price risk
+    // involved.
+    private double equityRatePriceRiskComponent;
+
     private double downpaymentFractionOfCash;
     @SimulationParameter(label = "Debt ratio in investments", from = 0, to = 1)
     private double debtRatioOfInvestments;
@@ -137,7 +157,8 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
         return dismantlingProlongingYearsAfterTechnicalLifetime;
     }
 
-    public void setDismantlingProlongingYearsAfterTechnicalLifetime(int dismantlingProlongingYearsAfterTechnicalLifetime) {
+    public void setDismantlingProlongingYearsAfterTechnicalLifetime(
+            int dismantlingProlongingYearsAfterTechnicalLifetime) {
         this.dismantlingProlongingYearsAfterTechnicalLifetime = dismantlingProlongingYearsAfterTechnicalLifetime;
     }
 
@@ -244,6 +265,14 @@ public class EnergyProducer extends DecarbonizationAgent implements Agent {
     public void setHistoricalCVarInterestRateIncreaseForNewTechnologies(
             double historicalCVarInterestRateIncreaseForNewTechnologies) {
         this.historicalCVarInterestRateIncreaseForNewTechnologies = historicalCVarInterestRateIncreaseForNewTechnologies;
+    }
+
+    public double getEquityRatePriceRiskComponent() {
+        return equityRatePriceRiskComponent;
+    }
+
+    public void setEquityRatePriceRiskComponent(double equityRatePriceRiskComponent) {
+        this.equityRatePriceRiskComponent = equityRatePriceRiskComponent;
     }
 
 }

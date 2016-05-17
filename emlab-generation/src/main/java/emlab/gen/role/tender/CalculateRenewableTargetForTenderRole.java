@@ -79,7 +79,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         }
 
         scheme.setAnnualExpectedConsumption(totalExpectedConsumption);
-        logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
+        // logger.warn("totalExpectedConsumption; " + totalExpectedConsumption);
 
         // renewable target for tender operation start year in MWh is
 
@@ -98,7 +98,7 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         for (PowerGeneratingTechnology technology : scheme.getPowerGeneratingTechnologiesEligible()) {
             expectedGenerationPerTechnologyAvailable = 0d;
 
-            logger.warn("For PGT - technology; " + technology);
+            // logger.warn("For PGT - technology; " + technology);
             // logger.warn("For PGT - technology; " + technology);
             scheme.setCurrentTechnologyUnderConsideration(technology);
 
@@ -111,7 +111,8 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             totalExpectedGenerationAvailable += expectedGenerationPerTechnologyAvailable;
         }
 
-        logger.warn("Calc target role: totalExpectedRenGeneration; " + totalExpectedGenerationAvailable);
+        // logger.warn("Calc target role: totalExpectedRenGeneration; " +
+        // totalExpectedGenerationAvailable);
 
         scheme.setYearlyTenderDemandTarget(renewableTargetInMwh);
         scheme.setExpectedRenewableGeneration(totalExpectedGenerationAvailable);
@@ -127,29 +128,11 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             renewableTargetInMwh = 0;
         }
 
-        logger.warn("actualRenewableTargetInMwh; " + renewableTargetInMwh + " for year" + futureStartingTenderTimePoint
-                + "for scheme " + scheme.getName());
+        // logger.warn("actualRenewableTargetInMwh; " + renewableTargetInMwh + "
+        // for year" + futureStartingTenderTimePoint
+        // + "for scheme " + scheme.getName());
         scheme.setAnnualRenewableTargetInMwh(renewableTargetInMwh);
 
-    }
-
-    private double getForecastedRenewableGeneration(RenewableSupportSchemeTender scheme,
-            PowerGeneratingTechnology technology) {
-        double targetForecast = 0d;
-        if (scheme.isTechnologySpecificityEnabled()) {
-            targetForecast = reps.renewableTargetForTenderRepository
-                    .findTechnologySpecificRenewableTargetForecastTimeSeriesForTenderByRegulator(scheme.getRegulator(),
-                            technology.getName())
-                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
-        } else {
-            targetForecast = reps.renewableTargetForTenderRepository
-                    .findTechnologySpecificRenewableTargetForecastTimeSeriesForTenderByRegulator(scheme.getRegulator(),
-                            technology.getName())
-                    .getValue(getCurrentTick() + scheme.getFutureTenderOperationStartTime());
-
-        }
-
-        return targetForecast;
     }
 
     private double computeGenerationFromRenUsingPPDP(PowerGeneratingTechnology technology, ElectricitySpotMarket market,
@@ -215,9 +198,11 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
             expectedGenerationPerTechnologyAvailable += totalGenerationOfPlantInMwh;
 
         }
-        logger.warn("No of power plants of technology " + technology.getName() + "is " + count);
-        logger.warn("Expected generation from technology " + technology.getName() + "is "
-                + expectedGenerationPerTechnologyAvailable);
+        // logger.warn("No of power plants of technology " +
+        // technology.getName() + "is " + count);
+        // logger.warn("Expected generation from technology " +
+        // technology.getName() + "is "
+        // + expectedGenerationPerTechnologyAvailable);
 
         return expectedGenerationPerTechnologyAvailable;
 

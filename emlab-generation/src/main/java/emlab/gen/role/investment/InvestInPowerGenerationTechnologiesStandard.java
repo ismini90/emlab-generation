@@ -163,7 +163,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         PowerGridNode bestNode = null;
         ForecastingInformationReport fReport = null;
 
-        for (PowerGeneratingTechnology technology : reps.genericRepository.findAll(PowerGeneratingTechnology.class)) {
+        for (PowerGeneratingTechnology technology : agent.getTechnologySet()) {
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
 
@@ -259,9 +259,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                 if (scheme != null) {
                     double technologyPotential;
                     technologyPotential = reps.renewableTargetForTenderRepository
-                            .findTechnologySpecificRenewableTargetTimeSeriesForTenderByRegulator(scheme.getRegulator(),
+                            .findTechnologySpecificRenewablePotentialLimitTimeSeriesByRegulator(scheme.getRegulator(),
                                     technology.getName())
-                            .getValue(futureTimePoint) * totalExpectedConsumption;
+                            .getValue(futureTimePoint);
 
                     pgtNodeLimit = technologyPotential / plant.getAnnualFullLoadHours();
                     // logger.warn("For technology " + technology.getName() + "
@@ -390,12 +390,14 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             baseCostFip = reps.baseCostFipRepository
                                     .findOneTechnologyNeutralBaseCostForTime(futureTimePoint);
                             expectedBaseCost = baseCostFip.getCostPerMWh();
+                            logger.warn("2: For technology" + technology.getName() + "for node" + node.getName()
+                                    + "Expected Base cost " + expectedBaseCost);
 
                         } else {
 
                             expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
                                     technology, scheme.isTechnologySpecificityEnabled());
-                            logger.warn("2: For technology" + technology.getName() + "for node" + node.getName()
+                            logger.warn("3: For technology" + technology.getName() + "for node" + node.getName()
                                     + "Expected Base cost " + expectedBaseCost);
                         }
 
@@ -511,7 +513,11 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                         // Calculation of weighted average cost of capital,
                         // based on the companies debt-ratio
-                        double wacc = (1 - agent.getDebtRatioOfInvestments()) * agent.getEquityInterestRate()
+                        double wacc = (1 - agent.getDebtRatioOfInvestments()) * (agent.getEquityInterestRate())
+                                + agent.getDebtRatioOfInvestments() * agent.getLoanInterestRate();
+
+                        double waccAdjusted = (1 - agent.getDebtRatioOfInvestments())
+                                * (agent.getEquityInterestRate() + agent.getEquityRatePriceRiskComponent())
                                 + agent.getDebtRatioOfInvestments() * agent.getLoanInterestRate();
 
                         // Creation of out cash-flow during power plant building
@@ -527,7 +533,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 technology.getDepreciationTime(), (int) plant.getActualLeadTime(), 0, -operatingCost);
 
                         double discountedCapitalCosts = npv(discountedProjectCapitalOutflow, wacc);// are
-                        double discountedOpRevenue = npv(discountedProjectOperatingRevenue, wacc);
+                        double discountedOpRevenue = npv(discountedProjectOperatingRevenue, waccAdjusted);
                         double discountedOpCost = npv(discountedProjectOperatingCost, wacc);
 
                         // logger.warn("Inv data w/o
@@ -557,11 +563,11 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             if (scheme.isEmRevenuePaidExpost()) {
                                 // logger.warn("484: expectedBaseCost " +
                                 // expectedBaseCost);
-                                operatingRevenue = expectedBaseCost * plant.getAnnualFullLoadHours()
-                                        * plant.getActualNominalCapacity();
 
                                 // logger.warn("ex post: expected base cost " +
                                 // expectedBaseCost);
+                                operatingRevenue = expectedBaseCost * plant.getAnnualFullLoadHours()
+                                        * plant.getActualNominalCapacity();
                                 operatingCost = expectedMarginalCost * plant.getAnnualFullLoadHours()
                                         * plant.getActualNominalCapacity() + fixedOMCost;
                                 discountedProjectOperatingRevenue = calculateSimplePowerPlantInvestmentCashFlow(
@@ -577,8 +583,10 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 double operatingRevenueFromElecMarket = expectedAnnualVariableRevenueByRenewableScheme;
                                 double operatingRevenueFromSubsidy = expectedBaseCost * plant.getAnnualFullLoadHours()
                                         * plant.getActualNominalCapacity();
-                                // logger.warn("ex ante: expected base cost " +
-                                // expectedBaseCost);
+                                // logger.warn("plant.getAnnualFullLoadHours()*
+                                // plant.getActualNominalCapacity() "
+                                // + plant.getAnnualFullLoadHours() *
+                                // plant.getActualNominalCapacity());
 
                                 operatingCost = expectedMarginalCost * plant.getAnnualFullLoadHours()
                                         * plant.getActualNominalCapacity() + fixedOMCost;
@@ -594,7 +602,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                         -operatingCost);
 
                                 double discountedOpRevenueWithoutSubsidy = npv(
-                                        discountedProjectOperatingRevenueFromElecMarket, wacc);
+                                        discountedProjectOperatingRevenueFromElecMarket, waccAdjusted);
                                 double discountedOpRevenueWithSubsidy = npv(
                                         discountedProjectOperatingRevenueFromSubsidy, wacc);
 
@@ -608,12 +616,12 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double projectValue = discountedOpRevenue + discountedCapitalCosts + discountedOpCost;
 
                         // *****FOR VERIFICATION
-                        // logger.warn("Inv data with subsidy:
-                        // discountedCapitalCosts " + discountedCapitalCosts
+                        // logger.warn("Inv data with
+                        // subsidy:discountedCapitalCosts " +
+                        // discountedCapitalCosts
                         // + "discountedOpCost" + discountedOpCost +
                         // "discountedOpRevenue" + discountedOpRevenue);
-                        // logger.warn("For plant:" + plant.getName() +
-                        // "ProjectValue " + projectValue);
+                        logger.warn("For plant:" + plant.getName() + "ProjectValue " + projectValue);
 
                         // logger.warn("for plant:" + plant + "disCapitalCost in
                         // Inv Role is" + -discountedCapitalCosts

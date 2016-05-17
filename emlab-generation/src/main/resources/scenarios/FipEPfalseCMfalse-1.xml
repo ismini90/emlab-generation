@@ -17,7 +17,7 @@
 	<!-- Decarbonization Model -->
 	<bean id="decarbonizationModel" class="emlab.gen.domain.agent.DecarbonizationModel"
 		p:name="Decarbonization Model" p:simulationLength="${simulationLength}"
-		p:co2TradingImplemented="false" p:realRenewableDataImplemented="false"
+		p:co2TradingImplemented="false" p:realRenewableDataImplemented="true"
 		p:co2BankingIsImplemented="false"
 		p:deletionOldPPDPBidsAndCashFlowsEnabled="true" p:deletionAge="4"
 		p:centralForecastBacklookingYears="5"
@@ -48,7 +48,8 @@
 	<!-- Regulator -->
 <bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL"
 p:numberOfYearsLookingBackToForecastDemand="5"
-p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+p:equityInterestRate="0.07" p:loanInterestRate="0.05"
+		p:equityRatePriceRiskComponent="0.03"
 		p:debtRatioOfInvestments="0.7">
 <property name="zone" ref="nl"/>
 </bean>
@@ -57,7 +58,7 @@ p:equityInterestRate="0.12" p:loanInterestRate="0.09"
 
 
 <bean id="renewableSupportScheme" class="emlab.gen.domain.policy.renewablesupport.RenewableSupportFipScheme" p:name="FeedInPremium"
-p:supportSchemeDuration="10"
+p:supportSchemeDuration="20"
 p:emRevenuePaidExpost="false"
 p:futureSchemeStartTime="2"
 p:technologySpecificityEnabled="false"
@@ -75,7 +76,7 @@ p:costContainmentMechanismEnabled="false">
 </bean>
 
 <bean id="biasFactorNL1PV" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
-p:feedInPremiumBiasFactor="1.001"
+p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -83,7 +84,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNL1Wind" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
-p:feedInPremiumBiasFactor="1.001"
+p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -91,7 +92,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNL1Windoffshore" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
-p:feedInPremiumBiasFactor="1.001"
+p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -99,7 +100,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNL1biomass" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
-p:feedInPremiumBiasFactor="1.001"
+p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -107,7 +108,7 @@ p:degressionFactor="0.06">
 </bean>
 
 <bean id="biasFactorNL1biogas" class="emlab.gen.domain.policy.renewablesupport.BiasFactor"
-p:feedInPremiumBiasFactor="1.001"
+p:feedInPremiumBiasFactor="1.01"
 p:degressionFactor="0.06">
 <property name="node" ref="nlNode1"> </property>
 <property name="scheme" ref="renewableSupportScheme"></property>
@@ -178,50 +179,7 @@ p:degressionFactor="0.06">
 				p:delimiter="," p:variableName="nl_target_windon" />
 
 
-				<!-- Technology Specific POTENTIAL LIMITS for Intermittent Technologies -->
-		<bean id="renewablePotentialLimitNLphotovoltaic"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_photovoltaicPGT_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-			</bean>
 
-			<bean id="nl_photovoltaicPGT_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/potentialLimits.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitPV" />
-
-
-			<bean id="renewablePotentialLimitNLwindOffshore"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_windOffshore_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-			</bean>
-
-			<bean id="nl_windOffshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitWindOff" />
-
-
-
-
-
-				<bean id="renewablePotentialLimitNLwindOnshore"
-				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
-				p:yearlyRenewableTargetTimeSeries-ref="nl_windOnshore_limit"
-				p:targetTechnologySpecific = "true"
-				p:powerGridNode-ref="nlNode1">
-				<property name="regulator" ref="regulatorNL" />
-				<property name="powerGeneratingTechnology" ref="windPGT" />
-			</bean>
-
-			<bean id="nl_windOnshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
-				p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
-				p:delimiter="," p:variableName="limitWindOn" />
 
 
 		<!-- Technology Specific Targets for Non-Intermittent Ren Technologies -->
@@ -250,6 +208,48 @@ p:degressionFactor="0.06">
 			<bean id="nl_nreap_biogasPGT" class="emlab.gen.trend.TimeSeriesCSVReader"
 				p:filename="/data/nodeAndTechSpecificPotentials.csv" p:startingYear="0"
 				p:delimiter="," p:variableName="nl_target_biogas" />
+
+				<!-- Technology Specific POTENTIAL LIMITS for Intermittent Technologies -->
+
+
+		<bean id="renewablePotentialLimitNLphotovoltaic"
+				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
+				p:yearlyRenewableTargetTimeSeries-ref="nl_photovoltaicPGT_limit"
+				p:targetTechnologySpecific = "true"
+				p:powerGridNode-ref="nlNode1">
+				<property name="regulator" ref="regulatorNL" />
+				<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
+			</bean>
+
+			<bean id="nl_photovoltaicPGT_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
+				p:filename="/data/potentialLimits.csv" p:startingYear="-4"
+				p:delimiter="," p:variableName="limitPV" />
+
+			<bean id="renewablePotentialLimitNLwindOffshore"
+				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
+				p:yearlyRenewableTargetTimeSeries-ref="nl_windOffshore_limit"
+				p:targetTechnologySpecific = "true"
+				p:powerGridNode-ref="nlNode1">
+				<property name="regulator" ref="regulatorNL" />
+				<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
+			</bean>
+
+			<bean id="nl_windOffshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
+				p:filename="/data/potentialLimits.csv" p:startingYear="-4"
+				p:delimiter="," p:variableName="limitWindOff" />
+
+				<bean id="renewablePotentialLimitNLwindOnshore"
+				class="emlab.gen.domain.policy.renewablesupport.RenewablePotentialLimit"
+				p:yearlyRenewableTargetTimeSeries-ref="nl_windOnshore_limit"
+				p:targetTechnologySpecific = "true"
+				p:powerGridNode-ref="nlNode1">
+				<property name="regulator" ref="regulatorNL" />
+				<property name="powerGeneratingTechnology" ref="windPGT" />
+			</bean>
+
+			<bean id="nl_windOnshore_limit" class="emlab.gen.trend.TimeSeriesCSVReader"
+				p:filename="/data/potentialLimits.csv" p:startingYear="-4"
+				p:delimiter="," p:variableName="limitWindOn" />
 
 				<!-- demand -->
 
@@ -1072,51 +1072,89 @@ p:degressionFactor="0.06">
 		<property name="name" value="Energy consumer" />
 	</bean>
 
-	<bean id="energyProducerA" class="emlab.gen.domain.agent.EnergyProducer"
+	<bean id="energyProducerRenewable" class="emlab.gen.domain.agent.EnergyProducer"
 		p:name="Energy Producer A" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-		p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+		p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
+		p:equityRatePriceRiskComponent="0.03"
 		p:debtRatioOfInvestments="0.7"
 		p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
 		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
-	<bean id="energyProducerB" class="emlab.gen.domain.agent.EnergyProducer"
+		p:investorMarket-ref="NetherlandsElectricitySpotMarket" >
+		<property name="technologySet">
+			<set>
+				<ref bean="photovoltaicPGT" />
+				<ref bean="windOffshorePGT" />
+				<ref bean="windPGT" />
+			</set>
+	</property>
+	</bean>
+
+	<bean id="energyProducerMixed" class="emlab.gen.domain.agent.EnergyProducer"
 		p:name="Energy Producer B" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-		p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+		p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
+		p:equityRatePriceRiskComponent="0.03"
 		p:debtRatioOfInvestments="0.7"
 		p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
 		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
-	<bean id="energyProducerC" class="emlab.gen.domain.agent.EnergyProducer"
+		p:investorMarket-ref="NetherlandsElectricitySpotMarket" >
+		<property name="technologySet">
+			<set>
+				<ref bean="photovoltaicPGT" />
+				<ref bean="windOffshorePGT" />
+				<ref bean="windPGT" />			
+				<ref bean="coalPulverizedSuperCritical" />
+				<ref bean="lignitePGT" />
+				<ref bean="IGCC" />
+				<ref bean="coalPscCSS" />
+				<ref bean="igccCCS" />
+				<ref bean="CCGT" />
+				<ref bean="ccgtCCS" />
+				<ref bean="OCGT" />
+				<ref bean="biomassPGT" />
+				<ref bean="biogasPGT" />
+				<ref bean="hydroPower" />
+				<ref bean="nuclearPGT" />
+			</set>
+	</property>
+	</bean>
+		
+	<bean id="energyProducerConventional" class="emlab.gen.domain.agent.EnergyProducer"
 		p:name="Energy Producer C" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 		p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 		p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-		p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+		p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
+		p:equityRatePriceRiskComponent="0.03"
 		p:debtRatioOfInvestments="0.7"
 		p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
 		p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 		p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 		p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-		p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
-
-	<bean id="energyProducerD" class="emlab.gen.domain.agent.EnergyProducer"
-			p:name="Energy Producer D" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
-			p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
-			p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-			p:pastTimeHorizon="5" p:equityInterestRate="0.12" p:loanInterestRate="0.09"
-			p:debtRatioOfInvestments="0.7"
-			p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
-			p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
-			p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
-			p:numberOfYearsBacklookingForForecasting="${numberOfYearsBacklookingForForecasting}"
-			p:investorMarket-ref="NetherlandsElectricitySpotMarket" />
+		p:investorMarket-ref="NetherlandsElectricitySpotMarket"  >
+		<property name="technologySet">
+			<set>
+				<ref bean="coalPulverizedSuperCritical" />
+				<ref bean="lignitePGT" />
+				<ref bean="IGCC" />
+				<ref bean="coalPscCSS" />
+				<ref bean="igccCCS" />
+				<ref bean="CCGT" />
+				<ref bean="ccgtCCS" />
+				<ref bean="OCGT" />
+				<ref bean="biomassPGT" />
+				<ref bean="biogasPGT" />
+				<ref bean="hydroPower" />
+				<ref bean="nuclearPGT" />
+			</set>
+	</property>
+	</bean>
 
 
 
@@ -1544,13 +1582,13 @@ p:degressionFactor="0.06">
 		p:name="Wind" p:capacity="600" p:investmentCostTimeSeries-ref="windInvestmentCostTimeSeries"
 		p:fixedOperatingCostTimeSeries-ref="windFixedOperatingCostTimeSeries"
 		p:efficiencyTimeSeries-ref="windEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
+		p:co2CaptureEffciency="0" p:depreciationTime="20"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:expectedLifetime="20" p:expectedLeadtime="1" p:expectedPermittime="1"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.40"
-		p:peakSegmentDependentAvailability="0.05" p:intermittent="false"
+		p:peakSegmentDependentAvailability="0.05" p:intermittent="true"
 		p:applicableForLongTermContract="true">
 	</bean>
 
@@ -1570,13 +1608,13 @@ p:degressionFactor="0.06">
 		p:investmentCostTimeSeries-ref="windOffshoreInvestmentCostTimeSeries"
 		p:fixedOperatingCostTimeSeries-ref="windOffshoreFixedOperatingCostTimeSeries"
 		p:efficiencyTimeSeries-ref="windOffshoreEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
+		p:co2CaptureEffciency="0" p:depreciationTime="20"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:expectedLifetime="20" p:expectedLeadtime="2" p:expectedPermittime="1"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.60"
-		p:peakSegmentDependentAvailability="0.07" p:intermittent="false"
+		p:peakSegmentDependentAvailability="0.07" p:intermittent="true"
 		p:applicableForLongTermContract="true">
 	</bean>
 
@@ -1616,14 +1654,14 @@ p:degressionFactor="0.06">
 		p:name="Photovoltaic" p:capacity="500" p:investmentCostTimeSeries-ref="pvInvestmentCostTimeSeries"
 		p:fixedOperatingCostTimeSeries-ref="pvFixedOperatingCostTimeSeries"
 		p:efficiencyTimeSeries-ref="pvEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
+		p:co2CaptureEffciency="0" p:depreciationTime="20"
 		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="25" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:expectedLifetime="20" p:expectedLeadtime="1" p:expectedPermittime="0"
 		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
 		p:maximumInstalledCapacityFractionPerAgent="1"
 		p:baseSegmentDependentAvailability="0.20"
 		p:peakSegmentDependentAvailability="0.04"
-		p:applicableForLongTermContract="true" p:intermittent="false">
+		p:applicableForLongTermContract="true" p:intermittent="true">
 	</bean>
 
 

@@ -37,6 +37,11 @@ public class Regulator extends DecarbonizationAgent implements Agent {
     private int numberOfYearsLookingBackToForecastDemand;
     @SimulationParameter(label = "Equity Interest Rate", from = 0, to = 1)
     private double equityInterestRate;
+
+    // this parameter is to indicate price risk component of equity rate, in
+    // particular for renewable support policies, of the ex-post type
+    private double equityRatePriceRiskComponent;
+
     @SimulationParameter(label = "Debt ratio in investments", from = 0, to = 1)
     private double debtRatioOfInvestments;
     // Loan
@@ -98,6 +103,14 @@ public class Regulator extends DecarbonizationAgent implements Agent {
 
     public void setEquityInterestRate(double equityInterestRate) {
         this.equityInterestRate = equityInterestRate;
+    }
+
+    public double getEquityRatePriceRiskComponent() {
+        return equityRatePriceRiskComponent;
+    }
+
+    public void setEquityRatePriceRiskComponent(double equityRatePriceRiskComponent) {
+        this.equityRatePriceRiskComponent = equityRatePriceRiskComponent;
     }
 
     public double getDebtRatioOfInvestments() {
