@@ -175,6 +175,7 @@ plotTimeSeriesWithConfidenceIntervalByFacettedGroup <- function(df, variable, yl
     theme(legend.position="none")+
     xlab("Time [a]")+
     ylab(ylabel)+
+   # ylim(0,100)+
     scale_linetype_manual(breaks=c("a","b"))
 }
 
@@ -186,9 +187,6 @@ plotTimeSeriesWithConfidenceIntervalByFacettedGroupWithSuperImposition <- functi
     stat_summary(fun.data=fun.data, conf.int=conf.int, geom="smooth", colour="black") +
     stat_summary(fun.data=fun.data, conf.int=conf.int2, geom="smooth", colour="black")+
     #stat_summary(fun.y="mean", conf.int=.95, geom="smooth", lty="dashed", colour="black") +
-    
-
-    
     #facet_grid(. ~ modelRun)+
     facet_wrap(~ modelRun, nrow=nrow)+
     theme(legend.position="none")+
@@ -197,7 +195,24 @@ plotTimeSeriesWithConfidenceIntervalByFacettedGroupWithSuperImposition <- functi
     scale_linetype_manual(breaks=c("a","b"))
 }
 
-plotTimeSeriesWithConfidenceIntervalByFacettedByRunIdGroup <- function(df, variable, ylabel, fun.data="median_hilow", conf.int=0.5, conf.int2=0.90, nrow=NULL){
+plotTimeSeriesWithConfidenceIntervalByFacettedGroupWithTripleSuperImposition <- function(df, variable1, variable2, variable3, ylabel, fun.data="median_hilow", conf.int=0.5, conf.int2=0.90, nrow=NULL){
+  g<-ggplot(df, aes_string(x="tick", y=variable1))+ 
+    geom_line(data=df, aes_string(x="tick", y=variable2), group ="modelRun") +
+    geom_line(data=df, aes_string(x="tick", y=variable3), group ="modelRun") +
+    #colour=modelRun, fill=modelRun,
+    #stat_summary(aes_string(fill="modelRun"), fun.data=fun.data, conf.int=conf.int, geom="smooth") +
+    stat_summary(fun.data=fun.data, conf.int=conf.int, geom="smooth", colour="black") +
+    stat_summary(fun.data=fun.data, conf.int=conf.int2, geom="smooth", colour="black")+
+    #stat_summary(fun.y="mean", conf.int=.95, geom="smooth", lty="dashed", colour="black") +
+    #facet_grid(. ~ modelRun)+
+    facet_wrap(~ modelRun, nrow=nrow)+
+    theme(legend.position="none")+
+    xlab("Time [a]")+
+    ylab(ylabel)+
+    scale_linetype_manual(breaks=c("a","b"))
+}
+
+plotTimeSeriesWithConfidenceIntervalByFacettedByRunIdGroup <- function(df, variable, ylabel, fun.data="median_hilow", conf.int=0.5, conf.int2=0.90, nrow=NULL, ylim=NULL){
   g<-ggplot(df, aes_string(x="tick", y=variable))+ #colour=modelRun, fill=modelRun,
     #stat_summary(aes_string(fill="modelRun"), fun.data=fun.data, conf.int=conf.int, geom="smooth") +
     stat_summary(fun.data=fun.data, conf.int=conf.int, geom="smooth", colour="black") +
@@ -210,6 +225,9 @@ plotTimeSeriesWithConfidenceIntervalByFacettedByRunIdGroup <- function(df, varia
     xlab("Time [a]")+
     ylab(ylabel)+
     scale_linetype_manual(breaks=c("a","b"))
+  if(!is.null(ylim))
+    g<- g + ylim(ylim)
+  return(g)
 }
 
 plotTimeSeriesWithOnly50PerConfidenceIntervalByFacettedGroup <- function(df, variable, ylabel, nrow=NULL){

@@ -9,7 +9,7 @@ filestump<-'FipTechSpec'
 exPostExAnteVariable <- c("true","false")
 #filestump<-'TechSpecFullTwoCountriesInfCap-'
 # Step 2 building the scenarios: make separate data vectors
-noOfRepetitions = 120
+noOfRepetitions = 10
 supportSchemeDuration = 10
 futureSchemeStartTime = 2
 feedInPremiumBiasFactor =1.001
@@ -20,7 +20,7 @@ co2MarketParameters <- c("true","false")
 exPostExAnteVariable <- c("true", "false")
 
 counter =0;
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/"
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803Determinant/"
 #scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
 nameList<-character()
@@ -45,7 +45,7 @@ for(exPostBoolean in exPostExAnteVariable)
       xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
       xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
       xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/TestRuns2603/", filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
+      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/TestRuns2803Determinant/", filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
     }
     nameList<- cbind(nameList, paste(filestump,"EP",exPostBoolean, "CM", co2Var, sep=""))
   }
@@ -84,13 +84,13 @@ nameList
 
 #SENSITIVITY ANALYSIS
 
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/"
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803/"
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
 
 #Sensitivity to FIP BIAS FACTOR 
 
 #nameList<-character()
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/"
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803/"
 feedInPremiumBiasFactorArray <- c(1.05,1.1,1.15,1.2)
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
 
