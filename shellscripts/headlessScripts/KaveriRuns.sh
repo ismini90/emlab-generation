@@ -1,6 +1,8 @@
 
 #./scenarioRuns.sh BaseCaseCMfalseTest BaseCaseCMfalse 1 1 60 0s 5:00:00
 #./scenarioRuns.sh BaseCaseCMtrueTest BaseCaseCMtrue 1 1 60 0s 5:00:00
+./scenarioRuns.sh BaseCaseVerifyCMfalseTest BaseCaseVerifyCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh BaseCaseVerifyCMtrueTest BaseCaseVerifyCMtrue 1 1 10 0s 5:00:00
 
 #HPC07
 
@@ -29,3 +31,25 @@
 ./scenarioRuns.sh FipEPfalseCMtrueTest FipEPfalseCMtrue 1 1 10 0s 5:00:00
 ./scenarioRuns.sh FipTechSpecEPtrueCMtrueTest FipTechSpecEPtrueCMtrue 1 1 10 0s 5:00:00
 ./scenarioRuns.sh FipTechSpecEPfalseCMtrueTest FipTechSpecEPfalseCMtrue 1 1 10 0s 5:00:00
+
+
+./scenarioRuns.sh TenderVerifyEPfalseCMfalseTest TenderVerifyEPfalseCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderVerifyEPtrueCMfalseTest TenderVerifyEPtrueCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderTechSpecVerifyEPfalseCMfalseTest TenderTechSpecVerifyEPfalseCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderTechSpecVerifyEPtrueCMfalseTest TenderTechSpecVerifyEPtrueCMfalse 1 1 10 0s 5:00:00
+
+
+./scenarioRuns.sh FipVerifyEPtrueCMfalseTest FipVerifyEPtrueCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipVerifyEPfalseCMfalseTest FipVerifyEPfalseCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipTechSpecVerifyEPtrueCMfalseTest FipTechSpecVerifyEPtrueCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipTechSpecVerifyEPfalseCMfalseTest FipTechSpecVerifyEPfalseCMfalse 1 1 10 0s 5:00:00
+
+./scenarioRuns.sh TenderVerifyEPtrueCMtrueTest TenderVerifyEPtrueCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderVerifyEPfalseCMtrueTest TenderVerifyEPfalseCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderTechSpecVerifyEPtrueCMtrueTest TenderTechSpecVerifyEPtrueCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderTechSpecVerifyEPfalseCMtrueTest TenderTechSpecVerifyEPfalseCMtrue 1 1 10 0s 5:00:00
+
+./scenarioRuns.sh FipVerifyEPtrueCMtrueTest FipVerifyEPtrueCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipVerifyEPfalseCMtrueTest FipVerifyEPfalseCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipTechSpecVerifyEPtrueCMtrueTest FipTechSpecVerifyEPtrueCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipTechSpecVerifyEPfalseCMtrueTest FipTechSpecVerifyEPfalseCMtrue 1 1 10 0s 5:00:00
