@@ -1075,11 +1075,11 @@ p:degressionFactor="0.06">
 
 
 	<bean id="energyProducerRenewable" class="emlab.gen.domain.agent.EnergyProducer"
-	  p:name="Energy Producer A" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
+	  p:name="RES-e only Producer" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 	  p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	  p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-	  p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
-	  p:equityRatePriceRiskComponent="0.03"
+	  p:pastTimeHorizon="5" p:equityInterestRate="0.0797" p:loanInterestRate="0.0428"
+	  p:equityRatePriceRiskComponent="0.00"
 	  p:debtRatioOfInvestments="0.7"
 	  p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
 	  p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
@@ -1096,11 +1096,11 @@ p:degressionFactor="0.06">
 	</bean>
 
 	<bean id="energyProducerMixed" class="emlab.gen.domain.agent.EnergyProducer"
-	  p:name="Energy Producer B" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
+	  p:name="RES-e and Conventional Producer" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 	  p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	  p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-	  p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
-	  p:equityRatePriceRiskComponent="0.03"
+	  p:pastTimeHorizon="5" p:equityInterestRate="0.0846" p:loanInterestRate="0.044"
+	  p:equityRatePriceRiskComponent="0.00"
 	  p:debtRatioOfInvestments="0.7"
 	  p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
 	  p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
@@ -1129,10 +1129,10 @@ p:degressionFactor="0.06">
 	</bean>
 
 	<bean id="energyProducerConventional" class="emlab.gen.domain.agent.EnergyProducer"
-	  p:name="Energy Producer C" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
+	  p:name="Conventional Only Producer" p:cash="${startCash}" p:investmentRole-ref="standardInvestmentRole"
 	  p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	  p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}"
-	  p:pastTimeHorizon="5" p:equityInterestRate="0.07" p:loanInterestRate="0.05"
+	  p:pastTimeHorizon="5" p:equityInterestRate="0.0895" p:loanInterestRate="0.0478"
 	  p:equityRatePriceRiskComponent="0.03"
 	  p:debtRatioOfInvestments="0.7"
 	  p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
