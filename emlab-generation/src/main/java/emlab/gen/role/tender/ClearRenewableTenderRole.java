@@ -99,8 +99,7 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
 
                     sumOfTenderBidQuantityAccepted = sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount();
 
-                    // logger.warn("sumOfTenderBidQuantityAccepted; " +
-                    // sumOfTenderBidQuantityAccepted);
+                    logger.warn("sumOfTenderBidQuantityAccepted; " + sumOfTenderBidQuantityAccepted);
 
                 }
 
@@ -109,11 +108,9 @@ public class ClearRenewableTenderRole extends AbstractRole<RenewableSupportSchem
                 else if (tenderQuota
                         - (sumOfTenderBidQuantityAccepted + currentTenderBid.getAmount()) < clearingEpsilon) {
 
-                    // logger.warn("Partially Accepted: bidder; " +
-                    // currentTenderBid.getBidder() + "Technology; "
-                    // + currentTenderBid.getTechnology() + "bidAmount; " +
-                    // currentTenderBid.getAmount()
-                    // + "acceptedSubsidyPrice; " + acceptedSubsidyPrice);
+                    logger.warn("Partially Accepted: bidder; " + currentTenderBid.getBidder() + "Technology; "
+                            + currentTenderBid.getTechnology() + "bidAmount; " + currentTenderBid.getAmount()
+                            + "acceptedSubsidyPrice; " + acceptedSubsidyPrice);
 
                     currentTenderBid.setStatus(Bid.FAILED);
                     currentTenderBid.setAcceptedAmount(0);

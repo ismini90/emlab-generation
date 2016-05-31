@@ -163,7 +163,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         PowerGridNode bestNode = null;
         ForecastingInformationReport fReport = null;
 
-        for (PowerGeneratingTechnology technology : agent.getTechnologySet()) {
+        for (PowerGeneratingTechnology technology : reps.genericRepository.findAll(PowerGeneratingTechnology.class)) {
 
             DecarbonizationModel model = reps.genericRepository.findAll(DecarbonizationModel.class).iterator().next();
 

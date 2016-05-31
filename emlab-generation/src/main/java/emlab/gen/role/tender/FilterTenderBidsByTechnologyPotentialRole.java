@@ -63,8 +63,7 @@ public class FilterTenderBidsByTechnologyPotentialRole extends AbstractRole<Rene
 
         // 1. Loop through all the technologies in the tech neutral scheme.
         // 2. For each technology, find a list of sorted bids
-        // 3. For each technology find potential (which for now is the same as
-        // target).
+        // 3. For each technology find potential
         // 4. Go through each bid, sum all the bids cumulative until the
         // potential is met, this is done in the clear bid algorithm anyway!
 

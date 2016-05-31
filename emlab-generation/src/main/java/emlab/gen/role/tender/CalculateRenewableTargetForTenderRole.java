@@ -114,7 +114,14 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         // logger.warn("Calc target role: totalExpectedRenGeneration; " +
         // totalExpectedGenerationAvailable);
 
-        scheme.setYearlyTenderDemandTarget(renewableTargetInMwh);
+        scheme.setYearlyTenderDemandTarget(renewableTargetInMwh); // Tender
+                                                                  // target
+                                                                  // without
+                                                                  // taking
+                                                                  // actual
+                                                                  // generation
+                                                                  // into
+                                                                  // account.
         scheme.setExpectedRenewableGeneration(totalExpectedGenerationAvailable);
 
         // when using expected Generation from corresponding FiPScenario
@@ -200,9 +207,8 @@ public class CalculateRenewableTargetForTenderRole extends AbstractRole<Renewabl
         }
         // logger.warn("No of power plants of technology " +
         // technology.getName() + "is " + count);
-        // logger.warn("Expected generation from technology " +
-        // technology.getName() + "is "
-        // + expectedGenerationPerTechnologyAvailable);
+        logger.warn("Expected generation from technology " + technology.getName() + "is "
+                + expectedGenerationPerTechnologyAvailable);
 
         return expectedGenerationPerTechnologyAvailable;
 
