@@ -15,8 +15,8 @@ setwd("~/emlab-generation/emlab-generation/src/main/resources/data/stochasticDem
 
 #For NL
 start = 1
-top = 1.02
-max = 1.05
+top = 1.01
+max = 1.03
 min = 0.99
 rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
@@ -76,10 +76,16 @@ write.csv(coalPrice, file =paste('coalPrice.csv'), quote = F, row.names = rowNam
 
 
 #For gas Price
-start = 9.02 
-top = 1.01
-max = 1.05
-min = 0.97
+#For gas Price Constant
+#reference: https://ycharts.com/indicators/europe_natural_gas_price
+
+
+setwd("~/emlab-generation/emlab-generation/src/main/resources/data/stochasticFuelPrices")
+#For NL Constant
+start = 4
+top = 1.00
+max = 1
+min = 1
 noOfTicks = 50 
 rowNames = c()
 modeSeq = seq(start, top, length.out = noOfTicks)
@@ -89,12 +95,55 @@ for(j in 1:noOfRepetitions){
   gasPrice[j,1]=start
   for(i in 2:noOfTicks){
     gasPrice[j,i] <- gasPrice[j,i-1]*gasPriceGrowthRate[i]
-
+    
   }
   rowNames <- c(rowNames, paste('gasPrice-',j,sep = ""))
 }
 colnames(gasPrice) <- columnNames
-write.csv(gasPrice, file =paste('gasPrice.csv'), quote = F, row.names = rowNames)
+
+#For NL High
+start = 4
+top = 1.04
+max = 1.02
+min = 1.00
+noOfTicks = 50 
+rowNames = c()
+modeSeq = seq(start, top, length.out = noOfTicks)
+gasPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
+for(j in 1:noOfRepetitions){
+  gasPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  gasPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    gasPrice[j,i] <- gasPrice[j,i-1]*gasPriceGrowthRate[i]
+    
+  }
+  rowNames <- c(rowNames, paste('gasPrice-',j,sep = ""))
+}
+colnames(gasPrice) <- columnNames
+plot(gasPriceGrowthRate)
+write.csv(gasPrice, file =paste('gasPriceHigh.csv'), quote = F, row.names = rowNames)
+
+#For NL High
+start = 4
+top = 0.98
+max = 1.00
+min = 0.96
+noOfTicks = 50 
+rowNames = c()
+modeSeq = seq(start, top, length.out = noOfTicks)
+gasPrice<- matrix(nrow = noOfRepetitions , ncol = noOfTicks )
+for(j in 1:noOfRepetitions){
+  gasPriceGrowthRate=rtriangle(noOfTicks,a=min,b=max, c=top)
+  gasPrice[j,1]=start
+  for(i in 2:noOfTicks){
+    gasPrice[j,i] <- gasPrice[j,i-1]*gasPriceGrowthRate[i]
+    
+  }
+  rowNames <- c(rowNames, paste('gasPrice-',j,sep = ""))
+}
+colnames(gasPrice) <- columnNames
+write.csv(gasPrice, file =paste('gasPriceLow.csv'), quote = F, row.names = rowNames)
+
 
 #For biomass Price
 start = 4.5

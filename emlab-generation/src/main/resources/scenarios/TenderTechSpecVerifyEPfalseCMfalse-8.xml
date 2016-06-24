@@ -394,259 +394,7 @@
 		and compressed3_Potential_capacity_generation_FLH_perBand_de_nl_solar_wind -->
 
 
-	<!-- lignite node limits NL -->
-	<bean id="ligniteNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="lignitePGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
 
-	<bean id="coalPSCNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="coalPulverizedSuperCritical" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-
-
-
-	<!-- biomass node limits NL -->
-	<bean id="biomassLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="3000">
-		<property name="powerGeneratingTechnology" ref="biomassPGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-
-
-	<!-- biogas node limits NL -->
-	<bean id="biogasNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="500">
-		<property name="powerGeneratingTechnology" ref="biogasPGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-
-
-	<!-- photovoltaic node limits NL
-	<bean id="photovoltaicNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="375.7">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-	<bean id="photovoltaicNodeLimitNL2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="8072.0">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="nlNode2" />
-	</bean>
-
-	<bean id="photovoltaicNodeLimitNL3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="2996.8">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="nlNode3" />
-	</bean> -->
-
-
-	<!-- Wind onshore node limits NL
-	<bean id="windNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1494.9">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-	<bean id="windNodeLimitNL2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1948.0">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="nlNode2" />
-	</bean>
-
-	<bean id="windNodeLimitNL3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="450.6">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="nlNode3" />
-	</bean> -->
-
-
-	<!-- Wind offshore node limits NL
-	<bean id="windOffshoreNodeLimitNL1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="2925.9">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="nlNode1" />
-	</bean>
-
-	<bean id="windOffshoreNodeLimitNL2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="7151.0">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="nlNode2" />
-	</bean>
-
-	<bean id="windOffshoreNodeLimitNL3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1979.3">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="nlNode3" />
-	</bean> -->
-
-
-
-
-	<!-- PowerGenerationTechnology Node Limits in MW DE -->
-	<!-- from file Potential_capacity_generation_FLH_perBand_de_nl_biomass_biogas
-		and Potential_capacity_generation_FLH_perBand_de_nl_solar_wind Germany has
-		lignite, biomas, and biogass and nuclear also zero -->
-
-	<!-- lignite node limits DE
-	<bean id="ligniteNodeLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="lignitePGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="ligniteNodeLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="lignitePGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="ligniteNodeLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="lignitePGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean> -->
-
-
-
-	<!-- biomass node limits DE
-	<bean id="biomassLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="9272.7">
-		<property name="powerGeneratingTechnology" ref="biomassPGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="biomassLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="biomassPGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="biomassLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="biomassPGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean> -->
-
-
-
-	<!-- biogas node limits DE
-	<bean id="biogasNodeLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="1842.9">
-		<property name="powerGeneratingTechnology" ref="biogasPGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="biogasNodeLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="biogasPGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="biogasNodeLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="0">
-		<property name="powerGeneratingTechnology" ref="biogasPGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean> -->
-
-
-	<!-- photovoltaic node limits DE
-	<bean id="photovoltaicNodeLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="2538.0">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="photovoltaicNodeLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="26864.3">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="photovoltaicNodeLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="9987.4">
-		<property name="powerGeneratingTechnology" ref="photovoltaicPGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean> -->
-
-
-	<!-- Wind onshore node limits DE
-	<bean id="windNodeLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="15228.5">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="windNodeLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="4557.8">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="windNodeLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="6184.6">
-		<property name="powerGeneratingTechnology" ref="windPGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean> -->
-
-
-	<!-- Wind offshore node limits DE
-	<bean id="windOffshoreNodeLimitDE1"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="6912.7">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="deNode1" />
-	</bean>
-
-	<bean id="windOffshoreNodeLimitDE2"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="10465.9">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="deNode2" />
-	</bean>
-
-	<bean id="windOffshoreNodeLimitDE3"
-		class="emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
-		p:permanentUpperCapacityLimit="12906.7">
-		<property name="powerGeneratingTechnology" ref="windOffshorePGT" />
-		<property name="powerGridNode" ref="deNode3" />
-	</bean>
--->
 
 <!-- Segments of load duration curves -->
 	<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="17"
@@ -1091,7 +839,7 @@
 		<key>
 			<ref bean="coalPulverizedSuperCritical" />
 		</key>
-		<value>0.240</value>
+		<value>0.420</value>
 	</entry>
 	<entry>
 		<key>
@@ -1104,18 +852,6 @@
 			<ref bean="OCGT" />
 		</key>
 		<value>0.172</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="biomassPGT" />
-		</key>
-		<value>0.054</value>
-	</entry>
-	<entry>
-		<key>
-			<ref bean="nuclearPGT" />
-		</key>
-		<value>0.019</value>
 	</entry>
 	<entry>
 		<key>
@@ -1135,12 +871,7 @@
 		</key>
 		<value>0.033</value>
 	</entry>
-	<entry>
-		<key>
-			<ref bean="biogasPGT" />
-		</key>
-		<value>0.00</value>
-	</entry>
+
 </map>
 </property>
 		<property name="nodes">
@@ -1229,121 +960,6 @@
 		p:growthRate="0.0032724641" p:start=".44" />
 
 
-	<bean id="lignitePGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="Lignite" p:capacity="1000" p:investmentCostTimeSeries-ref="ligniteInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="ligniteFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="ligniteEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
-		p:minimumRunningHours="5000"
-		p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="50"
-		p:expectedLeadtime="1" p:expectedPermittime="0" p:minimumFuelQuality=".95"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="lignite" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="ligniteInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="1700000" />
-	<bean id="ligniteFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="41545" />
-	<bean id="ligniteEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.005" p:start=".45" />
-
-	<bean id="IGCC" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="IGCC" p:capacity="758" p:investmentCostTimeSeries-ref="igccInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="igccFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="igccEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="20"
-		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="50" p:expectedLeadtime="1" p:expectedPermittime="0"
-		p:minimumFuelQuality=".9" p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="coal" />
-				<ref bean="biomass" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="igccInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Igcc_Inv" />
-	<bean id="igccFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Igcc_OM" />
-	<bean id="igccEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Igcc_Eff" />
-
-	<bean id="coalPscCSS" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="CoalPscCSS" p:capacity="600"
-		p:investmentCostTimeSeries-ref="coalPulverizedCSSInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="coalPulverizedCSSFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="coalPulverizedCSSEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0.875" p:depreciationTime="20"
-		p:minimumRunningHours="5000"
-		p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="50"
-		p:expectedLeadtime="1" p:expectedPermittime="0" p:minimumFuelQuality=".9"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="biomass" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="coalPulverizedCSSInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="-0.0098011846" p:start="2457950" />
-	<bean id="coalPulverizedCSSFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="-0.0099617099" p:start="74030" />
-	<bean id="coalPulverizedCSSEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.0011744757" p:start=".35" />
-
-	<bean id="igccCCS" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="IgccCCS" p:capacity="600" p:investmentCostTimeSeries-ref="igccCCSInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="igccCCSFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="igccCCSEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0.875" p:depreciationTime="20"
-		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="50" p:expectedLeadtime="1" p:expectedPermittime="0"
-		p:minimumFuelQuality=".9" p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="coal" />
-				<ref bean="biomass" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="igccCCSInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="IgccCCS_Inv" />
-	<bean id="igccCCSFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="IgccCCS_OM" />
-	<bean id="igccCCSEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="IgccCCS_Eff" />
-
 	<bean id="CCGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 		p:name="CCGT" p:capacity="776" p:investmentCostTimeSeries-ref="ccgtInvestmentCostTimeSeries"
 		p:fixedOperatingCostTimeSeries-ref="ccgtFixedOperatingCostTimeSeries"
@@ -1369,35 +985,6 @@
 		p:growthRate="0" p:start="29470" />
 	<bean id="ccgtEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0.002068676" p:start=".59" />
-
-	<bean id="ccgtCCS" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="CcgtCCS" p:capacity="600" p:investmentCostTimeSeries-ref="ccgtCCSInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="ccgtCCSFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="ccgtCCSEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0.85" p:depreciationTime="15"
-		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="40" p:expectedLeadtime="1" p:expectedPermittime="0"
-		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="naturalgas" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="ccgtCCSInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="CcgtCCS_Inv" />
-	<bean id="ccgtCCSFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="CcgtCCS_OM" />
-	<bean id="ccgtCCSEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="CcgtCCS_Eff" />
 
 
 	<bean id="OCGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
@@ -1425,66 +1012,6 @@
 		p:growthRate="0" p:start="14370" />
 	<bean id="ocgtCCSEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0.002068676" p:start="0.38" />
-
-	<bean id="biomassPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="Biomass" p:capacity="500" p:investmentCostTimeSeries-ref="biomassInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="biomassFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="biomassEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
-		p:minimumRunningHours="5000"
-		p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="40"
-		p:expectedLeadtime="1" p:expectedPermittime="0" p:minimumFuelQuality="0.5"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="0.7"
-		p:peakSegmentDependentAvailability="0.7"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="biomass" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="biomassInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biomass_Inv" />
-	<bean id="biomassFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biomass_OM" />
-	<bean id="biomassEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biomass_Eff" />
-
-	<bean id="biogasPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="Biogas" p:capacity="500" p:investmentCostTimeSeries-ref="biogasInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="biogasFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="biogasEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="15"
-		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="30" p:expectedLeadtime="1" p:expectedPermittime="0"
-		p:minimumFuelQuality="0.5"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="0.7"
-		p:peakSegmentDependentAvailability="0.7"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="biomass" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="biogasInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biogas_Inv" />
-	<bean id="biogasFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biogas_OM" />
-	<bean id="biogasEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
-		p:filename="/data/learningCurves.csv" p:startingYear="-50"
-		p:delimiter="," p:variableName="Biogas_Eff" />
 
 	<bean id="windPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 		p:name="Wind" p:capacity="600" p:investmentCostTimeSeries-ref="windInvestmentCostTimeSeries"
@@ -1536,26 +1063,6 @@
 		p:filename="/data/learningCurves.csv" p:startingYear="-50"
 		p:delimiter="," p:variableName="WindOffshore_Eff" />
 
-	<bean id="hydroPower" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="HydroPower" p:capacity="1000" p:investmentCostTimeSeries-ref="hydroPowerInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="hydroPowerFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="hydroPowerEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="30"
-		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
-		p:expectedLifetime="100" p:expectedLeadtime="1" p:expectedPermittime="0"
-		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="0.0"
-		p:peakSegmentDependentAvailability="0.60"
-		p:applicableForLongTermContract="true">
-	</bean>
-
-	<bean id="hydroPowerInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.0099528497" p:start="1602700" />
-	<bean id="hydroPowerFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.0120115818" p:start="38460" />
-	<bean id="hydroPowerEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="1" />
 
 
 	<bean id="photovoltaicPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
@@ -1582,33 +1089,6 @@
 	<bean id="pvEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader"
 		p:filename="/data/learningCurves.csv" p:startingYear="-50"
 		p:delimiter="," p:variableName="PV_Eff" />
-
-	<bean id="nuclearPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-		p:name="Nuclear" p:capacity="1000" p:investmentCostTimeSeries-ref="nuclearInvestmentCostTimeSeries"
-		p:fixedOperatingCostTimeSeries-ref="nuclearFixedOperatingCostTimeSeries"
-		p:efficiencyTimeSeries-ref="nuclearEfficiencyTimeSeries"
-		p:co2CaptureEffciency="0" p:depreciationTime="25"
-		p:minimumRunningHours="5000"
-		p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="40"
-		p:expectedLeadtime="1" p:expectedPermittime="0" p:minimumFuelQuality="1"
-		p:maximumInstalledCapacityFractionInCountry="1"
-		p:maximumInstalledCapacityFractionPerAgent="1"
-		p:baseSegmentDependentAvailability="1"
-		p:peakSegmentDependentAvailability="1"
-		p:applicableForLongTermContract="true" p:intermittent="false">
-		<property name="fuels">
-			<set>
-				<ref bean="uranium" />
-			</set>
-		</property>
-	</bean>
-
-	<bean id="nuclearInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="2874800" />
-	<bean id="nuclearFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0" p:start="71870" />
-	<bean id="nuclearEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
-		p:growthRate="0.00001" p:start=".33" />
 
 
 

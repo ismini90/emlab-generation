@@ -1,6 +1,6 @@
 
-#./scenarioRuns.sh BaseCaseCMfalseTest BaseCaseCMfalse 1 1 60 0s 5:00:00
-#./scenarioRuns.sh BaseCaseCMtrueTest BaseCaseCMtrue 1 1 60 0s 5:00:00
+#./scenarioRuns.sh BaseCaseCMfalse BaseCaseCMfalse 1 1 60 0s 3:00:00
+#./scenarioRuns.sh BaseCaseCMtrueTest BaseCaseCMtrue 1 1 60 0s 3:00:00
 
 #HPC07
 
@@ -9,23 +9,45 @@
 
 # LISA
 
-./scenarioRuns.sh TenderEPfalseCMfalseTest TenderEPfalseCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderEPtrueCMfalseTest TenderEPtrueCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderTechSpecEPfalseCMfalseTest TenderTechSpecEPfalseCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderTechSpecEPtrueCMfalseTest TenderTechSpecEPtrueCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderGasConstantEPfalseCMfalse TenderGasConstantEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderGasConstantEPtrueCMfalse TenderGasConstantEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasConstantEPfalseCMfalse TenderTechSpecGasConstantEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasConstantEPtrueCMfalse TenderTechSpecGasConstantEPtrueCMfalse 1 11 50 0s 3:00:00
 
 
-./scenarioRuns.sh FipEPtrueCMfalseTest FipEPtrueCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipEPfalseCMfalseTest FipEPfalseCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipTechSpecEPtrueCMfalseTest FipTechSpecEPtrueCMfalse 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipTechSpecEPfalseCMfalseTest FipTechSpecEPfalseCMfalse 1 1 10 0s 5:00:00
+./scenarioRuns.sh FipGasConstantEPtrueCMfalse FipGasConstantEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipGasConstantEPfalseCMfalse FipGasConstantEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasConstantEPtrueCMfalse FipTechSpecGasConstantEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasConstantEPfalseCMfalse FipTechSpecGasConstantEPfalseCMfalse 1 11 50 0s 3:00:00
 
-./scenarioRuns.sh TenderEPtrueCMtrueTest TenderEPtrueCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderEPfalseCMtrueTest TenderEPfalseCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderTechSpecEPtrueCMtrueTest TenderTechSpecEPtrueCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh TenderTechSpecEPfalseCMtrueTest TenderTechSpecEPfalseCMtrue 1 1 10 0s 5:00:00
+./scenarioRuns.sh TenderGasLowEPfalseCMfalse TenderGasLowEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderGasLowEPtrueCMfalse TenderGasLowEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasLowEPfalseCMfalse TenderTechSpecGasLowEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasLowEPtrueCMfalse TenderTechSpecGasLowEPtrueCMfalse 1 11 50 0s 3:00:00
 
-./scenarioRuns.sh FipEPtrueCMtrueTest FipEPtrueCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipEPfalseCMtrueTest FipEPfalseCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipTechSpecEPtrueCMtrueTest FipTechSpecEPtrueCMtrue 1 1 10 0s 5:00:00
-./scenarioRuns.sh FipTechSpecEPfalseCMtrueTest FipTechSpecEPfalseCMtrue 1 1 10 0s 5:00:00
+
+./scenarioRuns.sh FipGasLowEPtrueCMfalse FipGasLowEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipGasLowEPfalseCMfalse FipGasLowEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasLowEPtrueCMfalse FipTechSpecGasLowEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasLowEPfalseCMfalse FipTechSpecGasLowEPfalseCMfalse 1 11 50 0s 3:00:00
+
+./scenarioRuns.sh TenderGasHighEPfalseCMfalse TenderGasHighEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderGasHighEPtrueCMfalse TenderGasHighEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasHighEPfalseCMfalse TenderTechSpecGasHighEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh TenderTechSpecGasHighEPtrueCMfalse TenderTechSpecGasHighEPtrueCMfalse 1 11 50 0s 3:00:00
+
+
+./scenarioRuns.sh FipGasHighEPtrueCMfalse FipGasHighEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipGasHighEPfalseCMfalse FipGasHighEPfalseCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasHighEPtrueCMfalse FipTechSpecGasHighEPtrueCMfalse 1 11 50 0s 3:00:00
+./scenarioRuns.sh FipTechSpecGasHighEPfalseCMfalse FipTechSpecGasHighEPfalseCMfalse 1 11 50 0s 3:00:00
+
+#./scenarioRuns.sh TenderGasLowEPtrueCMtrueTest TenderEPtrueCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh TenderEPfalseCMtrueTest TenderEPfalseCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh TenderTechSpecEPtrueCMtrueTest TenderTechSpecEPtrueCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh TenderTechSpecEPfalseCMtrueTest TenderTechSpecEPfalseCMtrue 1 11 50 0s 3:00:00
+
+#./scenarioRuns.sh FipEPtrueCMtrueTest FipEPtrueCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh FipEPfalseCMtrueTest FipEPfalseCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh FipTechSpecEPtrueCMtrueTest FipTechSpecEPtrueCMtrue 1 11 50 0s 3:00:00
+#./scenarioRuns.sh FipTechSpecEPfalseCMtrueTest FipTechSpecEPfalseCMtrue 1 1 40 0s 3:00:00

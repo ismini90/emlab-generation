@@ -5,7 +5,7 @@
 ########################################################################
 USAGE="Provide name of run and number of runs"
 #Load configuration script to substitute
-if [ -f scriptConfigurations.cfg ];then 
+if [ -f scriptConfigurations.cfg ];then
 	. scriptConfigurations.cfg
 	HOME=$REMOTERESULTFOLDER
 else
@@ -22,11 +22,11 @@ chmod go+x $REMOTEHPCSCRIPTS/epilogueHpc.sh
 #Make sure your in the right directory
 cd $HOME
 
-if [ $# -lt 2 ]  
+if [ $# -lt 2 ]
 then
    echo "$USAGE"
    exit 0
-fi 
+fi
 
 RUNNAME=$1
 JOBNAME=$2
@@ -60,9 +60,9 @@ MD=$(md5sum $HOME/$JARNAME | sed 's/\([a-z0-9]*\) .*/\1/g')
    #Start the set of jobs.
 if [ $NROFRUNS -gt 1 ]
 then
-qsub -t 1-$NROFRUNS -N $JOBNAME -l nodes=1:ppn=2,mem=3000mb,walltime=$WALLTIME,epilogue=$REMOTEHPCSCRIPTS/epilogueHpc.sh -o $STREAMOUTPUT -e $STREAMOUTPUT -v JOBNAME=$JOBNAME,RUNNAME=$RUNNAME,JARNAME=$JARNAME,SCENARIO=$SCENARIO,TEMP=$TEMP,RAMDISK=$RAMDISK,EMLABDB=$EMLABDB,MD=$MD,HOME=$HOME,INPUTPARAMETERFOLDER=$INPUTPARAMETERFOLDER,PARAMETER=$PARAMETER $REMOTEHPCSCRIPTS/startASingleArrayJobOnNode.sh
+qsub -t 1-$NROFRUNS -N $JOBNAME -l nodes=1:ppn=1,mem=3000mb,walltime=$WALLTIME,epilogue=$REMOTEHPCSCRIPTS/epilogueHpc.sh -o $STREAMOUTPUT -e $STREAMOUTPUT -v JOBNAME=$JOBNAME,RUNNAME=$RUNNAME,JARNAME=$JARNAME,SCENARIO=$SCENARIO,TEMP=$TEMP,RAMDISK=$RAMDISK,EMLABDB=$EMLABDB,MD=$MD,HOME=$HOME,INPUTPARAMETERFOLDER=$INPUTPARAMETERFOLDER,PARAMETER=$PARAMETER $REMOTEHPCSCRIPTS/startASingleArrayJobOnNode.sh
    echo "Started all job "$JOBNAME"."
 else
-qsub -N $JOBNAME -l nodes=1:ppn=2,mem=3000mb,walltime=$WALLTIME,epilogue=$REMOTEHPCSCRIPTS/epilogueHpc.sh -o $STREAMOUTPUT -e $STREAMOUTPUT -v JOBNAME=$JOBNAME,RUNNAME=$RUNNAME,JARNAME=$JARNAME,SCENARIO=$SCENARIO,TEMP=$TEMP,RAMDISK=$RAMDISK,EMLABDB=$EMLABDB,MD=$MD,HOME=$HOME,INPUTPARAMETERFOLDER=$INPUTPARAMETERFOLDER,PARAMETER=$PARAMETER $REMOTEHPCSCRIPTS/startASingleArrayJobOnNode.sh
+qsub -N $JOBNAME -l nodes=1:ppn=1,mem=3000mb,walltime=$WALLTIME,epilogue=$REMOTEHPCSCRIPTS/epilogueHpc.sh -o $STREAMOUTPUT -e $STREAMOUTPUT -v JOBNAME=$JOBNAME,RUNNAME=$RUNNAME,JARNAME=$JARNAME,SCENARIO=$SCENARIO,TEMP=$TEMP,RAMDISK=$RAMDISK,EMLABDB=$EMLABDB,MD=$MD,HOME=$HOME,INPUTPARAMETERFOLDER=$INPUTPARAMETERFOLDER,PARAMETER=$PARAMETER $REMOTEHPCSCRIPTS/startASingleArrayJobOnNode.sh
    echo "Started all job "$JOBNAME"."
 fi

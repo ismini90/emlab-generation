@@ -210,9 +210,12 @@ public class ComputePremiumRoleExPost extends AbstractEnergyProducerRole<EnergyP
 
                 // FOR VERIFICATION
                 double projectCost = discountedCapitalCosts + discountedOpCost;
-                logger.warn("discountedOpCost in FipRole is" + discountedOpCost + "total Generation is"
-                        + totalGenerationinMWh + "flh is" + plant.getAnnualFullLoadHours());
-                logger.warn("discountedCapCost in FipRole is " + discountedCapitalCosts);
+                // logger.warn("discountedOpCost in FipRole is" +
+                // discountedOpCost + "total Generation is"
+                // + totalGenerationinMWh + "flh is" +
+                // plant.getAnnualFullLoadHours());
+                // logger.warn("discountedCapCost in FipRole is " +
+                // discountedCapitalCosts);
 
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
                 lcoe = (discountedCapitalCosts + discountedOpCost) * biasFactorValue

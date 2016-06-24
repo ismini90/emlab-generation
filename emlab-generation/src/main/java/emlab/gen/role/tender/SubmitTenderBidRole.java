@@ -366,74 +366,79 @@ public class SubmitTenderBidRole extends AbstractRole<RenewableSupportSchemeTend
 
                         double bidPricePerMWh = 0d;
 
-                        if (projectValueFinal >= 0 || totalAnnualExpectedGenerationOfPlant == 0) {
+                        // if (projectValueFinal >= 0 ||
+                        // totalAnnualExpectedGenerationOfPlant == 0) {
+                        // bidPricePerMWh = 0d;
+
+                        // } else {
+
+                        // calculate discounted tender return factor term
+                        TreeMap<Integer, Double> discountedTenderReturnFactorSummingTerm = calculateSimplePowerPlantInvestmentCashFlow(
+                                (int) tenderSchemeDuration, (int) (plant.calculateActualLeadtime()), 0, 1);
+                        double discountedTenderReturnFactor = npv(discountedTenderReturnFactorSummingTerm, wacc);
+
+                        // logger.warn("discountedTenderReturnFactor; " +
+                        // discountedTenderReturnFactor);
+
+                        if (discountedTenderReturnFactor == 0) {
                             bidPricePerMWh = 0d;
 
                         } else {
 
-                            // calculate discounted tender return factor term
-                            TreeMap<Integer, Double> discountedTenderReturnFactorSummingTerm = calculateSimplePowerPlantInvestmentCashFlow(
-                                    (int) tenderSchemeDuration, (int) (plant.calculateActualLeadtime()), 0, 1);
-                            double discountedTenderReturnFactor = npv(discountedTenderReturnFactorSummingTerm, wacc);
+                            // calculate generation in MWh per year
+                            bidPricePerMWh = -projectValueFinal
+                                    / (discountedTenderReturnFactor * totalAnnualExpectedGenerationOfPlant);
 
-                            // logger.warn("discountedTenderReturnFactor; " +
-                            // discountedTenderReturnFactor);
+                            if (bidPricePerMWh < 0)
+                                bidPricePerMWh = 0;
 
-                            if (discountedTenderReturnFactor == 0) {
-                                bidPricePerMWh = 0d;
+                            // logger.warn("for scheme" + scheme.getName() +
+                            // "bidding for " + noOfPlants + "at price"
+                            // + bidPricePerMWh);
+                            for (long i = 1; i <= noOfPlants; i++) {
 
-                            } else {
+                                noOfPlantsBid++;
+                                // logger.warn("FOR pp - no of plants Bid; "
+                                // +
+                                // noOfPlantsBid);
 
-                                // calculate generation in MWh per year
-                                bidPricePerMWh = -projectValueFinal
-                                        / (discountedTenderReturnFactor * totalAnnualExpectedGenerationOfPlant);
+                                long start = getCurrentTick() + plant.calculateActualLeadtime()
+                                        + plant.calculateActualPermittime();
+                                long finish = getCurrentTick() + plant.calculateActualLeadtime()
+                                        + plant.calculateActualPermittime() + tenderSchemeDuration;
 
-                                // logger.warn("for scheme" + scheme.getName() +
-                                // "bidding for " + noOfPlants + "at price"
-                                // + bidPricePerMWh);
-                                for (long i = 1; i <= noOfPlants; i++) {
+                                String investor = agent.getName();
 
-                                    noOfPlantsBid++;
-                                    // logger.warn("FOR pp - no of plants Bid; "
-                                    // +
-                                    // noOfPlantsBid);
+                                // logger.warn("investor is; " + investor);
 
-                                    long start = getCurrentTick() + plant.calculateActualLeadtime()
-                                            + plant.calculateActualPermittime();
-                                    long finish = getCurrentTick() + plant.calculateActualLeadtime()
-                                            + plant.calculateActualPermittime() + tenderSchemeDuration;
+                                TenderBid bid = new TenderBid();
+                                bid.specifyNotPersist(totalAnnualExpectedGenerationOfPlant, null, agent, zone, node,
+                                        start, finish, bidPricePerMWh, technology, getCurrentTick(), Bid.SUBMITTED,
+                                        scheme, cashNeededPerPlant, investor);
+                                persistTenderBid(bid);
 
-                                    String investor = agent.getName();
+                                // logger.warn("SubmitBid 454 - Agent " +
+                                // agent + " ,generation "
+                                // + totalAnnualExpectedGenerationOfPlant +
+                                // " ,plant " + plant + " ,zone "
+                                // + zone + " ,node " + node + " ,start " +
+                                // start + " ,finish " + finish
+                                // + " ,bid price " + bidPricePerMWh +
+                                // " ,tech " + technology
+                                // + " ,current tick " + getCurrentTick() +
+                                // " ,status " + Bid.SUBMITTED
+                                // + " ,scheme " + scheme +
+                                // ", cash downpayment; "
+                                // + cashNeededForPlantDownpayments,
+                                // " ,investor " + investor);
 
-                                    // logger.warn("investor is; " + investor);
+                            } // end for loop for tender bids
 
-                                    TenderBid bid = new TenderBid();
-                                    bid.specifyNotPersist(totalAnnualExpectedGenerationOfPlant, null, agent, zone, node,
-                                            start, finish, bidPricePerMWh, technology, getCurrentTick(), Bid.SUBMITTED,
-                                            scheme, cashNeededPerPlant, investor);
-                                    persistTenderBid(bid);
+                        } // end else calculate generation in MWh per year
 
-                                    // logger.warn("SubmitBid 454 - Agent " +
-                                    // agent + " ,generation "
-                                    // + totalAnnualExpectedGenerationOfPlant +
-                                    // " ,plant " + plant + " ,zone "
-                                    // + zone + " ,node " + node + " ,start " +
-                                    // start + " ,finish " + finish
-                                    // + " ,bid price " + bidPricePerMWh +
-                                    // " ,tech " + technology
-                                    // + " ,current tick " + getCurrentTick() +
-                                    // " ,status " + Bid.SUBMITTED
-                                    // + " ,scheme " + scheme +
-                                    // ", cash downpayment; "
-                                    // + cashNeededForPlantDownpayments,
-                                    // " ,investor " + investor);
-
-                                } // end for loop for tender bids
-
-                            } // end else calculate generation in MWh per year
-
-                        } // end else calculate discounted tender return factor
-                          // term
+                        // } // end else calculate discounted tender return
+                        // factor
+                        // term
                         plant = null;
 
                     } // end for loop possible installation nodes

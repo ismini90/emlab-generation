@@ -9,22 +9,24 @@ filestump<-'FipTechSpec'
 exPostExAnteVariable <- c("true","false")
 #filestump<-'TechSpecFullTwoCountriesInfCap-'
 # Step 2 building the scenarios: make separate data vectors
-noOfRepetitions = 10
-supportSchemeDuration = 10
+noOfRepetitions = 50
+supportSchemeDuration = 20
 futureSchemeStartTime = 2
-feedInPremiumBiasFactor =1.001
+feedInPremiumBiasFactor =1.00
 degressionEnabled = "false"
 degressionFactor =0.06
+gasPriceLevel 
 avgElectricityPriceBasedPremiumEnabled = "false"
-co2MarketParameters <- c("true","false")
+
 exPostExAnteVariable <- c("true", "false")
 
 counter =0;
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803Determinant/"
-#scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/FinalRunsGasLow/"
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
+#scenarioTemplateNames <- c("TenderTechSpecTemplate.xml")
 nameList<-character()
 exPostExAnteVariable <- c("true", "false")
+co2MarketParameters <- c("false")
 for(scenario in scenarioTemplateNames){
   filePathAndName <- paste(xmlFilePath,scenario,sep="")
   filestump<-gsub("Template.xml","",scenario)
@@ -45,9 +47,9 @@ for(exPostBoolean in exPostExAnteVariable)
       xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
       xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
       xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/TestRuns2803Determinant/", filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
+      writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/FinalRunsGasLow/",filestump,"GasLow","EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
     }
-    nameList<- cbind(nameList, paste(filestump,"EP",exPostBoolean, "CM", co2Var, sep=""))
+    nameList<- cbind(nameList, paste(filestump,"GasLow","EP",exPostBoolean, "CM", co2Var, sep=""))
   }
 }
 }
@@ -55,7 +57,7 @@ nameList
 
 
 #BASE CASE 
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/prelimAnalysis/"
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/FinalRunsGasConstant/"
 filePathAndName <- paste(xmlFilePath,"BaseCase.xml",sep="")
 filestump<-"BaseCase"
 for(co2Var in co2MarketParameters)
@@ -73,9 +75,9 @@ for(co2Var in co2MarketParameters)
     xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
     xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
     xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-    writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/prelimAnalysis/", filestump,"CM", co2Var, "-", runID, ".xml", sep=""))
+    writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/FinalRunsGasConstant/", filestump, "-", runID, ".xml", sep=""))
   }
-  nameList<- cbind(nameList, paste(filestump, "CM", co2Var, sep=""))
+  nameList<- cbind(nameList, paste(filestump))
 }
 
 nameList
@@ -84,77 +86,117 @@ nameList
 
 #SENSITIVITY ANALYSIS
 
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803/"
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns3105WithoutCoal/"
 scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
 
 #Sensitivity to FIP BIAS FACTOR 
 
 #nameList<-character()
-xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns2803/"
-feedInPremiumBiasFactorArray <- c(1.05,1.1,1.15,1.2)
-scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
-
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/FinalRunsGasConstant/"
+feedInPremiumBiasFactorArray <- c(1.001,1.01,1.05)
+scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml")
 exPostExAnteVariable <- c("false")
-noOfRepetitions = 120
-
-  filestump<-gsub("Template.xml","","FipTechSpecTemplate.xml")
-  for(exPostBoolean in exPostExAnteVariable){
-    
-    filePathAndName <- paste(xmlFilePath,"FipTechSpecTemplate.xml",sep="")
-    xmlFileContent<-readLines(filePathAndName, encoding = "UTF-8")
-    xmlFileContent<-gsub("#supportSchemeDuration", 10, xmlFileContent)
-    xmlFileContent<-gsub("#degressionEnabled", "false", xmlFileContent)
-    xmlFileContent<-gsub("#degressionFactor", 0.06, xmlFileContent)
-    xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
-    xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
-    xmlFileContent<-gsub("#futureSchemeStartTime", 0, xmlFileContent) 
-    xmlFileContent<-gsub("#co2TradingAndBankingImplemented", "false", xmlFileContent)
-    
-    for(fipBiasFactor in feedInPremiumBiasFactorArray){
-      xmlFileContent<-gsub("#feedInPremiumBiasFactor", fipBiasFactor, xmlFileContent) 
-      
-      for(runIterator in 1:noOfRepetitions){
-        xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-        writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/sensitivityAnalysis/", filestump,"BF",fipBiasFactor*100, "-", runIterator, ".xml", sep=""))
-      }
-      nameList<- cbind(nameList, paste(filestump,"BF",fipBiasFactor*100,sep=""))
-    }
-  }
-nameList
-
-
-#Sensitivity to FutureTimePoint
-
-scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml", "TenderTemplate.xml","TenderTechSpecTemplate.xml")
-futureTimePointArray <- c(1,5)
-exPostExAnteVariable <- c("true","false")
-noOfRepetitions = 120
+noOfRepetitions = 50
 
 for(scenario in scenarioTemplateNames){
+  filePathAndName <- paste(xmlFilePath,scenario,sep="")
   filestump<-gsub("Template.xml","",scenario)
   for(exPostBoolean in exPostExAnteVariable){
-    
-    filePathAndName <- paste(xmlFilePath,scenario,sep="")
     xmlFileContent<-readLines(filePathAndName, encoding = "UTF-8")
-    xmlFileContent<-gsub("#supportSchemeDuration", 10, xmlFileContent)
-    xmlFileContent<-gsub("#degressionEnabled", "false", xmlFileContent)
-    xmlFileContent<-gsub("#degressionFactor", 0.06, xmlFileContent)
-    xmlFileContent<-gsub("#feedInPremiumBiasFactor", 1, xmlFileContent)
-    xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
+    xmlFileContent<-gsub("#supportSchemeDuration", supportSchemeDuration, xmlFileContent)
+    xmlFileContent<-gsub("#degressionEnabled", degressionEnabled, xmlFileContent)
+    xmlFileContent<-gsub("#degressionFactor", degressionFactor, xmlFileContent)
+    xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", avgElectricityPriceBasedPremiumEnabled, xmlFileContent)
     xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
-    xmlFileContent<-gsub("#co2TradingAndBankingImplemented", "false", xmlFileContent)
+    xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
+    xmlFileContent<-gsub("#co2TradingAndBankingImplemented", c("false"), xmlFileContent)
     
-    for(futureTimePoint in futureTimePointArray){
-      xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
-    
-      for(runIterator in 1:noOfRepetitions){
-        xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
-        writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/sensitivityAnalysis/", filestump,"FTP",futureTimePoint, "-", runIterator, ".xml", sep=""))
-      }
+    for(fipBiasFactor in feedInPremiumBiasFactorArray){
+      print(fipBiasFactor)
+      xmlFileContent2<-gsub("#feedInPremiumBiasFactor", fipBiasFactor, xmlFileContent) 
       
+      for(runIterator in 1:noOfRepetitions){
+        xmlFileContent3<-gsub("#repetitionNumber", runIterator, xmlFileContent2)
+       writeLines(xmlFileContent3, paste("/Users/kaveri/Desktop/emlabGen/scenario/FinalRunsBiasFactor/", filestump,"EP",exPostBoolean,"BF",fipBiasFactor*1000, "-", runIterator, ".xml", sep=""))
+      }
+      nameList<- cbind(nameList, paste(filestump,"EP",exPostBoolean,"BF",fipBiasFactor*1000,sep=""))
     }
   }
 }
+nameList
+
+#Sensititvity to SAME RISK 
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns3105SameRisk/"
+scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
+#scenarioTemplateNames <- c("TenderTechSpecTemplate.xml")
+nameList<-character()
+exPostExAnteVariable <- c("true", "false")
+co2MarketParameters <- c("false")
+for(scenario in scenarioTemplateNames){
+  filePathAndName <- paste(xmlFilePath,scenario,sep="")
+  filestump<-gsub("Template.xml","",scenario)
+  for(exPostBoolean in exPostExAnteVariable)
+  {
+    for(co2Var in co2MarketParameters)
+    {
+      counter = counter +1
+      for(runID in seq(1:noOfRepetitions))
+      {
+        xmlFileContent<-readLines(filePathAndName, encoding = "UTF-8")
+        xmlFileContent<-gsub("#supportSchemeDuration", supportSchemeDuration, xmlFileContent)
+        xmlFileContent<-gsub("#degressionEnabled", degressionEnabled, xmlFileContent)
+        xmlFileContent<-gsub("#degressionFactor", degressionFactor, xmlFileContent)
+        xmlFileContent<-gsub("#feedInPremiumBiasFactor", feedInPremiumBiasFactor, xmlFileContent)
+        xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
+        xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
+        xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
+        xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
+        xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
+        #writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/FinalRunsSensitivity/", "SameRisk",filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
+      }
+      nameList<- cbind(nameList, paste("SameRisk",filestump, "EP",exPostBoolean, "CM", co2Var, sep=""))
+    }
+  }
+}
+nameList
+
+
+#Sensititvity to CONSTANT TARGET
+xmlFilePath<-"/Users/kaveri/Desktop/emlabGen/scenario/TestRuns3105ConstantTarget/"
+scenarioTemplateNames <- c("FipTemplate.xml","FipTechSpecTemplate.xml","TenderTemplate.xml","TenderTechSpecTemplate.xml")
+#scenarioTemplateNames <- c("TenderTechSpecTemplate.xml")
+nameList<-character()
+exPostExAnteVariable <- c("true", "false")
+co2MarketParameters <- c("false")
+for(scenario in scenarioTemplateNames){
+  filePathAndName <- paste(xmlFilePath,scenario,sep="")
+  filestump<-gsub("Template.xml","",scenario)
+  for(exPostBoolean in exPostExAnteVariable)
+  {
+    for(co2Var in co2MarketParameters)
+    {
+      counter = counter +1
+      for(runID in seq(1:noOfRepetitions))
+      {
+        xmlFileContent<-readLines(filePathAndName, encoding = "UTF-8")
+        xmlFileContent<-gsub("#supportSchemeDuration", supportSchemeDuration, xmlFileContent)
+        xmlFileContent<-gsub("#degressionEnabled", degressionEnabled, xmlFileContent)
+        xmlFileContent<-gsub("#degressionFactor", degressionFactor, xmlFileContent)
+        xmlFileContent<-gsub("#feedInPremiumBiasFactor", feedInPremiumBiasFactor, xmlFileContent)
+        xmlFileContent<-gsub("#avgElectricityPriceBasedPremiumEnabled", "false", xmlFileContent)
+        xmlFileContent<-gsub("#exPostEnabled", exPostBoolean, xmlFileContent) 
+        xmlFileContent<-gsub("#futureSchemeStartTime", futureSchemeStartTime, xmlFileContent) 
+        xmlFileContent<-gsub("#co2TradingAndBankingImplemented", co2Var, xmlFileContent)
+        xmlFileContent<-gsub("#repetitionNumber", runID, xmlFileContent)
+        writeLines(xmlFileContent, paste("~/Desktop/emlabGen/scenario/FinalRunsSensitivity/", "ConstantTarget",filestump,"EP",exPostBoolean, "CM", co2Var, "-", runID, ".xml", sep=""))
+      }
+      nameList<- cbind(nameList, paste("ConstantTarget",filestump, "EP",exPostBoolean, "CM", co2Var, sep=""))
+    }
+  }
+}
+nameList
+
+
 
 #Sensitivity to supportSchemeDuration
 

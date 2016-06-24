@@ -152,7 +152,7 @@ plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE
     ylab(ylabel)+
     theme_grey(base_size=14)+
     theme(legend.position="bottom", legend.margin=unit(0.5, "cm"))+
-    guides(fill=guide_legend(nrow=3, keywidth=1, keylength=1, keyheight=1))
+    guides(fill=guide_legend(nrow=1, keywidth=1, keylength=1, keyheight=1))
   if(is.null(manuelPalette))
     p <- p + scale_fill_brewer(type="qual", palette=3, name="Technology")
   else

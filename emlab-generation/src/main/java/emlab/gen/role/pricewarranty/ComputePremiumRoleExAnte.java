@@ -295,10 +295,17 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 double projectValue = discountedCapitalCosts + discountedOpCost + discountedOpRevenue;
                 double biasFactorValue = biasFactor.getFeedInPremiumBiasFactor();
 
-                logger.warn("Compute FIP:discountedCapitalCosts " + discountedCapitalCosts + "discountedOpCost"
-                        + discountedOpCost + "discountedOpRevenue" + discountedOpRevenue);
-                logger.warn("Compute FIP:totalGenerationinMWh " + totalGenerationinMWh);
-                logger.warn("Compute FIP:Project Value " + projectValue);
+                // logger.warn("Compute FIP:discountedCapitalCosts " +
+                // discountedCapitalCosts + "discountedOpCost"
+                // + discountedOpCost + "discountedOpRevenue" +
+                // discountedOpRevenue);
+                // logger.warn("Compute FIP:totalGenerationinMWh " +
+                // totalGenerationinMWh);
+                // logger.warn("Compute FIP: factorDiscountedGeneration " +
+                // factorDiscountedGeneration);
+                // logger.warn("Compute FIP: biasFactorValue " +
+                // biasFactorValue);
+                // logger.warn("Compute FIP:Project Value " + projectValue);
 
                 if (projectValue < 0) {
                     fiPremium = -projectValue * biasFactorValue / (totalGenerationinMWh * factorDiscountedGeneration);
@@ -340,7 +347,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
 
                     baseCostMap.put(new Key2D(technology, node), fiPremium);
 
-                    logger.warn("Creating base cost map: technology " + technology.getName() + "premium " + fiPremium);
+                    // logger.warn("Creating base cost map: technology " +
+                    // technology.getName() + "premium " + fiPremium);
 
                 }
 
@@ -360,7 +368,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
             // double sumOfPotentialsAccepted = 0d;
 
             double renewableTargetInMwh = computeRenewableGenerationTarget(scheme, null);
-            logger.warn("Theoretical Target for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+            // logger.warn("Theoretical Target for tick " + futureTimePoint +
+            // "in MWh is " + renewableTargetInMwh);
             double generationFromRenewables = totalExpectedGenerationFromRenewables(scheme, null);
             // logger.warn("Renewable Target Total for tick " + futureTimePoint
             // + "in MWh is " + renewableTargetInMwh);
@@ -388,7 +397,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
             // else
             // renewableTargetInMwh = 0;
 
-            logger.warn("Actual Target for tick " + futureTimePoint + "in MWh is " + renewableTargetInMwh);
+            // logger.warn("Actual Target for tick " + futureTimePoint + "in MWh
+            // is " + renewableTargetInMwh);
 
             for (Entry<Key2D, Double> technologyCost : meritOrderBaseCost.entrySet()) {
                 Key2D baseCostKey = technologyCost.getKey();
@@ -410,7 +420,8 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                                 technology.getName())
                         .getValue(futureTimePoint);
 
-                logger.warn("for Technology" + technology.getName() + "the potential in MWh is " + technologyPotential);
+                // logger.warn("for Technology" + technology.getName() + "the
+                // potential in MWh is " + technologyPotential);
 
                 if ((renewableTargetInMwh - (renewableGenerationAccepted + technologyPotential) > 0)) {
                     if ((!technology.isIntermittent() && nodeUnique) || technology.isIntermittent()) {
@@ -577,8 +588,10 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                     }
                     expectedGenerationPerTechnology += expectedGenerationPerPlant;
                 }
-                logger.warn("Total expected generation for technology " + technology.getName() + "is "
-                        + expectedGenerationPerTechnology);
+                // logger.warn("Total expected generation for technology " +
+                // technology.getName() + "is "
+                // + expectedGenerationPerTechnology);
+
                 totalExpectedGeneration += expectedGenerationPerTechnology;
 
             }
@@ -594,8 +607,9 @@ public class ComputePremiumRoleExAnte extends AbstractEnergyProducerRole<EnergyP
                 }
                 expectedGenerationPerTechnology += expectedGenerationPerPlant;
             }
-            logger.warn("Total expected generation for technology " + technologySpecified.getName() + "is "
-                    + expectedGenerationPerTechnology);
+            // logger.warn("Total expected generation for technology " +
+            // technologySpecified.getName() + "is "
+            // + expectedGenerationPerTechnology);
 
             totalExpectedGeneration += expectedGenerationPerTechnology;
         }

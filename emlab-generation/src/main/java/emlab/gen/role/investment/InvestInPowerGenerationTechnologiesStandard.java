@@ -314,13 +314,15 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                 if ((expectedInstalledCapacityOfTechnologyInNode + plant.getActualNominalCapacity()) > pgtNodeLimit) {
 
-                    logger.warn("NOT INVESTING in " + technology.getName() + "COZ OF NODE LIMIT: " + pgtNodeLimit);
+                    // logger.warn("NOT INVESTING in " + technology.getName() +
+                    // "COZ OF NODE LIMIT: " + pgtNodeLimit);
                 } else if (expectedOwnedCapacityInMarketOfThisTechnology > expectedOwnedTotalCapacityInMarket
                         * technology.getMaximumInstalledCapacityFractionPerAgent()) {
 
-                    logger.warn(
-                            agent + " will not invest in {} technology because there's too much capacity planned by him",
-                            technology);
+                    // logger.warn(
+                    // agent + " will not invest in {} technology because
+                    // there's too much capacity planned by him",
+                    // technology);
 
                     // } else if (capacityInPipelineInMarket > 0.2 *
                     // marketInformation.maxExpectedLoad) {
@@ -390,15 +392,19 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                             baseCostFip = reps.baseCostFipRepository
                                     .findOneTechnologyNeutralBaseCostForTime(futureTimePoint);
                             expectedBaseCost = baseCostFip.getCostPerMWh();
-                            logger.warn("2: For technology" + technology.getName() + "for node" + node.getName()
-                                    + "Expected Base cost " + expectedBaseCost);
+                            // logger.warn("2: For technology" +
+                            // technology.getName() + "for node" +
+                            // node.getName()
+                            // + "Expected Base cost " + expectedBaseCost);
 
                         } else {
 
                             expectedBaseCost = predictSubsidyFip(agent, scheme.getFutureSchemeStartTime(), node,
                                     technology, scheme.isTechnologySpecificityEnabled());
-                            logger.warn("3: For technology" + technology.getName() + "for node" + node.getName()
-                                    + "Expected Base cost " + expectedBaseCost);
+                            // logger.warn("3: For technology" +
+                            // technology.getName() + "for node" +
+                            // node.getName()
+                            // + "Expected Base cost " + expectedBaseCost);
                         }
 
                     }
@@ -583,6 +589,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                 double operatingRevenueFromElecMarket = expectedAnnualVariableRevenueByRenewableScheme;
                                 double operatingRevenueFromSubsidy = expectedBaseCost * plant.getAnnualFullLoadHours()
                                         * plant.getActualNominalCapacity();
+
+                                // logger.warn("ex ante: expected base cost " +
+                                // expectedBaseCost);
                                 // logger.warn("plant.getAnnualFullLoadHours()*
                                 // plant.getActualNominalCapacity() "
                                 // + plant.getAnnualFullLoadHours() *
@@ -603,9 +612,11 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
 
                                 double discountedOpRevenueWithoutSubsidy = npv(
                                         discountedProjectOperatingRevenueFromElecMarket, waccAdjusted);
+
                                 double discountedOpRevenueWithSubsidy = npv(
                                         discountedProjectOperatingRevenueFromSubsidy, wacc);
-
+                                // logger.warn("discounted revenue from subsidy"
+                                // + discountedOpRevenueWithSubsidy);
                                 discountedOpRevenue = discountedOpRevenueWithoutSubsidy
                                         + discountedOpRevenueWithSubsidy;
                                 discountedOpCost = npv(discountedProjectOperatingCost, wacc);
@@ -621,7 +632,8 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         // discountedCapitalCosts
                         // + "discountedOpCost" + discountedOpCost +
                         // "discountedOpRevenue" + discountedOpRevenue);
-                        logger.warn("For plant:" + plant.getName() + "ProjectValue " + projectValue);
+                        // logger.warn("For plant:" + plant.getName() +
+                        // "ProjectValue " + projectValue);
 
                         // logger.warn("for plant:" + plant + "disCapitalCost in
                         // Inv Role is" + -discountedCapitalCosts
@@ -667,8 +679,9 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
         }
 
         if (bestTechnology != null) {
-            logger.warn("****************Agent {} INVESTS! in technology {}  at tick " + getCurrentTick(), agent,
-                    bestTechnology);
+            // logger.warn("****************Agent {} INVESTS! in technology {}
+            // at tick " + getCurrentTick(), agent,
+            // bestTechnology);
 
             PowerPlant plant = new PowerPlant();
             plant.specifyAndPersist(getCurrentTick(), agent, bestNode, bestTechnology);

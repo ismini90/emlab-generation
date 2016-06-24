@@ -696,7 +696,13 @@
 		<key>
 			<ref bean="CCGT" />
 		</key>
-		<value>0.891</value>
+		<value>0.721</value>
+	</entry>
+	<entry>
+		<key>
+			<ref bean="OCGT" />
+		</key>
+		<value>0.172</value>
 	</entry>
 	<entry>
 		<key>
@@ -804,7 +810,31 @@
 	<bean id="ccgtEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
 		p:growthRate="0.002068676" p:start=".59" />
 
+	<bean id="OCGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
+		p:name="OCGT" p:capacity="150" p:investmentCostTimeSeries-ref="ocgtCCSInvestmentCostTimeSeries"
+		p:fixedOperatingCostTimeSeries-ref="ocgtCCSFixedOperatingCostTimeSeries"
+		p:efficiencyTimeSeries-ref="ocgtCCSEfficiencyTimeSeries"
+		p:co2CaptureEffciency="0" p:depreciationTime="15"
+		p:minimumRunningHours="0" p:fixedOperatingCostModifierAfterLifetime=".05"
+		p:expectedLifetime="30" p:expectedLeadtime="1" p:expectedPermittime="0"
+		p:minimumFuelQuality="1" p:maximumInstalledCapacityFractionInCountry="1"
+		p:maximumInstalledCapacityFractionPerAgent="1"
+		p:baseSegmentDependentAvailability="1"
+		p:peakSegmentDependentAvailability="1"
+		p:applicableForLongTermContract="true" p:intermittent="false">
+		<property name="fuels">
+			<set>
+				<ref bean="naturalgas" />
+			</set>
+		</property>
+	</bean>
 
+	<bean id="ocgtCCSInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
+		p:growthRate="0" p:start="359350" />
+	<bean id="ocgtCCSFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend"
+		p:growthRate="0" p:start="14370" />
+	<bean id="ocgtCCSEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend"
+		p:growthRate="0.002068676" p:start="0.38" />
 
 
 
