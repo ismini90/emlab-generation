@@ -96,6 +96,27 @@ public class Regulator extends DecarbonizationAgent implements Agent {
     // this.annualTotalExpectedRenewableGeneration =
     // annualTotalExpectedGeneration;
     // }
+    @SimulationParameter(label = " Implementation Phase Length ", from = 0, to = 10)
+    private double implementationPhaseLength;
+
+    @SimulationParameter(label = " Initial Supply Margin ", from = 0, to = 1)
+    private double initialSupplyMargin;
+
+    public double getInitialSupplyMargin() {
+        return initialSupplyMargin;
+    }
+
+    public void setInitialSupplyMargin(double initialSupplyMargin) {
+        this.initialSupplyMargin = initialSupplyMargin;
+    }
+
+    public double getImplementationPhaseLength() {
+        return implementationPhaseLength;
+    }
+
+    public void setImplementationPhaseLength(double implementationPhaseLength) {
+        this.implementationPhaseLength = implementationPhaseLength;
+    }
 
     public double getEquityInterestRate() {
         return equityInterestRate;

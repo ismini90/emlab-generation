@@ -28,8 +28,11 @@ import agentspring.role.AbstractRole;
 import agentspring.role.RoleComponent;
 import emlab.gen.domain.agent.CommoditySupplier;
 import emlab.gen.domain.agent.Government;
+import emlab.gen.domain.agent.Regulator;
+import emlab.gen.domain.agent.StrategicReserveOperator;
 import emlab.gen.domain.contract.CashFlow;
 import emlab.gen.domain.contract.Loan;
+import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.ClearingPoint;
 import emlab.gen.domain.market.DecarbonizationMarket;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
@@ -39,7 +42,9 @@ import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.domain.technology.Substance;
 import emlab.gen.domain.technology.SubstanceShareInFuelMix;
 import emlab.gen.repository.Reps;
+import emlab.gen.repository.StrategicReserveOperatorRepository;
 import emlab.gen.util.MapValueComparator;
+import emlab.gen.util.MapValueReverseComparator;
 
 /**
  * @author pradyumnabhagwat
@@ -51,6 +56,9 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
 
     @Autowired
     Reps reps;
+
+    @Autowired
+    StrategicReserveOperatorRepository strategicReserveOperatorRepository;
 
     public Reps getReps() {
         return reps;
@@ -78,8 +86,8 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
 
                     double ModifiedOM = plant.getActualFixedOperatingCost()
                             * Math.pow((1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())),
-                                    ((double) plant.getActualLifetime() - (((double) plant.getTechnology()
-                                            .getExpectedLifetime()))));
+                                    ((double) plant.getActualLifetime()
+                                            - (((double) plant.getTechnology().getExpectedLifetime()))));
 
                     plant.setActualFixedOperatingCost(ModifiedOM);
                 }
@@ -134,17 +142,28 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
                                 cost = cost + cf.getMoney();
                             }
 
-                            if (cf.getType() == CashFlow.ELECTRICITY_SPOT || cf.getType() == CashFlow.STRRESPAYMENT
+                            if (cf.getType() == CashFlow.ELECTRICITY_SPOT
                                     || cf.getType() == CashFlow.SIMPLE_CAPACITY_MARKET) {
                                 revenue = revenue + cf.getMoney();
+                            }
+                            if (cf.getType() == CashFlow.STRRESPAYMENT && cf.getTo().equals(plant.getOwner())) {
+                                revenue = revenue + cf.getMoney();
+                            }
 
+                            if ((cf.getType() == CashFlow.FEED_IN_PREMIUM || cf.getType() == CashFlow.TENDER_SUBSIDY)
+                                    && cf.getTo().equals(plant.getOwner())) {
+                                revenue = revenue + cf.getMoney();
                             }
 
                         }
 
-                        double actualOM = (calculatedOM - (plant.getTechnology().getVariableOperatingCostinEURPerMWh() * 8760 * plant
-                                .getTechnology().getCapacity()))
-                                + (plant.getTechnology().getVariableOperatingCostinEURPerMWh() * energyGenerated);
+                        // -
+                        // (plant.getTechnology().getVariableOperatingCostinEURPerMWh()
+                        // * 8760 * plant.getTechnology().getCapacity())) +
+                        // (plant.getTechnology().getVariableOperatingCostinEURPerMWh()
+                        // * energyGenerated
+
+                        double actualOM = (calculatedOM);
 
                         cost = cost + plantMarginalCost + actualOM;
                         profit = (revenue - cost);
@@ -165,7 +184,7 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
             for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsInMarket(market,
                     getCurrentTick())) {
 
-                if (plant.getOwner().equals(reps.targetInvestorRepository.findInvestorByMarket(market))) {
+                if (plant.getOwner().equals(reps.targetInvestorRepository.findTargetInvestorByMarket(market))) {
 
                     double prolongYearsOfDismantlng = plant.getTechnology().getMaximumLifeExtension()
                             + plant.getTechnology().getExpectedLifetime();
@@ -177,67 +196,73 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
                 }
             }
 
+            Map<PowerPlant, Double> marginalCostMap = new HashMap<PowerPlant, Double>();
+            Map<PowerPlant, Double> meritOrder;
+
+            for (PowerPlant plant1 : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarket(market,
+                    getCurrentTick())) {
+                marginalCostMap.put(plant1, calculateMarginalCostExclCO2MarketCost(plant1, (getCurrentTick())));
+
+            }
+
+            MapValueComparator comp = new MapValueComparator(marginalCostMap);
+            meritOrder = new TreeMap<PowerPlant, Double>(comp);
+            meritOrder.putAll(marginalCostMap);
+
             for (PowerPlant plant : reps.powerPlantRepository
                     .findOperationalPowerPlantsByAscendingProfitabilityAndMarket(market, getCurrentTick())) {
                 // logger.warn("profitability " + plant.getProfitability());
+
                 if (plant.getProfitability() < 0) {
-
-                    Map<PowerPlant, Double> marginalCostMap = new HashMap<PowerPlant, Double>();
-                    Map<PowerPlant, Double> meritOrder;
-
-                    for (PowerPlant plant1 : reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarket(
-                            market, getCurrentTick())) {
-                        marginalCostMap.put(plant1, calculateMarginalCostExclCO2MarketCost(plant1, getCurrentTick()));
-
-                    }
-
-                    MapValueComparator comp = new MapValueComparator(marginalCostMap);
-                    meritOrder = new TreeMap<PowerPlant, Double>(comp);
-                    meritOrder.putAll(marginalCostMap);
+                    double totalProfit = 0;
+                    long lookforward = 1;
+                    long iterator = 0;
+                    // for (iterator = 0; iterator <= lookforward; iterator++) {
+                    // logger.warn("year" + (getCurrentTick() + iterator));
+                    // Marginal cost Map was here earlier
 
                     double mc = 0;
                     double OM = 0;
                     double sumProfit = 0;
                     double energy = 0;
 
-                    double totalProfit = 0;
                     double demandGrowthFactor = 0;
                     double assignment = 0;
 
-                    mc = calculateMarginalCostExclCO2MarketCost(plant, getCurrentTick());
+                    mc = calculateMarginalCostExclCO2MarketCost(plant, (getCurrentTick() + iterator));
 
                     OM = plant.getActualFixedOperatingCost();
 
-                    if (getCurrentTick() == 1) {
-                        demandGrowthFactor = (market.getDemandGrowthTrend().getValue(getCurrentTick()));
+                    if ((getCurrentTick() + iterator) == 1) {
+                        demandGrowthFactor = (market.getDemandGrowthTrend().getValue((getCurrentTick() + iterator)));
                     }
-                    if (getCurrentTick() > 1) {
+                    if ((getCurrentTick() + iterator) > 1) {
                         SimpleRegression sr = new SimpleRegression();
-                        for (long time = getCurrentTick() - 1; time >= getCurrentTick()
+                        for (long time = (getCurrentTick() + iterator) - 1; time >= (getCurrentTick() + iterator)
                                 - market.getBacklookingForDemandForecastinginDismantling()
                                 && time >= 0; time = time - 1) {
                             sr.addData(time, market.getDemandGrowthTrend().getValue(time));
 
                         }
 
-                        demandGrowthFactor = (market.getDemandGrowthTrend().getValue(getCurrentTick()));
+                        demandGrowthFactor = (market.getDemandGrowthTrend().getValue((getCurrentTick() + iterator)));
                     }
 
                     double range = 0;
 
-                    if (getCurrentTick() == 1) {
+                    if ((getCurrentTick() + iterator) == 1) {
                         double max = reps.powerPlantRepository.calculateBaseCapacityOfOperationalPowerPlantsInMarket(
-                                market, getCurrentTick());
+                                market, (getCurrentTick() + iterator));
                         double min = reps.powerPlantRepository.calculatePeakCapacityOfOperationalPowerPlantsInMarket(
-                                market, getCurrentTick());
+                                market, (getCurrentTick() + iterator));
 
                         range = ((max + min) / 2);
 
                     }
 
-                    if (getCurrentTick() > 1) {
+                    if ((getCurrentTick() + iterator) > 1) {
                         SimpleRegression sr = new SimpleRegression();
-                        for (long time = getCurrentTick() - 1; time >= getCurrentTick()
+                        for (long time = (getCurrentTick() + iterator) - 1; time >= (getCurrentTick() + iterator)
                                 - market.getBacklookingForDemandForecastinginDismantling()
                                 && time >= 0; time = time - 1) {
 
@@ -250,58 +275,65 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
 
                         }
 
-                        range = (sr.predict(getCurrentTick()));
+                        range = (sr.predict((getCurrentTick() + iterator)));
                     }
 
                     // * ((100 + r.nextGaussian() * 20) / 100);
 
+                    double reservePrice = 0;
+                    double reserveVolume = 0;
+                    for (StrategicReserveOperator operator : strategicReserveOperatorRepository.findAll()) {
+                        ElectricitySpotMarket market1 = reps.marketRepository
+                                .findElectricitySpotMarketForZone(operator.getZone());
+                        if (market.getNodeId().intValue() == market1.getNodeId().intValue()) {
+                            reservePrice = operator.getReservePriceSR();
+                            reserveVolume = operator.getReserveVolume();
+                        }
+                    }
+
                     for (Segment currentSegment : reps.segmentRepository.findAll()) {
                         double segmentCapacity = 0;
-                        double segmentLoad = demandGrowthFactor
-                                * reps.segmentLoadRepository.returnSegmentBaseLoadBySegmentAndMarket(currentSegment,
-                                        market);
+                        double segmentLoad = demandGrowthFactor * reps.segmentLoadRepository
+                                .returnSegmentBaseLoadBySegmentAndMarket(currentSegment, market);
 
-                        if ((int) currentSegment.getSegmentID() != 1) {
-
-                            double segmentPortion = (int) currentSegment.getSegmentID();
-
-                            segmentCapacity = reps.powerPlantRepository
-                                    .calculateBaseCapacityOfOperationalPowerPlantsInMarket(market, getCurrentTick());
-
-                            // reps.powerPlantRepository
-                            // .calculateBaseCapacityOfOperationalPowerPlantsInMarket(market,
-                            // getCurrentTick())
-                            // - (range);
-                        }
-
-                        else {
-                            segmentCapacity = reps.powerPlantRepository
-                                    .calculateBaseCapacityOfOperationalPowerPlantsInMarket(market, getCurrentTick());
-
-                            // reps.powerPlantRepository
-                            // .calculateBaseCapacityOfOperationalPowerPlantsInMarket(market,
-                            // getCurrentTick())
-                            // - (range);
-                        }
-                        // logger.warn("Capacity " + market.getName() + " DGF "
-                        // + demandGrowthFactor);
-
+                        // for (PowerPlant pplants :
+                        // reps.powerPlantRepository.findExpectedOperationalPowerPlantsInMarket(
+                        // market, getCurrentTick())) {
+                        // segmentCapacity = segmentCapacity
+                        // + pplants.getAvailableCapacity((getCurrentTick() +
+                        // iterator), currentSegment,
+                        // reps.segmentRepository.count());
+                        // }
+                        segmentCapacity = reps.powerPlantRepository
+                                .calculateBaseCapacityOfOperationalPowerPlantsInMarket(market, getCurrentTick());
                         if (segmentLoad > (segmentCapacity)) {
                             double price = 0;
                             double profit1 = 0;
                             price = market.getValueOfLostLoad();
-
                             profit1 = currentSegment.getLengthInHours()
-                                    * plant.getAvailableCapacity(getCurrentTick(), currentSegment,
-                                            reps.segmentRepository.count()) * (price - mc);
+                                    * plant.getAvailableCapacity((getCurrentTick() + iterator), currentSegment,
+                                            reps.segmentRepository.count())
+                                    * (price - mc);
 
                             sumProfit += profit1;
-                            energy += currentSegment.getLengthInHours()
-                                    * plant.getAvailableCapacity(getCurrentTick(), currentSegment,
-                                            reps.segmentRepository.count());
+                            energy += currentSegment.getLengthInHours() * plant.getAvailableCapacity(
+                                    (getCurrentTick() + iterator), currentSegment, reps.segmentRepository.count());
+                        }
+                        if (segmentLoad <= (segmentCapacity) && ((segmentCapacity - segmentLoad) <= (reserveVolume))) {
+                            double price = 0;
+                            double profit1 = 0;
+                            price = reservePrice;
+                            profit1 = currentSegment.getLengthInHours()
+                                    * plant.getAvailableCapacity((getCurrentTick() + iterator), currentSegment,
+                                            reps.segmentRepository.count())
+                                    * (price - mc);
+
+                            sumProfit += profit1;
+                            energy += currentSegment.getLengthInHours() * plant.getAvailableCapacity(
+                                    (getCurrentTick() + iterator), currentSegment, reps.segmentRepository.count());
                         }
 
-                        if (segmentLoad <= (segmentCapacity)) {
+                        if (segmentLoad <= (segmentCapacity) && ((segmentCapacity - segmentLoad) > (reserveVolume))) {
                             double price = 0;
                             double capacityCounter = 0;
 
@@ -309,35 +341,137 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
                                 PowerPlant plant1 = plantCost.getKey();
 
                                 if (capacityCounter < segmentLoad) {
-                                    capacityCounter += plant1.getAvailableCapacity(getCurrentTick(), currentSegment,
-                                            reps.segmentRepository.count());
+                                    capacityCounter += plant1.getAvailableCapacity((getCurrentTick() + iterator),
+                                            currentSegment, reps.segmentRepository.count());
                                     price = plantCost.getValue();
                                 }
 
                             }
-
+                            // logger.warn("CP " + price + " MC " + mc);
                             if (price > mc) {
                                 double profit1 = 0;
                                 profit1 = currentSegment.getLengthInHours()
-                                        * plant.getAvailableCapacity(getCurrentTick(), currentSegment,
-                                                reps.segmentRepository.count()) * (price - mc);
-
-                                energy += currentSegment.getLengthInHours()
-                                        * plant.getAvailableCapacity(getCurrentTick(), currentSegment,
-                                                reps.segmentRepository.count());
+                                        * plant.getAvailableCapacity((getCurrentTick() + iterator), currentSegment,
+                                                reps.segmentRepository.count())
+                                        * (price - mc);
+                                energy += currentSegment.getLengthInHours() * plant.getAvailableCapacity(
+                                        (getCurrentTick() + iterator), currentSegment, reps.segmentRepository.count());
                                 sumProfit += profit1;
                             }
                         }
+
                     }
 
-                    totalProfit = (sumProfit - ((OM - (plant.getTechnology().getVariableOperatingCostinEURPerMWh() * 8760 * plant
-                            .getTechnology().getCapacity())) + (plant.getTechnology()
-                            .getVariableOperatingCostinEURPerMWh() * energy)));
+                    long yIterator = 1;
+                    double counter = 0;
+                    double cmRevenue = 0;
+                    // for (yIterator = 1; yIterator <= market.getLookback()
+                    // &&
+                    // yIterator > 0; yIterator++) {
+                    // counter += 1;
 
-                    // logger.warn("2 Range " + (range1*mc));
+                    double totalPeakCapacityAtFuturePoint = reps.powerPlantRepository
+                            .calculatePeakCapacityOfOperationalPowerPlantsInMarket(market, getCurrentTick());
+                    double totalPeakDemandAtFuturePoint = reps.segmentLoadRepository.peakLoadbyMarketandTime(market,
+                            getCurrentTick());
 
-                    if ((totalProfit + plant.getProfitability()) < 0) {
+                    Zone zoneTemp = market.getZone();
+                    Regulator regulator = reps.regulatorRepository.findRegulatorForZone(zoneTemp);
+                    if ((plant.getOwner().isSimpleCapacityMarketEnabled() && regulator != null)) {
+                        double phaseInPeriod = 0;
 
+                        if (getCurrentTick() <= (long) regulator.getImplementationPhaseLength()
+                                && regulator.getImplementationPhaseLength() > 0) {
+                            phaseInPeriod = regulator.getReserveMargin()
+                                    - ((((regulator.getReserveMargin() - regulator.getInitialSupplyMargin())
+                                            / regulator.getImplementationPhaseLength()) * getCurrentTick())
+                                            + regulator.getInitialSupplyMargin());
+                        }
+
+                        if (totalPeakCapacityAtFuturePoint < totalPeakDemandAtFuturePoint
+                                * (1 + (regulator.getReserveMargin() - phaseInPeriod
+                                        - regulator.getReserveDemandLowerMargin()))) {
+                            cmRevenue = plant.getTechnology().getCapacity()
+                                    * plant.getTechnology().getPeakSegmentDependentAvailability()
+                                    * regulator.getCapacityMarketPriceCap();
+                        }
+
+                        if ((totalPeakCapacityAtFuturePoint > (totalPeakDemandAtFuturePoint
+                                * (1 + (regulator.getReserveMargin() - phaseInPeriod
+                                        - regulator.getReserveDemandLowerMargin())))
+                                && totalPeakCapacityAtFuturePoint <= (totalPeakDemandAtFuturePoint
+                                        * (1 + (regulator.getReserveMargin() - phaseInPeriod
+                                                + regulator.getReserveDemandUpperMargin()))))) {
+
+                            double reserveMargin = 1 + regulator.getReserveMargin() - phaseInPeriod;
+                            double lowerMargin = reserveMargin - regulator.getReserveDemandLowerMargin();
+                            double upperMargin = reserveMargin + regulator.getReserveDemandUpperMargin();
+                            double marketCap = regulator.getCapacityMarketPriceCap();
+
+                            cmRevenue = (-(marketCap / (upperMargin - lowerMargin))
+                                    * ((totalPeakCapacityAtFuturePoint / totalPeakDemandAtFuturePoint) - upperMargin))
+                                    * plant.getTechnology().getCapacity()
+                                    * plant.getTechnology().getPeakSegmentDependentAvailability();
+                        }
+
+                        if (totalPeakCapacityAtFuturePoint > (totalPeakDemandAtFuturePoint
+                                * (1 + (regulator.getReserveMargin() - phaseInPeriod
+                                        + regulator.getReserveDemandUpperMargin())))) {
+                            cmRevenue = 0;
+                        }
+                    } else {
+                        cmRevenue = 0;
+                    }
+                    if (reserveVolume > 0.01) {
+                        double counterReserve = 0;
+                        Map<PowerPlant, Double> reverseMarginalCostMap = new HashMap<PowerPlant, Double>();
+                        Map<PowerPlant, Double> reverseMeritOrder;
+                        for (PowerPlant plant1 : reps.powerPlantRepository
+                                .findExpectedOperationalPowerPlantsInMarket(market, getCurrentTick())) {
+                            reverseMarginalCostMap.put(plant1,
+                                    calculateMarginalCostExclCO2MarketCost(plant1, (getCurrentTick())));
+
+                        }
+
+                        MapValueReverseComparator comp1 = new MapValueReverseComparator(reverseMarginalCostMap);
+                        reverseMeritOrder = new TreeMap<PowerPlant, Double>(comp1);
+                        reverseMeritOrder.putAll(reverseMarginalCostMap);
+                        for (Entry<PowerPlant, Double> plantVol : reverseMeritOrder.entrySet()) {
+                            if (plantVol.getKey().equals(plant)) {
+                            }
+                            if (counterReserve < reserveVolume) {
+                                counterReserve = counterReserve + plantVol.getKey().getActualNominalCapacity();
+                                if (plantVol.getKey().equals(plant)) {
+                                    cmRevenue = cmRevenue + plant.getActualFixedOperatingCost();
+                                }
+
+                            }
+                        }
+
+                    }
+
+                    // for (CashFlow cf :
+                    // reps.cashFlowRepository.findAllCashFlowsForPowerPlantForTime(plant,
+                    // (getCurrentTick() - 1))) {
+                    // if (cf.getType() == CashFlow.STRRESPAYMENT &&
+                    // cf.getTo().equals(plant.getOwner())) {
+                    // cmRevenue = cmRevenue + cf.getMoney();
+                    // }
+                    // }
+
+                    // }
+                    totalProfit = ((sumProfit + (cmRevenue) - OM));
+
+                    // * plant
+                    // .getActualNominalCapacity())
+                    // ((OM -
+                    // (plant.getTechnology().getVariableOperatingCostinEURPerMWh()
+                    // * 8760 * plant.getTechnology().getCapacity())) +
+                    // (plant.getTechnology().getVariableOperatingCostinEURPerMWh()
+                    // * energy))
+                    // }
+                    if ((totalProfit) < 0) {
+                        // + plant.getProfitability()
                         // REMAINING LOAN-----//
                         Loan loan = plant.getLoan();
 
@@ -364,27 +498,29 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
                             if (downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments()) {
 
                                 double payment = downpayment.getAmountPerPayment()
-                                        * (downpayment.getTotalNumberOfPayments() - downpayment
-                                                .getNumberOfPaymentsDone());
+                                        * (downpayment.getTotalNumberOfPayments()
+                                                - downpayment.getNumberOfPaymentsDone());
                                 reps.nonTransactionalCreateRepository.createCashFlow(plant.getOwner(),
                                         downpayment.getTo(), payment, CashFlow.DOWNPAYMENT, getCurrentTick(),
                                         downpayment.getRegardingPowerPlant());
 
-                                downpayment.setNumberOfPaymentsDone(downpayment.getNumberOfPaymentsDone()
-                                        + (downpayment.getTotalNumberOfPayments() - downpayment
-                                                .getNumberOfPaymentsDone()));
+                                downpayment.setNumberOfPaymentsDone(
+                                        downpayment.getNumberOfPaymentsDone() + (downpayment.getTotalNumberOfPayments()
+                                                - downpayment.getNumberOfPaymentsDone()));
 
                                 logger.info("DISMANTLING: Paying {} (euro) for remaining downpayment {}", payment,
                                         downpayment);
                             }
                         }
-                        // logger.warn("dismantled " + plant.getName());
+                        // logger.warn("dismantled " + plant.getName() + " Age "
+                        // + plant.getActualLifetime());
                         plant.dismantlePowerPlant(getCurrentTick());
 
                     }
                 }
             }
         }
+
     }
 
     public double calculateMarginalCostExclCO2MarketCost(PowerPlant powerPlant, long clearingTick) {
@@ -430,8 +566,8 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
     }
 
     public double findLastKnownPriceOnMarket(DecarbonizationMarket market, long clearingTick) {
-        Double average = calculateAverageMarketPriceBasedOnClearingPoints(reps.clearingPointRepositoryOld
-                .findClearingPointsForMarketAndTime(market, clearingTick, false));
+        Double average = calculateAverageMarketPriceBasedOnClearingPoints(
+                reps.clearingPointRepositoryOld.findClearingPointsForMarketAndTime(market, clearingTick, false));
         Substance substance = market.getSubstance();
 
         if (average != null) {
@@ -439,8 +575,8 @@ public class DismantlePowerPlantOperationalLossRole extends AbstractRole<Electri
             return average;
         }
 
-        average = calculateAverageMarketPriceBasedOnClearingPoints(reps.clearingPointRepositoryOld
-                .findClearingPointsForMarketAndTime(market, clearingTick - 1, false));
+        average = calculateAverageMarketPriceBasedOnClearingPoints(
+                reps.clearingPointRepositoryOld.findClearingPointsForMarketAndTime(market, clearingTick - 1, false));
         if (average != null) {
             logger.info("Average price found on market for previous tick for {}", substance.getName());
             return average;
