@@ -321,7 +321,35 @@ p:degressionFactor="0.06">
 	</bean>
 
 
+	<!-- Photovoltaic nodes Germany (1-3 nodes) -->
+	<bean id="photovoltaicNodeDE1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
+		p:filename="/data/multiNodeProduction_DE_solarPV.csv"
+		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
+		p:variableName="de_node_1">
+		<property name="intermittentTechnology" ref="photovoltaicPGT"></property>
+		<property name="intermittentProductionNode" ref="deNode1"></property>
+	</bean>
 
+
+
+	<!-- Wind onshore nodes Germany (1-3 nodes) -->
+	<bean id="windOnSpeedNodeDE1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
+		p:filename="/data/multiNodeProduction_DE_windOn.csv"
+		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
+		p:variableName="de_node_1">
+		<property name="intermittentTechnology" ref="windPGT"></property>
+		<property name="intermittentProductionNode" ref="deNode1"></property>
+	</bean>
+
+
+	<!-- Wind offshore nodes Germany (1-3 nodes) -->
+	<bean id="windOffSpeedNodeDE1" class="emlab.gen.domain.technology.IntermittentResourceProfile"
+		p:filename="/data/multiNodeProduction_DE_windOff.csv"
+		p:timeSeriesAreInDifferentColumns="true" p:delimiter=","
+		p:variableName="de_node_1">
+		<property name="intermittentTechnology" ref="windOffshorePGT"></property>
+		<property name="intermittentProductionNode" ref="deNode1"></property>
+	</bean>
 
 
 
