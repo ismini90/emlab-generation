@@ -13,29 +13,32 @@ bigDFBaseCaseFinancialReport <- read.csv("BaseCaseCMtrueTest-FinancialReports.cs
 bigDFBaseCaseBaseCostFip <- read.csv("BaseCaseCMtrueTest-BaseCostFip.csv")
 bigDFBaseCase <- addSupplyRatios(bigDFBaseCase)
 bigDFBaseCase <- addSumOfVariablesByPrefixToDF(bigDFBaseCase, "ProducerCash")
-RenewableCapacityBaseCase = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityBaseCase = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFBaseCase <- addSumOfVariablesByVariableListToDF(bigDFBaseCase, RenewableCapacityBaseCase, 'TotalRenewableCapacity')
-RenewableGenerationBaseCase = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationBaseCase = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFBaseCase <- addSumOfVariablesByVariableListToDF(bigDFBaseCase, RenewableGenerationBaseCase, 'TotalRenewableGeneration')
+
+setwd("~/Desktop/emlabGen/output/TestRuns3105WithoutCoal")
 
 bigDFFipAnte <- read.csv("FipEPfalseCMtrueTest.csv")
 bigDFFipAnteFinancialReport <- read.csv("FipEPfalseCMtrueTest-FinancialReports.csv")
 bigDFFipAnteBaseCostFip <- read.csv("FipEPfalseCMtrueTest-BaseCostFip.csv")
 bigDFFipAnte <- addSupplyRatios(bigDFFipAnte)
 bigDFFipAnte <- addSumOfVariablesByPrefixToDF(bigDFFipAnte, "ProducerCash")
-RenewableCapacityFipAnte = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityFipAnte = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFFipAnte <- addSumOfVariablesByVariableListToDF(bigDFFipAnte, RenewableCapacityFipAnte, 'TotalRenewableCapacity')
-RenewableGenerationFipAnte = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationFipAnte = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFFipAnte <- addSumOfVariablesByVariableListToDF(bigDFFipAnte, RenewableGenerationFipAnte, 'TotalRenewableGeneration')
+
 
 bigDFFipPost <- read.csv("FipEPtrueCMtrueTest.csv")
 bigDFFipPostFinancialReport <- read.csv("FipEPtrueCMtrueTest-FinancialReports.csv")
 bigDFFipPostBaseCostFip <- read.csv("FipEPtrueCMtrueTest-BaseCostFip.csv")
 bigDFFipPost <- addSupplyRatios(bigDFFipPost)
 bigDFFipPost <- addSumOfVariablesByPrefixToDF(bigDFFipPost, "ProducerCash")
-RenewableCapacityFipPost = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityFipPost = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFFipPost <- addSumOfVariablesByVariableListToDF(bigDFFipPost, RenewableCapacityFipPost, 'TotalRenewableCapacity')
-RenewableGenerationFipPost = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationFipPost = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFFipPost <- addSumOfVariablesByVariableListToDF(bigDFFipPost, RenewableGenerationFipAnte, 'TotalRenewableGeneration')
 
 #setwd("~/Desktop/emlabGen/output/TestRuns0604")
@@ -44,9 +47,9 @@ bigDFFipAnteTSFinancialReport <- read.csv("FipTechSpecEPfalseCMtrueTest-Financia
 bigDFFipAnteTSBaseCostFip <- read.csv("FipTechSpecEPfalseCMtrueTest-BaseCostFip.csv")
 bigDFFipAnteTS <- addSupplyRatios(bigDFFipAnteTS)
 bigDFFipAnteTS <- addSumOfVariablesByPrefixToDF(bigDFFipAnteTS, "ProducerCash")
-RenewableCapacityFipAnte = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityFipAnte = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFFipAnteTS <- addSumOfVariablesByVariableListToDF(bigDFFipAnteTS, RenewableCapacityFipAnte, 'TotalRenewableCapacity')
-RenewableGenerationFipAnte = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationFipAnte = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFFipAnteTS <- addSumOfVariablesByVariableListToDF(bigDFFipAnteTS, RenewableGenerationFipAnte, 'TotalRenewableGeneration')
 
 bigDFFipPostTS <- read.csv("FipTechSpecEPtrueCMtrueTest.csv")
@@ -54,9 +57,9 @@ bigDFFipPostTSFinancialReport <- read.csv("FipTechSpecEPtrueCMtrueTest-Financial
 bigDFFipPostTSBaseCostFip <- read.csv("FipTechSpecEPtrueCMtrueTest-BaseCostFip.csv")
 bigDFFipPostTS <- addSupplyRatios(bigDFFipPostTS)
 bigDFFipPostTS <- addSumOfVariablesByPrefixToDF(bigDFFipPostTS, "ProducerCash")
-RenewableCapacityFipPost = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityFipPost = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFFipPostTS <- addSumOfVariablesByVariableListToDF(bigDFFipPostTS, RenewableCapacityFipPost, 'TotalRenewableCapacity')
-RenewableGenerationFipPost = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationFipPost = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFFipPostTS <- addSumOfVariablesByVariableListToDF(bigDFFipPostTS, RenewableGenerationFipAnte, 'TotalRenewableGeneration')
 
 
@@ -65,9 +68,9 @@ bigDFTenderAnteFinancialReport <- read.csv("TenderEPfalseCMtrueTest-FinancialRep
 bigDFTenderAnteClearingPoints <- read.csv("TenderEPfalseCMtrueTest-TenderClearingPoints.csv")
 bigDFTenderAnte <- addSupplyRatios(bigDFTenderAnte)
 bigDFTenderAnte <- addSumOfVariablesByPrefixToDF(bigDFTenderAnte, "ProducerCash")
-RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFTenderAnte <- addSumOfVariablesByVariableListToDF(bigDFTenderAnte, RenewableCapacityTender, 'TotalRenewableCapacity')
-RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFTenderAnte <- addSumOfVariablesByVariableListToDF(bigDFTenderAnte, RenewableGenerationTenderAnte, 'TotalRenewableGeneration')
 
 bigDFTenderAnteTS <- read.csv("TenderTechSpecEPfalseCMtrueTest.csv")
@@ -75,9 +78,9 @@ bigDFTenderAnteTSFinancialReport <- read.csv("TenderTechSpecEPfalseCMtrueTest-Fi
 bigDFTenderAnteTSClearingPoints <- read.csv("TenderTechSpecEPfalseCMtrueTest-TenderClearingPoints.csv")
 bigDFTenderAnteTS <- addSupplyRatios(bigDFTenderAnteTS)
 bigDFTenderAnteTS <- addSumOfVariablesByPrefixToDF(bigDFTenderAnteTS, "ProducerCash")
-RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFTenderAnteTS <- addSumOfVariablesByVariableListToDF(bigDFTenderAnteTS, RenewableCapacityTender, 'TotalRenewableCapacity')
-RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFTenderAnteTS <- addSumOfVariablesByVariableListToDF(bigDFTenderAnteTS, RenewableGenerationTenderAnte, 'TotalRenewableGeneration')
 
 bigDFTenderPostTS <- read.csv("TenderTechSpecEPtrueCMtrueTest.csv")
@@ -85,9 +88,9 @@ bigDFTenderPostTSFinancialReport <- read.csv("TenderTechSpecEPtrueCMtrueTest-Fin
 bigDFTenderPostTSClearingPoints <- read.csv("TenderTechSpecEPtrueCMtrueTest-TenderClearingPoints.csv")
 bigDFTenderPostTS <- addSupplyRatios(bigDFTenderPostTS)
 bigDFTenderPostTS <- addSumOfVariablesByPrefixToDF(bigDFTenderPostTS, "ProducerCash")
-RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_Biomass", "CapacityinMWinA_WindOffshore")
+RenewableCapacityTender = c("CapacityinMWinA_Photovoltaic", "CapacityinMWinA_Wind", "CapacityinMWinA_WindOffshore")
 bigDFTenderPostTS <- addSumOfVariablesByVariableListToDF(bigDFTenderPostTS, RenewableCapacityTender, 'TotalRenewableCapacity')
-RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind","GenerationinMWhCountryA_Biomass","GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
+RenewableGenerationTenderAnte = c("GenerationinMWhCountryA_Wind", "GenerationinMWhCountryA_Photovoltaic","GenerationinMWhCountryA_WindOffshore")
 bigDFTenderPostTS <- addSumOfVariablesByVariableListToDF(bigDFTenderPostTS, RenewableGenerationTenderAnte, 'TotalRenewableGeneration')
 
 bigDFBaseCase$modelRun <- 'NoPolicy'
@@ -137,7 +140,7 @@ names(bigDF)<-c(oldNames,"renTarget")
 graphics.off()
 library(gridExtra)
 library(TeachingDemos)  
-analysisFolder <- "~/Desktop/emlabGen/analysis/TestRuns1504VerificationwithETS"
+analysisFolder <- "~/Desktop/emlabGen/analysis/TestRuns3105WithoutCoalETS"
 setwd(analysisFolder)
 
 

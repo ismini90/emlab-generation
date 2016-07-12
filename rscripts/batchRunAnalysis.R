@@ -150,13 +150,14 @@ plotStackedDiagram <- function(moltenVariable, ylabel, legendName, absolute=TRUE
     facet_wrap( ~ modelRun, nrow=nrow)+
     xlab("Time [a]")+
     ylab(ylabel)+
-    theme_grey(base_size=14)+
+    #theme_grey(base_size=14)+
+    scale_fill_grey() + theme_bw()+
     theme(legend.position="bottom", legend.margin=unit(0.5, "cm"))+
     guides(fill=guide_legend(nrow=1, keywidth=1, keylength=1, keyheight=1))
   if(is.null(manuelPalette))
     p <- p + scale_fill_brewer(type="qual", palette=3, name="Technology")
   else
-    p <- p + scale_fill_manual(name=legendName, values=manuelPalette)
+    p <- p + scale_colour_grey() + theme_bw()+theme(legend.position="bottom")
   return(p)
 }
 

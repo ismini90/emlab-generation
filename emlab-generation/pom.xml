@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
   Copyright 2012 the original author or authors.
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
     http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,14 +32,14 @@
 
      <!--  ========== DEPENDECIES ============= -->
   <dependencies>
-   
+
    <!-- AgentSpring engine -->
    <dependency>
 	   <groupId>agentspring</groupId>
 	   <artifactId>agentspring-engine</artifactId>
 	   <version>1.0.0-SNAPSHOT</version>
    </dependency>
-   
+
 	<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-math</artifactId>
@@ -51,13 +51,13 @@
       <artifactId>colt</artifactId>
       <version>1.2.0</version>
 	</dependency>
-	
+
 	<dependency>
 		<groupId>com.googlecode.jcsv</groupId>
 		<artifactId>jcsv</artifactId>
 		<version>1.4.0</version>
 	</dependency>
-	
+
 	<!-- Testing Environment -->
 	<dependency>
 		<groupId>org.neo4j</groupId>
@@ -74,7 +74,7 @@
 <!--         <classifier>tests</classifier> -->
 <!--         <scope>test</scope> -->
 <!--     </dependency> -->
-	
+
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
@@ -82,9 +82,14 @@
 		<scope>test</scope>
 	</dependency>
 
-               
+
+	<dependency>
+		<groupId>cplex</groupId>
+		<artifactId>cplex</artifactId>
+		<version>12.6.3</version>
+	</dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
 		  <!-- Compiles project -->
@@ -215,7 +220,7 @@
           <mainClass>agentspring.HPCService</mainClass>
         </configuration>
       </plugin>
-      
+
 <!-- 	  If enabled, creates binary distributions of the project (war,jar,targz), with HPCService as main class       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -243,7 +248,7 @@
                 </transformer>
                 Enable this transformer if you have a queries.properties file in the same directory
                 as the pom.xml
-                <transformer 
+                <transformer
                	  implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
                  	<resource>queries.properties</resource>
                  	<file>queries.properties</file>
@@ -268,7 +273,7 @@
 	            </descriptorRefs>
 	          </configuration>
 	        </plugin>
-    
+
     </plugins>
   </build>
 
@@ -290,7 +295,7 @@
         </plugins>
       </build>
     </profile>
-    
+
     <!-- Headless profile -->
     <profile>
       <id>hpc</id>
@@ -308,9 +313,9 @@
       </build>
     </profile>
   </profiles>
-  
+
     <distributionManagement>
-     <!-- 
+     <!--
       <repository>
         <id>tbm.eeni.archiva.internal</id>
         <url>http://test.eeni.tbm.tudelft.nl:8080/archiva/repository/internal</url>
@@ -321,9 +326,9 @@
       </snapshotRepository>
     -->
     </distributionManagement>
-  
+
     <repositories>
-     <!-- 
+     <!--
        <repository>
         <id>archiva.internal</id>
         <name>Archiva Managed Internal Repository</name>
@@ -349,5 +354,5 @@
       -->
     </repositories>
 
-    
+
 </project>

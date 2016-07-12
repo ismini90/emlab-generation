@@ -1,2 +1,25 @@
-./localHeadlessSingle.sh TenderExAnteTest TenderExAnte-1
-./localHeadlessSingle.sh TenderExAnteTechSpecTest TenderExAnteTechSpec
+./localHeadlessSingle.sh Test SameRiskFipTechSpecEPtrueCMfalse-46
+./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseCMfalse-1
+./localHeadlessSingle.sh Test ConstantTargetTenderEPfalseCMfalse-1
+./localHeadlessSingle.sh Test ConstantTargetTenderTechSpecEPfalseCMfalse-1
+#./localHeadlessSingle.sh Test ConstantTargetFipEPfalseCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetTenderEPfalseCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetTenderTechSpecEPfalseCMtrue-1
+./localHeadlessSingle.sh Test ConstantTargetFipEPtrueCMfalse-1
+./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPtrueCMfalse-1
+./localHeadlessSingle.sh Test ConstantTargetTenderEPtrueCMfalse-1
+./localHeadlessSingle.sh Test ConstantTargetTenderTechSpecEPtrueCMfalse-1
+#./localHeadlessSingle.sh Test ConstantTargetFipEPtrueCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPtrueCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetTenderEPtrueCMtrue-1
+#./localHeadlessSingle.sh Test ConstantTargetTenderTechSpecEPtrueCMtrue-1
+
+#./localHeadlessSingle.sh Test ConstantTargetFipEPfalseBF105-9
+#./localHeadlessSingle.sh Test ConstantTargetFipEPfalseBF150-9
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseBF105-9
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseBF150-9
+#./localHeadlessSingle.sh Test ConstantTargetFipEPfalseBF115-9
+#./localHeadlessSingle.sh Test ConstantTargetFipEPfalseBF200-9
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseBF115-9
+#./localHeadlessSingle.sh Test ConstantTargetFipTechSpecEPfalseBF200-9

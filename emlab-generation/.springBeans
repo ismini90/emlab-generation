@@ -7,6 +7,7 @@
 	</configSuffixes>
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
+2		<config>src/main/resources/scenarios/scenarioS-OneCountryStorage.xml</config>
 	</configs>
 	<autoconfigs>
 	</autoconfigs>

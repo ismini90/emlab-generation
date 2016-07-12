@@ -94,6 +94,7 @@ public class PowerPlant {
     private double actualEfficiency;
     private double expectedEndOfLife;
     private double actualNominalCapacity;
+    private double actualStorageContentEndOfYear;
     private boolean hasFeedInPremiumContract;
     private boolean isRenewableTenderDummyPowerPlant;
 
@@ -647,6 +648,14 @@ public class PowerPlant {
     public IntermittentTechnologyNodeLoadFactor getIntermittentTechnologyNodeLoadFactor() {
         return intermittentTechnologyNodeLoadFactorRepository
                 .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(this.getLocation(), this.getTechnology());
+    }
+
+    public double getActualStorageContentEndOfYear() {
+        return actualStorageContentEndOfYear;
+    }
+
+    public void setActualStorageContentEndOfYear(double actualStorageContentEndOfYear) {
+        this.actualStorageContentEndOfYear = actualStorageContentEndOfYear;
     }
 
 }

@@ -5,7 +5,7 @@
 ########################################################################
 USAGE="Provide name of run and name of scenario file."
 #Load configuration script to substitute
-if [ -f scriptConfigurations.cfg ];then 
+if [ -f scriptConfigurations.cfg ];then
 	. scriptConfigurations.cfg
 	HOME=$REMOTERESULTFOLDER
 else
@@ -23,14 +23,14 @@ SCENARIOPATH=file://$LOCALSCENARIOFOLDER
 
 mkdir $LOCALRESULTFOLDER/$JOBNAME
 cd $LOCALRESULTFOLDER/$JOBNAME
-if [ ! -z $3 ] 
-then 
+if [ ! -z $3 ]
+then
     QUERYCOMMAND="-Dquery.file=$3"
 else
     QUERYCOMMAND=""
 fi
 
 java -Xmx1000m -Drun.id=$JOBNAME -DSCENARIO_FOLDER=$SCENARIOPATH -Dresults.path=$LOCALRESULTFOLDER/$JOBNAME -Dscenario.file=$SCENARIO".xml" $QUERYCOMMAND -jar $LOCALJARFILE
-rm -rf /tmp/ramdisk/emlab.gen-db/$JOBNAME
+rm -rf /tmp/ramdisk/emlab.gen-db/$JOBNAME -Djava.library.path=/Users/kaveri/Applications/IBM/ILOG/CPLEX_Studio1263/cplex/bin/x86-64_osx
 
 mv simulation.log $JOBNAME.log
