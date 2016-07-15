@@ -19,14 +19,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import agentspring.simulation.SimulationParameter;
+import emlab.gen.repository.Reps;
 import emlab.gen.trend.TimeSeriesImpl;
 
 @NodeEntity
 public class PowerGeneratingTechnology {
+
+    @Transient
+    @Autowired
+    Reps reps;
 
     private String name;
 
@@ -93,6 +100,8 @@ public class PowerGeneratingTechnology {
     private double maxStorageCapacity;
 
     private double minStorageCapacity;
+
+    private double chargingTime;
 
     public double getMaximumLifeExtension() {
         return maximumLifeExtension;
@@ -331,7 +340,8 @@ public class PowerGeneratingTechnology {
         this.disChargeEfficiency = disChargeEfficiency;
     }
 
-    public double getChargingRate() {
+    public double getChargingRate(long currentTick) {
+        this.chargingRate = reps.powerPlantRepository.findCapacityOfOperationalStoragePowerPlants(currentTick);
         return chargingRate;
     }
 
@@ -339,7 +349,9 @@ public class PowerGeneratingTechnology {
         this.chargingRate = chargingRate;
     }
 
-    public double getDisChargingRate() {
+    public double getDisChargingRate(long currentTick) {
+
+        this.disChargingRate = reps.powerPlantRepository.findCapacityOfOperationalStoragePowerPlants(currentTick);
         return disChargingRate;
     }
 
@@ -347,7 +359,10 @@ public class PowerGeneratingTechnology {
         this.disChargingRate = disChargingRate;
     }
 
-    public double getMaxStorageCapacity() {
+    public double getMaxStorageCapacity(long currentTick) {
+
+        this.maxStorageCapacity = reps.powerPlantRepository.findCapacityOfOperationalStoragePowerPlants(currentTick)
+                * this.chargingTime;
         return maxStorageCapacity;
     }
 
@@ -361,6 +376,14 @@ public class PowerGeneratingTechnology {
 
     public void setMinStorageCapacity(double minStorageCapacity) {
         this.minStorageCapacity = minStorageCapacity;
+    }
+
+    public double getChargingTime() {
+        return chargingTime;
+    }
+
+    public void setChargingTime(double chargingTime) {
+        this.chargingTime = chargingTime;
     }
 
 }

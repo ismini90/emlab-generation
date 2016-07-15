@@ -316,7 +316,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
                                         .getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                        .getMaxStorageCapacity());
+                                        .getMaxStorageCapacity(getCurrentTick()));
                     }
                 }
 
@@ -352,8 +352,8 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     sIn[zoneList.indexOf(zone)] = cplex.numVarArray(HOURS, zoneList.indexOf(zone),
                             zoneList.indexOf(zone));
                     for (int hour = 0; hour < HOURS; hour++) {
-                        sIn[zoneList.indexOf(zone)][hour] = cplex.numVar(0,
-                                storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getChargingRate());
+                        sIn[zoneList.indexOf(zone)][hour] = cplex.numVar(0, storagePowerPlantList
+                                .get(zoneList.indexOf(zone)).getTechnology().getChargingRate(getCurrentTick()));
                     }
                 }
 
@@ -365,8 +365,8 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     sOut[zoneList.indexOf(zone)] = cplex.numVarArray(HOURS, zoneList.indexOf(zone),
                             zoneList.indexOf(zone));
                     for (int hour = 0; hour < HOURS; hour++) {
-                        sOut[zoneList.indexOf(zone)][hour] = cplex.numVar(0,
-                                storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getDisChargingRate());
+                        sOut[zoneList.indexOf(zone)][hour] = cplex.numVar(0, storagePowerPlantList
+                                .get(zoneList.indexOf(zone)).getTechnology().getDisChargingRate(getCurrentTick()));
                     }
                 }
 
@@ -527,7 +527,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             for (PowerGeneratingTechnology technology : storageTechnologyList) {
 
                                 DoubleMatrix1D maxStorageCapacity = new DenseDoubleMatrix1D(8760);
-                                maxStorageCapacity.assign(technology.getMaxStorageCapacity());
+                                maxStorageCapacity.assign(technology.getMaxStorageCapacity(getCurrentTick()));
 
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
                                         .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
