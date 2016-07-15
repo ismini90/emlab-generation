@@ -98,14 +98,6 @@ public class PowerPlant {
     private boolean hasFeedInPremiumContract;
     private boolean isRenewableTenderDummyPowerPlant;
 
-    private double chargingRate;
-
-    private double disChargingRate;
-
-    private double maxStorageCapacity;
-
-    private double minStorageCapacity;
-
     public boolean isRenewableTenderDummyPowerPlant() {
         return isRenewableTenderDummyPowerPlant;
     }
@@ -664,38 +656,6 @@ public class PowerPlant {
 
     public void setActualStorageContentEndOfYear(double actualStorageContentEndOfYear) {
         this.actualStorageContentEndOfYear = actualStorageContentEndOfYear;
-    }
-
-    public double getChargingRate() {
-        return chargingRate;
-    }
-
-    public void setChargingRate(double chargingRate) {
-        this.chargingRate = chargingRate;
-    }
-
-    public double getDisChargingRate() {
-        return disChargingRate;
-    }
-
-    public void setDisChargingRate(double disChargingRate) {
-        this.disChargingRate = disChargingRate;
-    }
-
-    public double getMaxStorageCapacity() {
-        return maxStorageCapacity;
-    }
-
-    public void setMaxStorageCapacity(double maxStorageCapacity) {
-        this.maxStorageCapacity = maxStorageCapacity;
-    }
-
-    public double getMinStorageCapacity() {
-        return minStorageCapacity;
-    }
-
-    public void setMinStorageCapacity(double minStorageCapacity) {
-        this.minStorageCapacity = minStorageCapacity;
     }
 
 }

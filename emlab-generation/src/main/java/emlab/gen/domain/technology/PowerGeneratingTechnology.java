@@ -86,6 +86,14 @@ public class PowerGeneratingTechnology {
 
     private double maximumLifeExtension;
 
+    private double chargingRate;
+
+    private double disChargingRate;
+
+    private double maxStorageCapacity;
+
+    private double minStorageCapacity;
+
     public double getMaximumLifeExtension() {
         return maximumLifeExtension;
     }
@@ -321,6 +329,38 @@ public class PowerGeneratingTechnology {
 
     public void setDisChargeEfficiency(double disChargeEfficiency) {
         this.disChargeEfficiency = disChargeEfficiency;
+    }
+
+    public double getChargingRate() {
+        return chargingRate;
+    }
+
+    public void setChargingRate(double chargingRate) {
+        this.chargingRate = chargingRate;
+    }
+
+    public double getDisChargingRate() {
+        return disChargingRate;
+    }
+
+    public void setDisChargingRate(double disChargingRate) {
+        this.disChargingRate = disChargingRate;
+    }
+
+    public double getMaxStorageCapacity() {
+        return maxStorageCapacity;
+    }
+
+    public void setMaxStorageCapacity(double maxStorageCapacity) {
+        this.maxStorageCapacity = maxStorageCapacity;
+    }
+
+    public double getMinStorageCapacity() {
+        return minStorageCapacity;
+    }
+
+    public void setMinStorageCapacity(double minStorageCapacity) {
+        this.minStorageCapacity = minStorageCapacity;
     }
 
 }
