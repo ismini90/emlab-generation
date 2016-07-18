@@ -323,7 +323,7 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
             @Param("tick") long tick);
 
     @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.storage == true}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}", type = QueryType.Gremlin)
-    PowerPlant findOperationalStoragePowerPlantsByPowerGridNode(@Param("gridnode") PowerGridNode node,
+    ArrayList<PowerPlant> findOperationalStoragePowerPlantsByPowerGridNode(@Param("gridnode") PowerGridNode node,
             @Param("tick") long tick);
 
     @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerPlant']].as('p').out('TECHNOLOGY').filter{it.storage == true}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}.out('TECHNOLOGY').sum{it.capacity};", type = QueryType.Gremlin)

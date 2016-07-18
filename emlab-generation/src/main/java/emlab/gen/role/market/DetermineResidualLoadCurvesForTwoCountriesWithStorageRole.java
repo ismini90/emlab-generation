@@ -258,14 +258,14 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
         int HOURS = m.rows(); // amount of hours in simulation
 
-        List<PowerPlant> storagePowerPlantList = new ArrayList<PowerPlant>();
+        ArrayList<PowerPlant> storagePowerPlantList = new ArrayList<PowerPlant>();
 
         for (Zone zone : zoneList) {
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
                 logger.warn("current node" + node.getName());
 
-                storagePowerPlantList.add(reps.powerPlantRepository
-                        .findOperationalStoragePowerPlantsByPowerGridNode(node, getCurrentTick()));
+                storagePowerPlantList = reps.powerPlantRepository.findOperationalStoragePowerPlantsByPowerGridNode(node,
+                        getCurrentTick());
 
             }
         }
