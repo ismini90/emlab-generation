@@ -45,11 +45,11 @@
 		</property>
 	</bean>
 
-	<!-- Regulator -->
+	<!--   -->
 <bean id="regulatorNL" class="emlab.gen.domain.agent.Regulator" p:name="Regulator NL"
 p:numberOfYearsLookingBackToForecastDemand="5"
-p:equityInterestRate="0.11" p:loanInterestRate="0.055"
-		p:equityRatePriceRiskComponent="0.03"
+p:equityInterestRate="0.0797" p:loanInterestRate="0.0428"
+		p:equityRatePriceRiskComponent="0.00"
 		p:debtRatioOfInvestments="0.7">
 <property name="zone" ref="nl"/>
 </bean>
